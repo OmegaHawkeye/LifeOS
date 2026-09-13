@@ -4,6 +4,74 @@
  */
 
 export interface paths {
+    "/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start an owner session */
+        post: operations["loginOwner"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke the current owner session */
+        post: operations["logoutOwner"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/challenge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete the authenticator challenge and start an owner session */
+        post: operations["completeOwnerTwoFactorChallenge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/two-factor/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm first-time authenticator setup and start an owner session */
+        post: operations["confirmOwnerTwoFactorSetup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/me": {
         parameters: {
             query?: never;
@@ -38,6 +106,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return the current owner's settings */
+        get: operations["getOwnerSettings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update the current owner's settings */
+        patch: operations["updateOwnerSettings"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -46,6 +132,12 @@ export interface components {
             message: string;
         } & {
             [key: string]: unknown;
+        };
+        LoginRequest: {
+            /** Format: email */
+            email: string;
+            /** Format: password */
+            password: string;
         };
         OwnerProfile: {
             /** Format: email */
@@ -57,11 +149,47 @@ export interface components {
         OwnerProfileResponse: {
             data: components["schemas"]["OwnerProfile"];
         };
+        OwnerSettings: {
+            currency: string;
+            mask_sensitive_data_by_default: boolean;
+            /** @enum {string} */
+            measurement_system: "metric" | "imperial";
+            /** @enum {string} */
+            theme: "system" | "light" | "dark";
+            /** @example Europe/Vienna */
+            timezone: string;
+        };
+        OwnerSettingsResponse: {
+            data: components["schemas"]["OwnerSettings"];
+        };
         Readiness: {
             /** @constant */
             service: "lifeos-api";
             /** @constant */
             status: "ok";
+        };
+        TwoFactorCodeRequest: {
+            code: string;
+        };
+        TwoFactorLoginResponse: {
+            data: {
+                /** @description Base32 authenticator secret, returned only during authenticated first-time setup. */
+                secret: string;
+                /** @constant */
+                status: "setup_required";
+            } | {
+                /** @constant */
+                status: "challenge_required";
+            };
+        };
+        UpdateOwnerSettingsRequest: {
+            currency?: string;
+            mask_sensitive_data_by_default?: boolean;
+            /** @enum {string} */
+            measurement_system?: "metric" | "imperial";
+            /** @enum {string} */
+            theme?: "system" | "light" | "dark";
+            timezone?: string;
         };
     };
     responses: never;
@@ -72,6 +200,177 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    loginOwner: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description A second factor is required before an owner session is created. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwoFactorLoginResponse"];
+                };
+            };
+            /** @description The credentials are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Too many sign-in attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    logoutOwner: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The current session has been revoked. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    completeOwnerTwoFactorChallenge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TwoFactorCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description The owner is signed in. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerProfileResponse"];
+                };
+            };
+            /** @description A password sign-in is required first. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Two-factor setup must be completed first. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The authenticator code is invalid or expired. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many verification attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    confirmOwnerTwoFactorSetup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TwoFactorCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description The authenticator is confirmed and the owner is signed in. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerProfileResponse"];
+                };
+            };
+            /** @description A password sign-in is required first. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Two-factor setup is not pending. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The authenticator code is invalid or expired. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many verification attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getOwnerProfile: {
         parameters: {
             query?: never;
@@ -117,6 +416,73 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Readiness"];
+                };
+            };
+        };
+    };
+    getOwnerSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The current owner settings. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerSettingsResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateOwnerSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateOwnerSettingsRequest"];
+            };
+        };
+        responses: {
+            /** @description The saved owner settings. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerSettingsResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A setting is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
                 };
             };
         };

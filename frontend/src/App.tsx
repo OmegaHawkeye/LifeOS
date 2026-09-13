@@ -1,36 +1,158 @@
-function App() {
-  return (
-    <main className="flex min-h-svh items-center justify-center bg-stone-950 px-6 py-12 text-stone-100">
-      <section className="flex w-full max-w-3xl flex-col gap-10 rounded-3xl border border-white/10 bg-stone-900/70 p-8 shadow-2xl shadow-emerald-950/20 sm:p-12">
-        <div className="flex items-center gap-3 text-sm font-medium text-emerald-300">
-          <span
-            aria-hidden="true"
-            className="size-2.5 rounded-full bg-emerald-400 shadow-[0_0_18px_theme(colors.emerald.400)]"
-          />
-          Foundation ready
-        </div>
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  AppShell,
+  AuthProvider,
+  LoginPage,
+  SettingsPage,
+  useAuth,
+} from "@/modules/Foundation";
 
-        <div className="flex flex-col gap-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-stone-400">
-            Personal operating system
-          </p>
-          <h1 className="text-5xl font-semibold tracking-tight text-white sm:text-7xl">
-            LifeOS
+const modules = [
+  {
+    path: "dashboard",
+    label: "Dashboard",
+    description: "Your day, at a glance.",
+  },
+  {
+    path: "finance",
+    label: "Finance",
+    description: "A clear view of your money.",
+  },
+  {
+    path: "fitness",
+    label: "Fitness",
+    description: "Training and progress, together.",
+  },
+  {
+    path: "nutrition",
+    label: "Nutrition",
+    description: "Make a practical plan for the week.",
+  },
+  {
+    path: "health",
+    label: "Health",
+    description: "Health signals you choose to track.",
+  },
+];
+
+function ProtectedRoutes() {
+  const { isLoading, owner, loadError } = useAuth();
+
+  if (isLoading) {
+    return (
+      <main className="grid min-h-svh place-items-center">
+        Loading your private workspace…
+      </main>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <main className="grid min-h-svh place-items-center px-6 text-center">
+        <section className="max-w-md">
+          <h1 className="text-xl font-semibold">
+            LifeOS is temporarily unavailable
           </h1>
-          <p className="max-w-2xl text-lg leading-8 text-stone-300">
-            A private home for daily planning, finance, fitness, nutrition, and
-            the signals that help shape a better week.
+          <p className="mt-3 text-sm text-stone-400">
+            Check your connection and reload this page.
           </p>
-        </div>
+          <button
+            className="mt-6 rounded-xl bg-emerald-400 px-4 py-2 font-semibold text-stone-950"
+            onClick={() => window.location.reload()}
+          >
+            Reload
+          </button>
+        </section>
+      </main>
+    );
+  }
 
-        <div className="grid gap-3 border-t border-white/10 pt-6 text-sm text-stone-400 sm:grid-cols-3">
-          <span>Laravel API</span>
-          <span>React PWA</span>
-          <span>PostgreSQL</span>
-        </div>
-      </section>
-    </main>
+  if (!owner) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return (
+    <AppShell>
+      <Routes>
+        {modules.map((module) => (
+          <Route
+            key={module.path}
+            path={module.path}
+            element={
+              <ModulePage
+                title={module.label}
+                description={module.description}
+              />
+            }
+          />
+        ))}
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="settings" element={<SettingsPage />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </AppShell>
   );
 }
 
-export default App;
+function ModulePage({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  const { owner } = useAuth();
+
+  return (
+    <section aria-labelledby="page-title" className="mx-auto w-full max-w-5xl">
+      <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+        Your private workspace
+      </p>
+      <h1
+        id="page-title"
+        className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl"
+      >
+        {title}
+      </h1>
+      <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
+        {description}
+      </p>
+      {title === "Dashboard" && (
+        <div className="mt-10 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8">
+          <p className="text-sm text-stone-500 dark:text-stone-400">
+            Welcome back
+          </p>
+          <p className="mt-2 text-xl font-medium">{owner?.name}</p>
+          <p className="mt-5 max-w-xl text-sm leading-6 text-stone-500 dark:text-stone-400">
+            Your LifeOS workspace is ready. Choose a module to start capturing
+            and planning your week.
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function AppRoutes() {
+  const { owner } = useAuth();
+
+  return (
+    <Routes>
+      <Route
+        path="/login"
+        element={owner ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+      />
+      <Route path="/*" element={<ProtectedRoutes />} />
+    </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}

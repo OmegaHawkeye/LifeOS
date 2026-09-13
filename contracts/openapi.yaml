@@ -39,6 +39,143 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /auth/login:
+    post:
+      operationId: loginOwner
+      summary: Start an owner session
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '202':
+          description: A second factor is required before an owner session is created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TwoFactorLoginResponse'
+        '422':
+          description: The credentials are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Too many sign-in attempts.
+  /auth/two-factor/confirm:
+    post:
+      operationId: confirmOwnerTwoFactorSetup
+      summary: Confirm first-time authenticator setup and start an owner session
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TwoFactorCodeRequest'
+      responses:
+        '200':
+          description: The authenticator is confirmed and the owner is signed in.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerProfileResponse'
+        '401':
+          description: A password sign-in is required first.
+        '409':
+          description: Two-factor setup is not pending.
+        '422':
+          description: The authenticator code is invalid or expired.
+        '429':
+          description: Too many verification attempts.
+  /auth/two-factor/challenge:
+    post:
+      operationId: completeOwnerTwoFactorChallenge
+      summary: Complete the authenticator challenge and start an owner session
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TwoFactorCodeRequest'
+      responses:
+        '200':
+          description: The owner is signed in.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerProfileResponse'
+        '401':
+          description: A password sign-in is required first.
+        '409':
+          description: Two-factor setup must be completed first.
+        '422':
+          description: The authenticator code is invalid or expired.
+        '429':
+          description: Too many verification attempts.
+  /auth/logout:
+    post:
+      operationId: logoutOwner
+      summary: Revoke the current owner session
+      tags: [Foundation]
+      security:
+        - cookieAuth: []
+      responses:
+        '204':
+          description: The current session has been revoked.
+        '401':
+          description: The request is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /settings:
+    get:
+      operationId: getOwnerSettings
+      summary: Return the current owner's settings
+      tags: [Foundation]
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: The current owner settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerSettingsResponse'
+        '401':
+          description: The request is not authenticated.
+    patch:
+      operationId: updateOwnerSettings
+      summary: Update the current owner's settings
+      tags: [Foundation]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOwnerSettingsRequest'
+      responses:
+        '200':
+          description: The saved owner settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerSettingsResponse'
+        '401':
+          description: The request is not authenticated.
+        '422':
+          description: A setting is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     cookieAuth:
@@ -80,6 +217,93 @@ components:
         email:
           type: string
           format: email
+    LoginRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    TwoFactorCodeRequest:
+      type: object
+      additionalProperties: false
+      required: [code]
+      properties:
+        code:
+          type: string
+          pattern: '^\d{6}$'
+    TwoFactorLoginResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          oneOf:
+            - type: object
+              additionalProperties: false
+              required: [status, secret]
+              properties:
+                status:
+                  type: string
+                  const: setup_required
+                secret:
+                  type: string
+                  description: Base32 authenticator secret, returned only during authenticated first-time setup.
+            - type: object
+              additionalProperties: false
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  const: challenge_required
+    OwnerSettingsResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/OwnerSettings'
+    OwnerSettings:
+      type: object
+      additionalProperties: false
+      required: [timezone, currency, measurement_system, theme, mask_sensitive_data_by_default]
+      properties:
+        timezone:
+          type: string
+          example: Europe/Vienna
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        measurement_system:
+          type: string
+          enum: [metric, imperial]
+        theme:
+          type: string
+          enum: [system, light, dark]
+        mask_sensitive_data_by_default:
+          type: boolean
+    UpdateOwnerSettingsRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        timezone:
+          type: string
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        measurement_system:
+          type: string
+          enum: [metric, imperial]
+        theme:
+          type: string
+          enum: [system, light, dark]
+        mask_sensitive_data_by_default:
+          type: boolean
     Error:
       type: object
       additionalProperties: true
