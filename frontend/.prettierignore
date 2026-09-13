@@ -1,0 +1,6 @@
+coverage
+dist
+node_modules
+playwright-report
+src/api/schema.d.ts
+test-results

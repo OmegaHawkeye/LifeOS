@@ -1,0 +1,89 @@
+openapi: 3.1.0
+info:
+  title: LifeOS API
+  version: 1.0.0
+  description: The client-neutral contract for the LifeOS modular monolith.
+servers:
+  - url: /api/v1
+paths:
+  /readiness:
+    get:
+      operationId: getReadiness
+      summary: Report whether the API process is ready
+      tags: [Foundation]
+      responses:
+        '200':
+          description: The API process is ready to receive requests.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Readiness'
+  /me:
+    get:
+      operationId: getOwnerProfile
+      summary: Return the authenticated owner profile
+      tags: [Foundation]
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The current owner profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerProfileResponse'
+        '401':
+          description: The request is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: lifeos_session
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Readiness:
+      type: object
+      additionalProperties: false
+      required: [service, status]
+      properties:
+        service:
+          type: string
+          const: lifeos-api
+        status:
+          type: string
+          const: ok
+    OwnerProfileResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/OwnerProfile'
+    OwnerProfile:
+      type: object
+      additionalProperties: false
+      required: [id, name, email]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+    Error:
+      type: object
+      additionalProperties: true
+      required: [message]
+      properties:
+        message:
+          type: string

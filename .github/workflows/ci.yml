@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: lifeos
+          POSTGRES_USER: lifeos
+          POSTGRES_PASSWORD: lifeos-ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lifeos -d lifeos"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/setup@v2
+        with:
+          version: 11.18.0
+          runtime: node@24
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+          extensions: intl, pdo_pgsql, zip
+
+      - name: Install PHP dependencies
+        run: composer install --working-dir=backend --no-interaction --no-progress --prefer-dist
+
+      - name: Install web dependencies
+        run: pnpm --dir frontend install --frozen-lockfile
+
+      - name: Install Playwright
+        run: pnpm --dir frontend exec playwright install --with-deps chromium
+
+      - name: Prepare Laravel
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: lifeos
+          DB_USERNAME: lifeos
+          DB_PASSWORD: lifeos-ci
+        run: |
+          cp backend/.env.example backend/.env
+          php backend/artisan key:generate --no-interaction
+          php backend/artisan migrate --no-interaction
+
+      - name: Run repository checks
+        run: pnpm check
