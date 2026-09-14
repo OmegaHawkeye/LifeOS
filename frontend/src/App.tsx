@@ -6,17 +6,13 @@ import {
   SettingsPage,
   useAuth,
 } from "@/modules/Foundation";
+import { FinancePage } from "@/modules/Finance/FinancePage";
 
 const modules = [
   {
     path: "dashboard",
     label: "Dashboard",
     description: "Your day, at a glance.",
-  },
-  {
-    path: "finance",
-    label: "Finance",
-    description: "A clear view of your money.",
   },
   {
     path: "fitness",
@@ -74,6 +70,7 @@ function ProtectedRoutes() {
   return (
     <AppShell>
       <Routes>
+        <Route path="finance" element={<FinancePage />} />
         {modules.map((module) => (
           <Route
             key={module.path}

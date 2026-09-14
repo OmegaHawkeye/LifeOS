@@ -12,12 +12,12 @@ paths:
       summary: Report whether the API process is ready
       tags: [Foundation]
       responses:
-        '200':
+        "200":
           description: The API process is ready to receive requests.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Readiness'
+                $ref: "#/components/schemas/Readiness"
   /me:
     get:
       operationId: getOwnerProfile
@@ -27,18 +27,18 @@ paths:
         - cookieAuth: []
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: The current owner profile.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnerProfileResponse'
-        '401':
+                $ref: "#/components/schemas/OwnerProfileResponse"
+        "401":
           description: The request is not authenticated.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /auth/login:
     post:
       operationId: loginOwner
@@ -49,21 +49,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '202':
+        "202":
           description: A second factor is required before an owner session is created.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TwoFactorLoginResponse'
-        '422':
+                $ref: "#/components/schemas/TwoFactorLoginResponse"
+        "422":
           description: The credentials are invalid.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '429':
+                $ref: "#/components/schemas/Error"
+        "429":
           description: Too many sign-in attempts.
   /auth/two-factor/confirm:
     post:
@@ -75,21 +75,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TwoFactorCodeRequest'
+              $ref: "#/components/schemas/TwoFactorCodeRequest"
       responses:
-        '200':
+        "200":
           description: The authenticator is confirmed and the owner is signed in.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnerProfileResponse'
-        '401':
+                $ref: "#/components/schemas/OwnerProfileResponse"
+        "401":
           description: A password sign-in is required first.
-        '409':
+        "409":
           description: Two-factor setup is not pending.
-        '422':
+        "422":
           description: The authenticator code is invalid or expired.
-        '429':
+        "429":
           description: Too many verification attempts.
   /auth/two-factor/challenge:
     post:
@@ -101,21 +101,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TwoFactorCodeRequest'
+              $ref: "#/components/schemas/TwoFactorCodeRequest"
       responses:
-        '200':
+        "200":
           description: The owner is signed in.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnerProfileResponse'
-        '401':
+                $ref: "#/components/schemas/OwnerProfileResponse"
+        "401":
           description: A password sign-in is required first.
-        '409':
+        "409":
           description: Two-factor setup must be completed first.
-        '422':
+        "422":
           description: The authenticator code is invalid or expired.
-        '429':
+        "429":
           description: Too many verification attempts.
   /auth/logout:
     post:
@@ -125,14 +125,14 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '204':
+        "204":
           description: The current session has been revoked.
-        '401':
+        "401":
           description: The request is not authenticated.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /settings:
     get:
       operationId: getOwnerSettings
@@ -141,13 +141,13 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: The current owner settings.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnerSettingsResponse'
-        '401':
+                $ref: "#/components/schemas/OwnerSettingsResponse"
+        "401":
           description: The request is not authenticated.
     patch:
       operationId: updateOwnerSettings
@@ -160,22 +160,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateOwnerSettingsRequest'
+              $ref: "#/components/schemas/UpdateOwnerSettingsRequest"
       responses:
-        '200':
+        "200":
           description: The saved owner settings.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OwnerSettingsResponse'
-        '401':
+                $ref: "#/components/schemas/OwnerSettingsResponse"
+        "401":
           description: The request is not authenticated.
-        '422':
+        "422":
           description: A setting is invalid.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /finance/accounts:
     get:
       operationId: listFinanceAccounts
@@ -184,13 +184,13 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Active accounts ordered by name.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FinanceAccountListResponse'
-        '401':
+                $ref: "#/components/schemas/FinanceAccountListResponse"
+        "401":
           description: The request is not authenticated.
     post:
       operationId: createFinanceAccount
@@ -203,22 +203,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateFinanceAccountRequest'
+              $ref: "#/components/schemas/CreateFinanceAccountRequest"
       responses:
-        '201':
+        "201":
           description: The created account.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FinanceAccountResponse'
-        '401':
+                $ref: "#/components/schemas/FinanceAccountResponse"
+        "401":
           description: The request is not authenticated.
-        '422':
+        "422":
           description: An account field is invalid.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /finance/categories:
     get:
       operationId: listFinanceCategories
@@ -227,13 +227,13 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Active categories ordered by type and name.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FinanceCategoryListResponse'
-        '401':
+                $ref: "#/components/schemas/FinanceCategoryListResponse"
+        "401":
           description: The request is not authenticated.
     post:
       operationId: createFinanceCategory
@@ -246,22 +246,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateFinanceCategoryRequest'
+              $ref: "#/components/schemas/CreateFinanceCategoryRequest"
       responses:
-        '201':
+        "201":
           description: The created category.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FinanceCategoryResponse'
-        '401':
+                $ref: "#/components/schemas/FinanceCategoryResponse"
+        "401":
           description: The request is not authenticated.
-        '422':
+        "422":
           description: A category field is invalid.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /finance/categories/{category}:
     patch:
       operationId: updateFinanceCategory
@@ -281,39 +281,70 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateFinanceCategoryRequest'
+              $ref: "#/components/schemas/UpdateFinanceCategoryRequest"
       responses:
-        '200':
+        "200":
           description: The updated category.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FinanceCategoryResponse'
-        '401':
+                $ref: "#/components/schemas/FinanceCategoryResponse"
+        "401":
           description: The request is not authenticated.
-        '404':
+        "404":
           description: The category does not exist for this owner.
-        '422':
+        "422":
           description: A category field is invalid.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /finance/transactions:
     get:
       operationId: listFinanceTransactions
       summary: List the authenticated owner's income and expense transactions
       tags: [Finance]
+      parameters:
+        - name: account_id
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: category_id
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: tag
+          in: query
+          schema:
+            type: string
+            maxLength: 50
+        - name: search
+          in: query
+          schema:
+            type: string
+            maxLength: 120
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Transactions ordered by occurrence time, newest first.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FinanceTransactionListResponse'
-        '401':
+                $ref: "#/components/schemas/FinanceTransactionListResponse"
+        "401":
           description: The request is not authenticated.
     post:
       operationId: createFinanceTransaction
@@ -326,24 +357,108 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateFinanceTransactionRequest'
+              $ref: "#/components/schemas/CreateFinanceTransactionRequest"
       responses:
-        '201':
+        "201":
           description: The created transaction.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FinanceTransactionResponse'
-        '401':
+                $ref: "#/components/schemas/FinanceTransactionResponse"
+        "401":
           description: The request is not authenticated.
-        '404':
+        "404":
           description: The account or category does not exist for this owner.
-        '422':
+        "422":
           description: The transaction fields are invalid.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
+  /finance/transactions/{transaction}:
+    parameters:
+      - name: transaction
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+    patch:
+      operationId: updateFinanceTransaction
+      summary: Update an income or expense transaction
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFinanceTransactionRequest"
+      responses:
+        "200":
+          description: The updated transaction.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceTransactionResponse"
+        "401":
+          description: The request is not authenticated.
+        "404":
+          description: The transaction, account, or category does not exist for this owner.
+        "422":
+          description: The transaction fields are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      operationId: deleteFinanceTransaction
+      summary: Delete an income or expense transaction
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: The transaction was deleted.
+        "401":
+          description: The request is not authenticated.
+        "404":
+          description: The transaction does not exist for this owner.
+  /finance/overview:
+    get:
+      operationId: getFinanceOverview
+      summary: Summarize one month's income, spending, and category totals
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: month
+          in: query
+          description: Month in YYYY-MM format; defaults to the current month.
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+        - name: account_id
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Monthly totals grouped by currency and category.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceOverviewResponse"
+        "401":
+          description: The request is not authenticated.
+        "422":
+          description: The month or account filter is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /finance/transfers:
     get:
       operationId: listFinanceTransfers
@@ -352,13 +467,13 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Transfers ordered by occurrence time, newest first.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FinanceTransferListResponse'
-        '401':
+                $ref: "#/components/schemas/FinanceTransferListResponse"
+        "401":
           description: The request is not authenticated.
     post:
       operationId: createFinanceTransfer
@@ -371,24 +486,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateFinanceTransferRequest'
+              $ref: "#/components/schemas/CreateFinanceTransferRequest"
       responses:
-        '201':
+        "201":
           description: The transfer pair. Transfers are stored separately from cash-flow transactions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FinanceTransferResponse'
-        '401':
+                $ref: "#/components/schemas/FinanceTransferResponse"
+        "401":
           description: The request is not authenticated.
-        '404':
+        "404":
           description: An account does not exist for this owner.
-        '422':
+        "422":
           description: The transfer fields are invalid.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
 components:
   securitySchemes:
     cookieAuth:
@@ -416,7 +531,7 @@ components:
       required: [data]
       properties:
         data:
-          $ref: '#/components/schemas/OwnerProfile'
+          $ref: "#/components/schemas/OwnerProfile"
     OwnerProfile:
       type: object
       additionalProperties: false
@@ -479,18 +594,25 @@ components:
       required: [data]
       properties:
         data:
-          $ref: '#/components/schemas/OwnerSettings'
+          $ref: "#/components/schemas/OwnerSettings"
     OwnerSettings:
       type: object
       additionalProperties: false
-      required: [timezone, currency, measurement_system, theme, mask_sensitive_data_by_default]
+      required:
+        [
+          timezone,
+          currency,
+          measurement_system,
+          theme,
+          mask_sensitive_data_by_default,
+        ]
       properties:
         timezone:
           type: string
           example: Europe/Vienna
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         measurement_system:
           type: string
           enum: [metric, imperial]
@@ -508,7 +630,7 @@ components:
           type: string
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         measurement_system:
           type: string
           enum: [metric, imperial]
@@ -532,18 +654,18 @@ components:
           enum: [checking, savings, credit_card, cash, investment, other]
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         opening_balance:
-          $ref: '#/components/schemas/FinanceAmount'
+          $ref: "#/components/schemas/FinanceAmount"
         balance:
-          $ref: '#/components/schemas/FinanceAmount'
+          $ref: "#/components/schemas/FinanceAmount"
     FinanceAccountResponse:
       type: object
       additionalProperties: false
       required: [data]
       properties:
         data:
-          $ref: '#/components/schemas/FinanceAccount'
+          $ref: "#/components/schemas/FinanceAccount"
     FinanceAccountListResponse:
       type: object
       additionalProperties: false
@@ -552,7 +674,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/FinanceAccount'
+            $ref: "#/components/schemas/FinanceAccount"
     CreateFinanceAccountRequest:
       type: object
       additionalProperties: false
@@ -566,10 +688,10 @@ components:
           enum: [checking, savings, credit_card, cash, investment, other]
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
           description: Defaults to the owner's primary currency.
         opening_balance:
-          $ref: '#/components/schemas/FinanceAmount'
+          $ref: "#/components/schemas/FinanceAmount"
     FinanceCategory:
       type: object
       additionalProperties: false
@@ -584,8 +706,8 @@ components:
           type: string
           enum: [income, expense]
         color:
-          type: [string, 'null']
-          pattern: '^#[A-Fa-f0-9]{6}$'
+          type: [string, "null"]
+          pattern: "^#[A-Fa-f0-9]{6}$"
         is_archived:
           type: boolean
     FinanceCategoryResponse:
@@ -594,7 +716,7 @@ components:
       required: [data]
       properties:
         data:
-          $ref: '#/components/schemas/FinanceCategory'
+          $ref: "#/components/schemas/FinanceCategory"
     FinanceCategoryListResponse:
       type: object
       additionalProperties: false
@@ -603,7 +725,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/FinanceCategory'
+            $ref: "#/components/schemas/FinanceCategory"
     CreateFinanceCategoryRequest:
       type: object
       additionalProperties: false
@@ -616,8 +738,8 @@ components:
           type: string
           enum: [income, expense]
         color:
-          type: [string, 'null']
-          pattern: '^#[A-Fa-f0-9]{6}$'
+          type: [string, "null"]
+          pattern: "^#[A-Fa-f0-9]{6}$"
     UpdateFinanceCategoryRequest:
       type: object
       additionalProperties: false
@@ -627,12 +749,24 @@ components:
           type: string
           maxLength: 100
         color:
-          type: [string, 'null']
-          pattern: '^#[A-Fa-f0-9]{6}$'
+          type: [string, "null"]
+          pattern: "^#[A-Fa-f0-9]{6}$"
     FinanceTransaction:
       type: object
       additionalProperties: false
-      required: [id, account_id, type, amount, currency, description, occurred_at, category, payee, tags]
+      required:
+        [
+          id,
+          account_id,
+          type,
+          amount,
+          currency,
+          description,
+          occurred_at,
+          category,
+          payee,
+          tags,
+        ]
       properties:
         id:
           type: integer
@@ -644,21 +778,21 @@ components:
           type: string
           enum: [income, expense]
         amount:
-          $ref: '#/components/schemas/FinanceAmount'
+          $ref: "#/components/schemas/FinanceAmount"
         currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         description:
-          type: [string, 'null']
+          type: [string, "null"]
         occurred_at:
           type: string
           format: date-time
         category:
           anyOf:
-            - $ref: '#/components/schemas/FinanceTransactionCategory'
-            - type: 'null'
+            - $ref: "#/components/schemas/FinanceTransactionCategory"
+            - type: "null"
         payee:
-          type: [string, 'null']
+          type: [string, "null"]
         tags:
           type: array
           items:
@@ -682,7 +816,7 @@ components:
       required: [data]
       properties:
         data:
-          $ref: '#/components/schemas/FinanceTransaction'
+          $ref: "#/components/schemas/FinanceTransaction"
     FinanceTransactionListResponse:
       type: object
       additionalProperties: false
@@ -691,7 +825,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/FinanceTransaction'
+            $ref: "#/components/schemas/FinanceTransaction"
     CreateFinanceTransactionRequest:
       type: object
       additionalProperties: false
@@ -701,21 +835,21 @@ components:
           type: integer
           format: int64
         category_id:
-          type: [integer, 'null']
+          type: [integer, "null"]
           format: int64
         type:
           type: string
           enum: [income, expense]
         amount:
-          $ref: '#/components/schemas/FinanceAmount'
+          $ref: "#/components/schemas/FinanceAmount"
         description:
-          type: [string, 'null']
+          type: [string, "null"]
           maxLength: 255
         occurred_at:
           type: string
           format: date-time
         payee:
-          type: [string, 'null']
+          type: [string, "null"]
           maxLength: 120
         tags:
           type: array
@@ -723,10 +857,112 @@ components:
           items:
             type: string
             maxLength: 50
+    UpdateFinanceTransactionRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        account_id:
+          type: integer
+          format: int64
+        category_id:
+          type: [integer, "null"]
+          format: int64
+        type:
+          type: string
+          enum: [income, expense]
+        amount:
+          $ref: "#/components/schemas/FinanceAmount"
+        description:
+          type: [string, "null"]
+          maxLength: 255
+        occurred_at:
+          type: string
+          format: date-time
+        payee:
+          type: [string, "null"]
+          maxLength: 120
+        tags:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            maxLength: 50
+    FinanceOverview:
+      type: object
+      additionalProperties: false
+      required: [month, totals, category_breakdown]
+      properties:
+        month:
+          type: string
+          pattern: '^\d{4}-\d{2}$'
+        totals:
+          type: array
+          items:
+            $ref: "#/components/schemas/FinanceOverviewTotal"
+        category_breakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/FinanceCategoryBreakdown"
+    FinanceOverviewTotal:
+      type: object
+      additionalProperties: false
+      required: [currency, income, spending, net_cashflow]
+      properties:
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+        income:
+          $ref: "#/components/schemas/FinanceAmount"
+        spending:
+          $ref: "#/components/schemas/FinanceAmount"
+        net_cashflow:
+          $ref: "#/components/schemas/FinanceAmount"
+    FinanceCategoryBreakdown:
+      type: object
+      additionalProperties: false
+      required:
+        [category_id, category_name, type, currency, total, transaction_count]
+      properties:
+        category_id:
+          type: [integer, "null"]
+          format: int64
+        category_name:
+          type: string
+        type:
+          type: string
+          enum: [income, expense]
+        currency:
+          type: string
+          pattern: "^[A-Z]{3}$"
+        total:
+          $ref: "#/components/schemas/FinanceAmount"
+        transaction_count:
+          type: integer
+          minimum: 0
+    FinanceOverviewResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/FinanceOverview"
     FinanceTransfer:
       type: object
       additionalProperties: false
-      required: [id, from_account_id, to_account_id, from_amount, from_currency, to_amount, to_currency, description, occurred_at, cash_flow_effect]
+      required:
+        [
+          id,
+          from_account_id,
+          to_account_id,
+          from_amount,
+          from_currency,
+          to_amount,
+          to_currency,
+          description,
+          occurred_at,
+          cash_flow_effect,
+        ]
       properties:
         id:
           type: integer
@@ -738,17 +974,17 @@ components:
           type: integer
           format: int64
         from_amount:
-          $ref: '#/components/schemas/FinanceAmount'
+          $ref: "#/components/schemas/FinanceAmount"
         from_currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         to_amount:
-          $ref: '#/components/schemas/FinanceAmount'
+          $ref: "#/components/schemas/FinanceAmount"
         to_currency:
           type: string
-          pattern: '^[A-Z]{3}$'
+          pattern: "^[A-Z]{3}$"
         description:
-          type: [string, 'null']
+          type: [string, "null"]
         occurred_at:
           type: string
           format: date-time
@@ -761,7 +997,7 @@ components:
       required: [data]
       properties:
         data:
-          $ref: '#/components/schemas/FinanceTransfer'
+          $ref: "#/components/schemas/FinanceTransfer"
     FinanceTransferListResponse:
       type: object
       additionalProperties: false
@@ -770,7 +1006,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/FinanceTransfer'
+            $ref: "#/components/schemas/FinanceTransfer"
     CreateFinanceTransferRequest:
       type: object
       additionalProperties: false
@@ -783,11 +1019,11 @@ components:
           type: integer
           format: int64
         from_amount:
-          $ref: '#/components/schemas/FinanceAmount'
+          $ref: "#/components/schemas/FinanceAmount"
         to_amount:
-          $ref: '#/components/schemas/FinanceAmount'
+          $ref: "#/components/schemas/FinanceAmount"
         description:
-          type: [string, 'null']
+          type: [string, "null"]
           maxLength: 255
         occurred_at:
           type: string

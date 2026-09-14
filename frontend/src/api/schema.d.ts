@@ -125,6 +125,23 @@ export interface paths {
         patch: operations["updateFinanceCategory"];
         trace?: never;
     };
+    "/finance/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Summarize one month's income, spending, and category totals */
+        get: operations["getFinanceOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/finance/transactions": {
         parameters: {
             query?: never;
@@ -141,6 +158,26 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/finance/transactions/{transaction}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an income or expense transaction */
+        delete: operations["deleteFinanceTransaction"];
+        options?: never;
+        head?: never;
+        /** Update an income or expense transaction */
+        patch: operations["updateFinanceTransaction"];
         trace?: never;
     };
     "/finance/transfers": {
@@ -287,11 +324,35 @@ export interface components {
             /** @enum {string} */
             type: "income" | "expense";
         };
+        FinanceCategoryBreakdown: {
+            /** Format: int64 */
+            category_id: number | null;
+            category_name: string;
+            currency: string;
+            total: components["schemas"]["FinanceAmount"];
+            transaction_count: number;
+            /** @enum {string} */
+            type: "income" | "expense";
+        };
         FinanceCategoryListResponse: {
             data: components["schemas"]["FinanceCategory"][];
         };
         FinanceCategoryResponse: {
             data: components["schemas"]["FinanceCategory"];
+        };
+        FinanceOverview: {
+            category_breakdown: components["schemas"]["FinanceCategoryBreakdown"][];
+            month: string;
+            totals: components["schemas"]["FinanceOverviewTotal"][];
+        };
+        FinanceOverviewResponse: {
+            data: components["schemas"]["FinanceOverview"];
+        };
+        FinanceOverviewTotal: {
+            currency: string;
+            income: components["schemas"]["FinanceAmount"];
+            net_cashflow: components["schemas"]["FinanceAmount"];
+            spending: components["schemas"]["FinanceAmount"];
         };
         FinanceTransaction: {
             /** Format: int64 */
@@ -397,6 +458,20 @@ export interface components {
         UpdateFinanceCategoryRequest: {
             color?: string | null;
             name?: string;
+        };
+        UpdateFinanceTransactionRequest: {
+            /** Format: int64 */
+            account_id?: number;
+            amount?: components["schemas"]["FinanceAmount"];
+            /** Format: int64 */
+            category_id?: number | null;
+            description?: string | null;
+            /** Format: date-time */
+            occurred_at?: string;
+            payee?: string | null;
+            tags?: string[];
+            /** @enum {string} */
+            type?: "income" | "expense";
         };
         UpdateOwnerSettingsRequest: {
             currency?: string;
@@ -770,9 +845,56 @@ export interface operations {
             };
         };
     };
+    getFinanceOverview: {
+        parameters: {
+            query?: {
+                account_id?: number;
+                /** @description Month in YYYY-MM format; defaults to the current month. */
+                month?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Monthly totals grouped by currency and category. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceOverviewResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The month or account filter is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     listFinanceTransactions: {
         parameters: {
-            query?: never;
+            query?: {
+                account_id?: number;
+                category_id?: number;
+                date_from?: string;
+                date_to?: string;
+                search?: string;
+                tag?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -827,6 +949,89 @@ export interface operations {
                 content?: never;
             };
             /** @description The account or category does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The transaction fields are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    deleteFinanceTransaction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The transaction was deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The transaction does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateFinanceTransaction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                transaction: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFinanceTransactionRequest"];
+            };
+        };
+        responses: {
+            /** @description The updated transaction. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceTransactionResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The transaction, account, or category does not exist for this owner. */
             404: {
                 headers: {
                     [name: string]: unknown;

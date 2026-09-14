@@ -16,6 +16,9 @@ class FinanceApiTest extends TestCase
         $this->getJson('/api/v1/finance/accounts')->assertUnauthorized();
         $this->getJson('/api/v1/finance/categories')->assertUnauthorized();
         $this->getJson('/api/v1/finance/transactions')->assertUnauthorized();
+        $this->getJson('/api/v1/finance/overview')->assertUnauthorized();
+        $this->patchJson('/api/v1/finance/transactions/1', ['amount' => '1.00'])->assertUnauthorized();
+        $this->deleteJson('/api/v1/finance/transactions/1')->assertUnauthorized();
         $this->getJson('/api/v1/finance/transfers')->assertUnauthorized();
     }
 
@@ -224,6 +227,180 @@ class FinanceApiTest extends TestCase
             ->assertJsonValidationErrors('category_id');
 
         $this->assertDatabaseCount('finance_transactions', 0);
+    }
+
+    public function test_owner_can_edit_and_delete_a_persisted_transaction_without_stale_balances(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+        $accountId = $this->postJson('/api/v1/finance/accounts', [
+            'name' => 'Daily account',
+            'type' => 'checking',
+            'opening_balance' => '100.00',
+        ])->assertCreated()->json('data.id');
+        $categoryId = $this->postJson('/api/v1/finance/categories', [
+            'name' => 'Groceries',
+            'type' => 'expense',
+        ])->assertCreated()->json('data.id');
+        $transactionId = $this->postJson('/api/v1/finance/transactions', [
+            'account_id' => $accountId,
+            'category_id' => $categoryId,
+            'type' => 'expense',
+            'amount' => '42.50',
+            'description' => 'First shop',
+            'occurred_at' => '2026-09-14T12:30:00+02:00',
+            'payee' => 'Hofer',
+            'tags' => ['weekly'],
+        ])->assertCreated()->json('data.id');
+
+        $this->patchJson("/api/v1/finance/transactions/{$transactionId}", [
+            'amount' => '52.50',
+            'description' => 'Updated shop',
+            'payee' => 'Billa',
+            'tags' => ['monthly', 'food'],
+        ])->assertOk()
+            ->assertJsonPath('data.id', $transactionId)
+            ->assertJsonPath('data.amount', '52.5000')
+            ->assertJsonPath('data.description', 'Updated shop')
+            ->assertJsonPath('data.payee', 'Billa')
+            ->assertJsonPath('data.tags.0', 'monthly');
+
+        $this->getJson('/api/v1/finance/accounts')->assertJsonPath('data.0.balance', '47.5000');
+        $this->assertDatabaseHas('finance_transactions', [
+            'id' => $transactionId,
+            'description' => 'Updated shop',
+            'amount' => '52.5000',
+        ]);
+
+        $this->deleteJson("/api/v1/finance/transactions/{$transactionId}")->assertNoContent();
+
+        $this->getJson('/api/v1/finance/accounts')->assertJsonPath('data.0.balance', '100.0000');
+        $this->assertDatabaseMissing('finance_transactions', ['id' => $transactionId]);
+    }
+
+    public function test_transaction_filters_and_monthly_overview_use_only_matching_cashflow_entries(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+        $accountId = $this->postJson('/api/v1/finance/accounts', [
+            'name' => 'Daily account',
+            'type' => 'checking',
+            'currency' => 'EUR',
+        ])->assertCreated()->json('data.id');
+        $otherAccountId = $this->postJson('/api/v1/finance/accounts', [
+            'name' => 'Savings',
+            'type' => 'savings',
+            'currency' => 'EUR',
+        ])->assertCreated()->json('data.id');
+        $groceriesId = $this->postJson('/api/v1/finance/categories', [
+            'name' => 'Groceries',
+            'type' => 'expense',
+        ])->assertCreated()->json('data.id');
+        $salaryId = $this->postJson('/api/v1/finance/categories', [
+            'name' => 'Salary',
+            'type' => 'income',
+        ])->assertCreated()->json('data.id');
+
+        $this->postJson('/api/v1/finance/transactions', [
+            'account_id' => $accountId,
+            'category_id' => $groceriesId,
+            'type' => 'expense',
+            'amount' => '30.00',
+            'description' => 'Market groceries',
+            'occurred_at' => '2026-09-10T12:00:00+02:00',
+            'tags' => ['food'],
+        ])->assertCreated();
+        $this->postJson('/api/v1/finance/transactions', [
+            'account_id' => $accountId,
+            'category_id' => $salaryId,
+            'type' => 'income',
+            'amount' => '200.00',
+            'description' => 'September salary',
+            'occurred_at' => '2026-09-01T09:00:00+02:00',
+            'tags' => ['work'],
+        ])->assertCreated();
+        $this->postJson('/api/v1/finance/transactions', [
+            'account_id' => $otherAccountId,
+            'category_id' => $groceriesId,
+            'type' => 'expense',
+            'amount' => '15.00',
+            'description' => 'Other groceries',
+            'occurred_at' => '2026-09-12T10:00:00+02:00',
+            'tags' => ['food'],
+        ])->assertCreated();
+        $this->postJson('/api/v1/finance/transactions', [
+            'account_id' => $accountId,
+            'category_id' => $groceriesId,
+            'type' => 'expense',
+            'amount' => '99.00',
+            'description' => 'Last month groceries',
+            'occurred_at' => '2026-08-31T23:00:00+02:00',
+            'tags' => ['food'],
+        ])->assertCreated();
+
+        $this->getJson("/api/v1/finance/transactions?account_id={$accountId}&category_id={$groceriesId}&date_from=2026-09-09&date_to=2026-09-11&tag=FOOD&search=MARKET")
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.description', 'Market groceries');
+
+        $this->getJson('/api/v1/finance/overview?month=2026-09&account_id='.$accountId)
+            ->assertOk()
+            ->assertJsonPath('data.month', '2026-09')
+            ->assertJsonPath('data.totals.0.income', '200.0000')
+            ->assertJsonPath('data.totals.0.spending', '30.0000')
+            ->assertJsonPath('data.totals.0.net_cashflow', '170.0000')
+            ->assertJsonPath('data.category_breakdown.0.category_name', 'Groceries')
+            ->assertJsonPath('data.category_breakdown.0.total', '30.0000');
+    }
+
+    public function test_owner_cannot_edit_or_delete_another_owners_transaction(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+        $accountId = $this->postJson('/api/v1/finance/accounts', [
+            'name' => 'Private account',
+            'type' => 'checking',
+        ])->assertCreated()->json('data.id');
+        $transactionId = $this->postJson('/api/v1/finance/transactions', [
+            'account_id' => $accountId,
+            'type' => 'expense',
+            'amount' => '1.00',
+            'occurred_at' => '2026-09-14T14:00:00+02:00',
+        ])->assertCreated()->json('data.id');
+
+        Sanctum::actingAs(User::factory()->create());
+
+        $this->patchJson("/api/v1/finance/transactions/{$transactionId}", [
+            'amount' => '2.00',
+        ])->assertNotFound();
+        $this->deleteJson("/api/v1/finance/transactions/{$transactionId}")->assertNotFound();
+    }
+
+    public function test_transaction_edit_rejects_a_category_that_does_not_match_the_updated_type(): void
+    {
+        Sanctum::actingAs(User::factory()->create());
+        $accountId = $this->postJson('/api/v1/finance/accounts', [
+            'name' => 'Daily account',
+            'type' => 'checking',
+        ])->assertCreated()->json('data.id');
+        $categoryId = $this->postJson('/api/v1/finance/categories', [
+            'name' => 'Groceries',
+            'type' => 'expense',
+        ])->assertCreated()->json('data.id');
+        $transactionId = $this->postJson('/api/v1/finance/transactions', [
+            'account_id' => $accountId,
+            'category_id' => $categoryId,
+            'type' => 'expense',
+            'amount' => '10.00',
+            'occurred_at' => '2026-09-14T14:00:00+02:00',
+        ])->assertCreated()->json('data.id');
+
+        $this->patchJson("/api/v1/finance/transactions/{$transactionId}", [
+            'type' => 'income',
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors('category_id');
+
+        $this->getJson('/api/v1/finance/transactions')
+            ->assertOk()
+            ->assertJsonPath('data.0.type', 'expense')
+            ->assertJsonPath('data.0.amount', '10.0000');
     }
 
     public function test_cross_currency_transfers_require_a_destination_amount_and_owned_accounts(): void

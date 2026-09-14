@@ -3,7 +3,9 @@
 namespace App\Modules\Finance\Http\Controllers;
 
 use App\Modules\Finance\Application\ManageFinanceTransactions;
+use App\Modules\Finance\Http\Requests\ListFinanceTransactionsRequest;
 use App\Modules\Finance\Http\Requests\StoreFinanceTransactionRequest;
+use App\Modules\Finance\Http\Requests\UpdateFinanceTransactionRequest;
 use App\Modules\Finance\Http\Resources\FinanceTransactionResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,10 +16,10 @@ class FinanceTransactionController
 {
     public function __construct(private readonly ManageFinanceTransactions $transactions) {}
 
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(ListFinanceTransactionsRequest $request): AnonymousResourceCollection
     {
         return FinanceTransactionResource::collection(
-            $this->transactions->forOwner($request->user()->getAuthIdentifier()),
+            $this->transactions->forOwner($request->user()->getAuthIdentifier(), $request->validated()),
         );
     }
 
@@ -31,5 +33,21 @@ class FinanceTransactionController
         return (new FinanceTransactionResource($transaction))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
+    }
+
+    public function update(UpdateFinanceTransactionRequest $request, int $transaction): FinanceTransactionResource
+    {
+        return new FinanceTransactionResource($this->transactions->update(
+            $request->user()->getAuthIdentifier(),
+            $transaction,
+            $request->validated(),
+        ));
+    }
+
+    public function destroy(Request $request, int $transaction): Response
+    {
+        $this->transactions->delete($request->user()->getAuthIdentifier(), $transaction);
+
+        return response()->noContent();
     }
 }

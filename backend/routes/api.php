@@ -2,6 +2,7 @@
 
 use App\Modules\Finance\Http\Controllers\FinanceAccountController;
 use App\Modules\Finance\Http\Controllers\FinanceCategoryController;
+use App\Modules\Finance\Http\Controllers\FinanceOverviewController;
 use App\Modules\Finance\Http\Controllers\FinanceTransactionController;
 use App\Modules\Finance\Http\Controllers\FinanceTransferController;
 use App\Modules\Foundation\Http\Controllers\OwnerSettingsController;
@@ -51,6 +52,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             ->name('finance.transactions.index');
         Route::post('/finance/transactions', [FinanceTransactionController::class, 'store'])
             ->name('finance.transactions.store');
+        Route::patch('/finance/transactions/{transaction}', [FinanceTransactionController::class, 'update'])
+            ->name('finance.transactions.update');
+        Route::delete('/finance/transactions/{transaction}', [FinanceTransactionController::class, 'destroy'])
+            ->name('finance.transactions.destroy');
+        Route::get('/finance/overview', [FinanceOverviewController::class, 'show'])
+            ->name('finance.overview.show');
 
         Route::get('/finance/transfers', [FinanceTransferController::class, 'index'])
             ->name('finance.transfers.index');
