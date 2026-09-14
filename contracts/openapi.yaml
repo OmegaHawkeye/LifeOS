@@ -176,6 +176,219 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /finance/accounts:
+    get:
+      operationId: listFinanceAccounts
+      summary: List the authenticated owner's active finance accounts and balances
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Active accounts ordered by name.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceAccountListResponse'
+        '401':
+          description: The request is not authenticated.
+    post:
+      operationId: createFinanceAccount
+      summary: Create a finance account
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFinanceAccountRequest'
+      responses:
+        '201':
+          description: The created account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceAccountResponse'
+        '401':
+          description: The request is not authenticated.
+        '422':
+          description: An account field is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /finance/categories:
+    get:
+      operationId: listFinanceCategories
+      summary: List the authenticated owner's active transaction categories
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Active categories ordered by type and name.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceCategoryListResponse'
+        '401':
+          description: The request is not authenticated.
+    post:
+      operationId: createFinanceCategory
+      summary: Create a finance transaction category
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFinanceCategoryRequest'
+      responses:
+        '201':
+          description: The created category.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceCategoryResponse'
+        '401':
+          description: The request is not authenticated.
+        '422':
+          description: A category field is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /finance/categories/{category}:
+    patch:
+      operationId: updateFinanceCategory
+      summary: Rename or recolor a category without changing its transaction references
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFinanceCategoryRequest'
+      responses:
+        '200':
+          description: The updated category.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceCategoryResponse'
+        '401':
+          description: The request is not authenticated.
+        '404':
+          description: The category does not exist for this owner.
+        '422':
+          description: A category field is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /finance/transactions:
+    get:
+      operationId: listFinanceTransactions
+      summary: List the authenticated owner's income and expense transactions
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Transactions ordered by occurrence time, newest first.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceTransactionListResponse'
+        '401':
+          description: The request is not authenticated.
+    post:
+      operationId: createFinanceTransaction
+      summary: Record an income or expense transaction
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFinanceTransactionRequest'
+      responses:
+        '201':
+          description: The created transaction.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceTransactionResponse'
+        '401':
+          description: The request is not authenticated.
+        '404':
+          description: The account or category does not exist for this owner.
+        '422':
+          description: The transaction fields are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /finance/transfers:
+    get:
+      operationId: listFinanceTransfers
+      summary: List the authenticated owner's paired account transfers
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Transfers ordered by occurrence time, newest first.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceTransferListResponse'
+        '401':
+          description: The request is not authenticated.
+    post:
+      operationId: createFinanceTransfer
+      summary: Transfer value between two owned accounts
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFinanceTransferRequest'
+      responses:
+        '201':
+          description: The transfer pair. Transfers are stored separately from cash-flow transactions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinanceTransferResponse'
+        '401':
+          description: The request is not authenticated.
+        '404':
+          description: An account does not exist for this owner.
+        '422':
+          description: The transfer fields are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     cookieAuth:
@@ -304,6 +517,284 @@ components:
           enum: [system, light, dark]
         mask_sensitive_data_by_default:
           type: boolean
+    FinanceAccount:
+      type: object
+      additionalProperties: false
+      required: [id, name, type, currency, opening_balance, balance]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        type:
+          type: string
+          enum: [checking, savings, credit_card, cash, investment, other]
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        opening_balance:
+          $ref: '#/components/schemas/FinanceAmount'
+        balance:
+          $ref: '#/components/schemas/FinanceAmount'
+    FinanceAccountResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/FinanceAccount'
+    FinanceAccountListResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FinanceAccount'
+    CreateFinanceAccountRequest:
+      type: object
+      additionalProperties: false
+      required: [name, type]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        type:
+          type: string
+          enum: [checking, savings, credit_card, cash, investment, other]
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+          description: Defaults to the owner's primary currency.
+        opening_balance:
+          $ref: '#/components/schemas/FinanceAmount'
+    FinanceCategory:
+      type: object
+      additionalProperties: false
+      required: [id, name, type, color, is_archived]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        type:
+          type: string
+          enum: [income, expense]
+        color:
+          type: [string, 'null']
+          pattern: '^#[A-Fa-f0-9]{6}$'
+        is_archived:
+          type: boolean
+    FinanceCategoryResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/FinanceCategory'
+    FinanceCategoryListResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FinanceCategory'
+    CreateFinanceCategoryRequest:
+      type: object
+      additionalProperties: false
+      required: [name, type]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        type:
+          type: string
+          enum: [income, expense]
+        color:
+          type: [string, 'null']
+          pattern: '^#[A-Fa-f0-9]{6}$'
+    UpdateFinanceCategoryRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        color:
+          type: [string, 'null']
+          pattern: '^#[A-Fa-f0-9]{6}$'
+    FinanceTransaction:
+      type: object
+      additionalProperties: false
+      required: [id, account_id, type, amount, currency, description, occurred_at, category, payee, tags]
+      properties:
+        id:
+          type: integer
+          format: int64
+        account_id:
+          type: integer
+          format: int64
+        type:
+          type: string
+          enum: [income, expense]
+        amount:
+          $ref: '#/components/schemas/FinanceAmount'
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        description:
+          type: [string, 'null']
+        occurred_at:
+          type: string
+          format: date-time
+        category:
+          anyOf:
+            - $ref: '#/components/schemas/FinanceTransactionCategory'
+            - type: 'null'
+        payee:
+          type: [string, 'null']
+        tags:
+          type: array
+          items:
+            type: string
+    FinanceTransactionCategory:
+      type: object
+      additionalProperties: false
+      required: [id, name, type]
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        type:
+          type: string
+          enum: [income, expense]
+    FinanceTransactionResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/FinanceTransaction'
+    FinanceTransactionListResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FinanceTransaction'
+    CreateFinanceTransactionRequest:
+      type: object
+      additionalProperties: false
+      required: [account_id, type, amount, occurred_at]
+      properties:
+        account_id:
+          type: integer
+          format: int64
+        category_id:
+          type: [integer, 'null']
+          format: int64
+        type:
+          type: string
+          enum: [income, expense]
+        amount:
+          $ref: '#/components/schemas/FinanceAmount'
+        description:
+          type: [string, 'null']
+          maxLength: 255
+        occurred_at:
+          type: string
+          format: date-time
+        payee:
+          type: [string, 'null']
+          maxLength: 120
+        tags:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            maxLength: 50
+    FinanceTransfer:
+      type: object
+      additionalProperties: false
+      required: [id, from_account_id, to_account_id, from_amount, from_currency, to_amount, to_currency, description, occurred_at, cash_flow_effect]
+      properties:
+        id:
+          type: integer
+          format: int64
+        from_account_id:
+          type: integer
+          format: int64
+        to_account_id:
+          type: integer
+          format: int64
+        from_amount:
+          $ref: '#/components/schemas/FinanceAmount'
+        from_currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        to_amount:
+          $ref: '#/components/schemas/FinanceAmount'
+        to_currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        description:
+          type: [string, 'null']
+        occurred_at:
+          type: string
+          format: date-time
+        cash_flow_effect:
+          type: string
+          const: none
+    FinanceTransferResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/FinanceTransfer'
+    FinanceTransferListResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FinanceTransfer'
+    CreateFinanceTransferRequest:
+      type: object
+      additionalProperties: false
+      required: [from_account_id, to_account_id, from_amount, occurred_at]
+      properties:
+        from_account_id:
+          type: integer
+          format: int64
+        to_account_id:
+          type: integer
+          format: int64
+        from_amount:
+          $ref: '#/components/schemas/FinanceAmount'
+        to_amount:
+          $ref: '#/components/schemas/FinanceAmount'
+        description:
+          type: [string, 'null']
+          maxLength: 255
+        occurred_at:
+          type: string
+          format: date-time
+    FinanceAmount:
+      type: string
+      pattern: '^-?\d{1,15}(\.\d{1,4})?$'
     Error:
       type: object
       additionalProperties: true

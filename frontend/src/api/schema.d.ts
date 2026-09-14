@@ -72,6 +72,95 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finance/accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the authenticated owner's active finance accounts and balances */
+        get: operations["listFinanceAccounts"];
+        put?: never;
+        /** Create a finance account */
+        post: operations["createFinanceAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finance/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the authenticated owner's active transaction categories */
+        get: operations["listFinanceCategories"];
+        put?: never;
+        /** Create a finance transaction category */
+        post: operations["createFinanceCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finance/categories/{category}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Rename or recolor a category without changing its transaction references */
+        patch: operations["updateFinanceCategory"];
+        trace?: never;
+    };
+    "/finance/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the authenticated owner's income and expense transactions */
+        get: operations["listFinanceTransactions"];
+        put?: never;
+        /** Record an income or expense transaction */
+        post: operations["createFinanceTransaction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finance/transfers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the authenticated owner's paired account transfers */
+        get: operations["listFinanceTransfers"];
+        put?: never;
+        /** Transfer value between two owned accounts */
+        post: operations["createFinanceTransfer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/me": {
         parameters: {
             query?: never;
@@ -128,10 +217,133 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CreateFinanceAccountRequest: {
+            /** @description Defaults to the owner's primary currency. */
+            currency?: string;
+            name: string;
+            opening_balance?: components["schemas"]["FinanceAmount"];
+            /** @enum {string} */
+            type: "checking" | "savings" | "credit_card" | "cash" | "investment" | "other";
+        };
+        CreateFinanceCategoryRequest: {
+            color?: string | null;
+            name: string;
+            /** @enum {string} */
+            type: "income" | "expense";
+        };
+        CreateFinanceTransactionRequest: {
+            /** Format: int64 */
+            account_id: number;
+            amount: components["schemas"]["FinanceAmount"];
+            /** Format: int64 */
+            category_id?: number | null;
+            description?: string | null;
+            /** Format: date-time */
+            occurred_at: string;
+            payee?: string | null;
+            tags?: string[];
+            /** @enum {string} */
+            type: "income" | "expense";
+        };
+        CreateFinanceTransferRequest: {
+            description?: string | null;
+            /** Format: int64 */
+            from_account_id: number;
+            from_amount: components["schemas"]["FinanceAmount"];
+            /** Format: date-time */
+            occurred_at: string;
+            /** Format: int64 */
+            to_account_id: number;
+            to_amount?: components["schemas"]["FinanceAmount"];
+        };
         Error: {
             message: string;
         } & {
             [key: string]: unknown;
+        };
+        FinanceAccount: {
+            balance: components["schemas"]["FinanceAmount"];
+            currency: string;
+            /** Format: int64 */
+            id: number;
+            name: string;
+            opening_balance: components["schemas"]["FinanceAmount"];
+            /** @enum {string} */
+            type: "checking" | "savings" | "credit_card" | "cash" | "investment" | "other";
+        };
+        FinanceAccountListResponse: {
+            data: components["schemas"]["FinanceAccount"][];
+        };
+        FinanceAccountResponse: {
+            data: components["schemas"]["FinanceAccount"];
+        };
+        FinanceAmount: string;
+        FinanceCategory: {
+            color: string | null;
+            /** Format: int64 */
+            id: number;
+            is_archived: boolean;
+            name: string;
+            /** @enum {string} */
+            type: "income" | "expense";
+        };
+        FinanceCategoryListResponse: {
+            data: components["schemas"]["FinanceCategory"][];
+        };
+        FinanceCategoryResponse: {
+            data: components["schemas"]["FinanceCategory"];
+        };
+        FinanceTransaction: {
+            /** Format: int64 */
+            account_id: number;
+            amount: components["schemas"]["FinanceAmount"];
+            category: components["schemas"]["FinanceTransactionCategory"] | null;
+            currency: string;
+            description: string | null;
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            occurred_at: string;
+            payee: string | null;
+            tags: string[];
+            /** @enum {string} */
+            type: "income" | "expense";
+        };
+        FinanceTransactionCategory: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            /** @enum {string} */
+            type: "income" | "expense";
+        };
+        FinanceTransactionListResponse: {
+            data: components["schemas"]["FinanceTransaction"][];
+        };
+        FinanceTransactionResponse: {
+            data: components["schemas"]["FinanceTransaction"];
+        };
+        FinanceTransfer: {
+            /** @constant */
+            cash_flow_effect: "none";
+            description: string | null;
+            /** Format: int64 */
+            from_account_id: number;
+            from_amount: components["schemas"]["FinanceAmount"];
+            from_currency: string;
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            occurred_at: string;
+            /** Format: int64 */
+            to_account_id: number;
+            to_amount: components["schemas"]["FinanceAmount"];
+            to_currency: string;
+        };
+        FinanceTransferListResponse: {
+            data: components["schemas"]["FinanceTransfer"][];
+        };
+        FinanceTransferResponse: {
+            data: components["schemas"]["FinanceTransfer"];
         };
         LoginRequest: {
             /** Format: email */
@@ -181,6 +393,10 @@ export interface components {
                 /** @constant */
                 status: "challenge_required";
             };
+        };
+        UpdateFinanceCategoryRequest: {
+            color?: string | null;
+            name?: string;
         };
         UpdateOwnerSettingsRequest: {
             currency?: string;
@@ -368,6 +584,337 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    listFinanceAccounts: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Active accounts ordered by name. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceAccountListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFinanceAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFinanceAccountRequest"];
+            };
+        };
+        responses: {
+            /** @description The created account. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceAccountResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An account field is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listFinanceCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Active categories ordered by type and name. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceCategoryListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFinanceCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFinanceCategoryRequest"];
+            };
+        };
+        responses: {
+            /** @description The created category. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceCategoryResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A category field is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateFinanceCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFinanceCategoryRequest"];
+            };
+        };
+        responses: {
+            /** @description The updated category. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceCategoryResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The category does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A category field is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listFinanceTransactions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Transactions ordered by occurrence time, newest first. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceTransactionListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFinanceTransaction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFinanceTransactionRequest"];
+            };
+        };
+        responses: {
+            /** @description The created transaction. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceTransactionResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The account or category does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The transaction fields are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listFinanceTransfers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Transfers ordered by occurrence time, newest first. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceTransferListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFinanceTransfer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFinanceTransferRequest"];
+            };
+        };
+        responses: {
+            /** @description The transfer pair. Transfers are stored separately from cash-flow transactions. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceTransferResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description An account does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The transfer fields are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
             };
         };
     };

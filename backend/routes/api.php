@@ -1,5 +1,9 @@
 <?php
 
+use App\Modules\Finance\Http\Controllers\FinanceAccountController;
+use App\Modules\Finance\Http\Controllers\FinanceCategoryController;
+use App\Modules\Finance\Http\Controllers\FinanceTransactionController;
+use App\Modules\Finance\Http\Controllers\FinanceTransferController;
 use App\Modules\Foundation\Http\Controllers\OwnerSettingsController;
 use App\Modules\Foundation\Http\Controllers\SessionController;
 use App\Modules\Foundation\Http\Resources\OwnerProfileResource;
@@ -30,5 +34,27 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::get('/settings', [OwnerSettingsController::class, 'show'])->name('settings.show');
         Route::patch('/settings', [OwnerSettingsController::class, 'update'])->name('settings.update');
+
+        Route::get('/finance/accounts', [FinanceAccountController::class, 'index'])
+            ->name('finance.accounts.index');
+        Route::post('/finance/accounts', [FinanceAccountController::class, 'store'])
+            ->name('finance.accounts.store');
+
+        Route::get('/finance/categories', [FinanceCategoryController::class, 'index'])
+            ->name('finance.categories.index');
+        Route::post('/finance/categories', [FinanceCategoryController::class, 'store'])
+            ->name('finance.categories.store');
+        Route::patch('/finance/categories/{category}', [FinanceCategoryController::class, 'update'])
+            ->name('finance.categories.update');
+
+        Route::get('/finance/transactions', [FinanceTransactionController::class, 'index'])
+            ->name('finance.transactions.index');
+        Route::post('/finance/transactions', [FinanceTransactionController::class, 'store'])
+            ->name('finance.transactions.store');
+
+        Route::get('/finance/transfers', [FinanceTransferController::class, 'index'])
+            ->name('finance.transfers.index');
+        Route::post('/finance/transfers', [FinanceTransferController::class, 'store'])
+            ->name('finance.transfers.store');
     });
 });
