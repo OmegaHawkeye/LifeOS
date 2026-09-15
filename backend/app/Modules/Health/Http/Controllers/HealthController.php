@@ -2,17 +2,26 @@
 
 namespace App\Modules\Health\Http\Controllers;
 
+use App\Modules\Health\Application\ImportAppleHealthXml;
 use App\Modules\Health\Application\ManageHealthData;
 use App\Modules\Health\Http\Resources\HealthSampleResource;
 use App\Modules\Health\Http\Resources\HealthSourceResource;
 use App\Modules\Health\Http\Resources\HealthSyncRunResource;
 use App\Modules\Health\Models\HealthSource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class HealthController
 {
-    public function __construct(private readonly ManageHealthData $health) {}
+    public function __construct(private readonly ManageHealthData $health, private readonly ImportAppleHealthXml $importer) {}
+
+    public function import(Request $request): JsonResponse
+    {
+        $data = $request->validate(['file' => 'required|file|mimes:xml,txt|max:51200']);
+
+        return (new HealthSyncRunResource($this->importer->import($request->user()->getAuthIdentifier(), $data['file'])))->response()->setStatusCode(201);
+    }
 
     public function sources(Request $request): Response
     {

@@ -746,6 +746,25 @@ paths:
       responses:
         "200": { description: Existing sample returned for an idempotent retry., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSampleResponse" } } } }
         "201": { description: Created sample., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSampleResponse" } } } }
+  /health/imports:
+    post:
+      operationId: importAppleHealthXml
+      summary: Import an Apple Health XML export
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        "201": { description: Import summary., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSyncRunResponse" } } } }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid or malformed XML input. }
   /finance/transfers:
     get:
       operationId: listFinanceTransfers

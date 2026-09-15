@@ -88,5 +88,6 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::patch('/health/sync-runs/{run}', [HealthController::class, 'finishRun']);
         Route::get('/health/samples', [HealthController::class, 'samples']);
         Route::post('/health/samples', [HealthController::class, 'storeSample']);
+        Route::post('/health/imports', [HealthController::class, 'import']);
     });
 });
