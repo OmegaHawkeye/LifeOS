@@ -45,11 +45,17 @@ class ImportAppleHealthXml
             try {
                 $rawValue = (string) $record['value'];
                 $isSleepStage = $matched[0] === 'sleep' && ! is_numeric($rawValue);
+                if (! $isSleepStage && ! is_numeric($rawValue)) {
+                    $failed++;
+                    $errors[] = ['record_type' => $type, 'message' => 'The sample value is not numeric.'];
+
+                    continue;
+                }
                 $result = $this->health->ingest($ownerId, ['source_id' => $source->id, 'sync_run_id' => $run->id, 'external_id' => hash('sha256', implode('|', [$type, (string) $record['startDate'], (string) $record['endDate'], $rawValue, (string) $record['unit'], (string) $record['sourceName']])), 'sample_type' => $matched[0], 'value' => $isSleepStage ? '1' : $rawValue, 'unit' => $isSleepStage ? 'stage' : (string) ($record['unit'] ?: $matched[1]), 'recorded_at' => Carbon::parse((string) $record['startDate']), 'ended_at' => isset($record['endDate']) ? Carbon::parse((string) $record['endDate']) : null, 'metadata' => ['source_name' => (string) $record['sourceName'], 'source_version' => (string) $record['sourceVersion'], 'sleep_stage' => $isSleepStage ? $rawValue : null]]);
                 $result['idempotent'] ? $skipped++ : $imported++;
             } catch (\Throwable $exception) {
                 $failed++;
-                $errors[] = ['record_type' => $type, 'message' => $exception->getMessage()];
+                $errors[] = ['record_type' => $type, 'message' => 'The record could not be imported.'];
             }
         }
         $status = $failed > 0 ? ($imported > 0 ? 'partial_success' : 'failure') : ($skipped > 0 ? 'partial_success' : 'success');

@@ -39,6 +39,7 @@ class HealthImportApiTest extends TestCase
         $this->assertDatabaseHas('health_samples', ['sample_type' => 'weight', 'unit' => 'kg']);
         $this->assertDatabaseHas('health_samples', ['sample_type' => 'sleep', 'unit' => 'stage']);
         $this->assertDatabaseHas('health_samples', ['sample_type' => 'workouts', 'unit' => 'min']);
+        $this->getJson('/api/v1/health/samples?sample_type=steps')->assertOk()->assertJsonPath('data.0.sample_type', 'steps');
     }
 
     public function test_reimporting_the_same_xml_is_idempotent_and_invalid_xml_fails_safely(): void
