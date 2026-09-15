@@ -110,10 +110,16 @@ export function FinancePlanningPanel({ month, accounts, categories }: Props) {
           subscription.status === "active" &&
           daysUntil(subscription.next_renewal_on) <= 7,
       )
-      .map(
-        (subscription) =>
-          `${subscription.name} renews ${daysUntil(subscription.next_renewal_on) <= 0 ? "today" : `in ${daysUntil(subscription.next_renewal_on)} days`} for ${formatMoney(Number(subscription.amount), subscription.currency)}.`,
-      ),
+      .map((subscription) => {
+        const days = daysUntil(subscription.next_renewal_on);
+        const timing =
+          days < 0
+            ? `${Math.abs(days)} days overdue`
+            : days === 0
+              ? "today"
+              : `in ${days} days`;
+        return `${subscription.name} renews ${timing} for ${formatMoney(Number(subscription.amount), subscription.currency)}.`;
+      }),
     ...goals
       .filter((goal) => Number(goal.required_monthly_pace) > 0)
       .map(
@@ -153,7 +159,7 @@ export function FinancePlanningPanel({ month, accounts, categories }: Props) {
           aria-label="Actionable finance reminders"
           className="mt-5 grid gap-2 sm:grid-cols-2"
         >
-          {alerts.slice(0, 4).map((alert) => (
+          {alerts.map((alert) => (
             <p
               className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:bg-amber-950/30 dark:text-amber-100"
               key={alert}
