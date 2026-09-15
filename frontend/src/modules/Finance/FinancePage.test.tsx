@@ -8,12 +8,21 @@ import { FinancePage } from "./FinancePage";
 
 const financeApi = vi.hoisted(() => ({
   createFinanceTransaction: vi.fn(),
+  createFinanceBudget: vi.fn(),
+  createFinanceSavingsGoal: vi.fn(),
+  createFinanceSubscription: vi.fn(),
   deleteFinanceTransaction: vi.fn(),
+  deleteFinanceBudget: vi.fn(),
+  deleteFinanceSavingsGoal: vi.fn(),
+  getFinanceBudgets: vi.fn(),
+  getFinanceSavingsGoals: vi.fn(),
+  getFinanceSubscriptions: vi.fn(),
   getFinanceAccounts: vi.fn(),
   getFinanceCategories: vi.fn(),
   getFinanceOverview: vi.fn(),
   getFinanceTransactions: vi.fn(),
   updateFinanceTransaction: vi.fn(),
+  updateFinanceSubscription: vi.fn(),
 }));
 
 vi.mock("./finance", () => financeApi);
@@ -66,6 +75,30 @@ const overview = {
     },
   ],
 };
+const budget = {
+  id: 4,
+  category_id: category.id,
+  category_name: category.name,
+  month: "2026-09",
+  currency: "EUR",
+  target_amount: "100.0000",
+  spent: "125.0000",
+  remaining: "-25.0000",
+  is_over_budget: true,
+};
+const subscription = {
+  id: 5,
+  name: "Cloud storage",
+  account_id: account.id,
+  account_name: account.name,
+  category_id: null,
+  category_name: null,
+  amount: "2.9900",
+  currency: "EUR",
+  billing_cycle: "monthly" as const,
+  next_renewal_on: "2026-09-16",
+  status: "active" as const,
+};
 
 describe("FinancePage", () => {
   afterEach(cleanup);
@@ -73,12 +106,24 @@ describe("FinancePage", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/finance");
     financeApi.createFinanceTransaction.mockResolvedValue(transaction);
+    financeApi.createFinanceBudget.mockResolvedValue(budget);
+    financeApi.createFinanceSavingsGoal.mockResolvedValue({});
+    financeApi.createFinanceSubscription.mockResolvedValue(subscription);
     financeApi.deleteFinanceTransaction.mockResolvedValue(undefined);
+    financeApi.deleteFinanceBudget.mockResolvedValue(undefined);
+    financeApi.deleteFinanceSavingsGoal.mockResolvedValue(undefined);
+    financeApi.getFinanceBudgets.mockResolvedValue([budget]);
+    financeApi.getFinanceSavingsGoals.mockResolvedValue([]);
+    financeApi.getFinanceSubscriptions.mockResolvedValue([subscription]);
     financeApi.getFinanceAccounts.mockResolvedValue([account]);
     financeApi.getFinanceCategories.mockResolvedValue([category]);
     financeApi.getFinanceOverview.mockResolvedValue(overview);
     financeApi.getFinanceTransactions.mockResolvedValue([transaction]);
     financeApi.updateFinanceTransaction.mockResolvedValue(transaction);
+    financeApi.updateFinanceSubscription.mockResolvedValue({
+      ...subscription,
+      status: "paused",
+    });
   });
 
   it("records a quick transaction and refreshes the monthly cashflow", async () => {
@@ -130,5 +175,23 @@ describe("FinancePage", () => {
     await waitFor(() =>
       expect(financeApi.getFinanceTransactions).toHaveBeenLastCalledWith({}),
     );
+  });
+
+  it("shows actionable budget and renewal alerts and lets the owner pause a subscription", async () => {
+    const user = userEvent.setup();
+    render(<FinancePage />);
+
+    expect(
+      await screen.findByText(/Groceries is over its EUR budget by/),
+    ).toBeVisible();
+    expect(screen.getByText(/Cloud storage renews/)).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Pause" }));
+
+    await waitFor(() =>
+      expect(financeApi.updateFinanceSubscription).toHaveBeenCalledWith(5, {
+        status: "paused",
+      }),
+    );
+    expect(financeApi.getFinanceBudgets).toHaveBeenCalledWith("2026-09");
   });
 });

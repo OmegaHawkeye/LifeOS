@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['type', 'amount', 'currency', 'frequency', 'interval', 'starts_on', 'next_occurrence_on', 'ends_on', 'description', 'is_active'])]
+#[Fillable(['type', 'amount', 'currency', 'frequency', 'interval', 'starts_on', 'next_occurrence_on', 'ends_on', 'description', 'is_active', 'status'])]
 class FinanceRecurringPattern extends Model
 {
     /** @use HasFactory<FinanceRecurringPatternFactory> */

@@ -1,8 +1,11 @@
 <?php
 
 use App\Modules\Finance\Http\Controllers\FinanceAccountController;
+use App\Modules\Finance\Http\Controllers\FinanceBudgetController;
 use App\Modules\Finance\Http\Controllers\FinanceCategoryController;
 use App\Modules\Finance\Http\Controllers\FinanceOverviewController;
+use App\Modules\Finance\Http\Controllers\FinanceSavingsGoalController;
+use App\Modules\Finance\Http\Controllers\FinanceSubscriptionController;
 use App\Modules\Finance\Http\Controllers\FinanceTransactionController;
 use App\Modules\Finance\Http\Controllers\FinanceTransferController;
 use App\Modules\Foundation\Http\Controllers\OwnerSettingsController;
@@ -58,6 +61,20 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             ->name('finance.transactions.destroy');
         Route::get('/finance/overview', [FinanceOverviewController::class, 'show'])
             ->name('finance.overview.show');
+
+        Route::get('/finance/budgets', [FinanceBudgetController::class, 'index'])->name('finance.budgets.index');
+        Route::post('/finance/budgets', [FinanceBudgetController::class, 'store'])->name('finance.budgets.store');
+        Route::patch('/finance/budgets/{budget}', [FinanceBudgetController::class, 'update'])->name('finance.budgets.update');
+        Route::delete('/finance/budgets/{budget}', [FinanceBudgetController::class, 'destroy'])->name('finance.budgets.destroy');
+
+        Route::get('/finance/subscriptions', [FinanceSubscriptionController::class, 'index'])->name('finance.subscriptions.index');
+        Route::post('/finance/subscriptions', [FinanceSubscriptionController::class, 'store'])->name('finance.subscriptions.store');
+        Route::patch('/finance/subscriptions/{subscription}', [FinanceSubscriptionController::class, 'update'])->name('finance.subscriptions.update');
+
+        Route::get('/finance/savings-goals', [FinanceSavingsGoalController::class, 'index'])->name('finance.savings-goals.index');
+        Route::post('/finance/savings-goals', [FinanceSavingsGoalController::class, 'store'])->name('finance.savings-goals.store');
+        Route::patch('/finance/savings-goals/{goal}', [FinanceSavingsGoalController::class, 'update'])->name('finance.savings-goals.update');
+        Route::delete('/finance/savings-goals/{goal}', [FinanceSavingsGoalController::class, 'destroy'])->name('finance.savings-goals.destroy');
 
         Route::get('/finance/transfers', [FinanceTransferController::class, 'index'])
             ->name('finance.transfers.index');

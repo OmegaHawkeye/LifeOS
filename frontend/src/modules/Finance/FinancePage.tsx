@@ -18,6 +18,7 @@ import type {
   TransactionFilters,
   UpdateTransaction,
 } from "./finance";
+import { FinancePlanningPanel } from "./FinancePlanningPanel";
 
 type TransactionType = "income" | "expense";
 type FormValues = {
@@ -380,6 +381,12 @@ export function FinancePage() {
           )}
         </div>
       </div>
+
+      <FinancePlanningPanel
+        month={month}
+        accounts={accounts}
+        categories={categories}
+      />
 
       <div className="mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-4">

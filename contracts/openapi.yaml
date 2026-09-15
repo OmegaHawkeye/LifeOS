@@ -425,6 +425,238 @@ paths:
           description: The request is not authenticated.
         "404":
           description: The transaction does not exist for this owner.
+  /finance/budgets:
+    get:
+      operationId: listFinanceBudgets
+      summary: List monthly category budgets with currency-matched spending
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: month
+          in: query
+          schema:
+            type: string
+            pattern: '^\\d{4}-\\d{2}$'
+      responses:
+        "200":
+          description: Monthly budget targets with spent and remaining amounts.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceBudgetListResponse"
+        "401":
+          description: The request is not authenticated.
+    post:
+      operationId: createFinanceBudget
+      summary: Create a category budget for one month
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFinanceBudgetRequest"
+      responses:
+        "201":
+          description: The created budget including current spending.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceBudgetResponse"
+        "401":
+          description: The request is not authenticated.
+        "422":
+          description: The budget fields are invalid or duplicate.
+  /finance/budgets/{budget}:
+    parameters:
+      - name: budget
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+    patch:
+      operationId: updateFinanceBudget
+      summary: Update a monthly category budget
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFinanceBudgetRequest"
+      responses:
+        "200":
+          description: The updated budget.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceBudgetResponse"
+        "404":
+          description: The budget does not exist for this owner.
+        "422":
+          description: The budget fields are invalid.
+    delete:
+      operationId: deleteFinanceBudget
+      summary: Delete a monthly category budget
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: The budget was deleted.
+        "404":
+          description: The budget does not exist for this owner.
+  /finance/subscriptions:
+    get:
+      operationId: listFinanceSubscriptions
+      summary: List recurring expense subscriptions and renewals
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Owner subscriptions ordered by next renewal date.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceSubscriptionListResponse"
+    post:
+      operationId: createFinanceSubscription
+      summary: Add a recurring expense subscription
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFinanceSubscriptionRequest"
+      responses:
+        "201":
+          description: The created subscription.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceSubscriptionResponse"
+        "404":
+          description: The account or category does not exist for this owner.
+        "422":
+          description: The subscription fields are invalid.
+  /finance/subscriptions/{subscription}:
+    parameters:
+      - name: subscription
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+    patch:
+      operationId: updateFinanceSubscription
+      summary: Update subscription details or status
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFinanceSubscriptionRequest"
+      responses:
+        "200":
+          description: The updated subscription.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceSubscriptionResponse"
+        "404":
+          description: The subscription does not exist for this owner.
+        "422":
+          description: The subscription fields are invalid.
+  /finance/savings-goals:
+    get:
+      operationId: listFinanceSavingsGoals
+      summary: List savings goals with progress and monthly pace
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Owner savings goals ordered by deadline.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceSavingsGoalListResponse"
+    post:
+      operationId: createFinanceSavingsGoal
+      summary: Create a savings goal
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFinanceSavingsGoalRequest"
+      responses:
+        "201":
+          description: The created savings goal.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceSavingsGoalResponse"
+        "422":
+          description: The savings goal fields are invalid.
+  /finance/savings-goals/{goal}:
+    parameters:
+      - name: goal
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+    patch:
+      operationId: updateFinanceSavingsGoal
+      summary: Update a savings goal
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFinanceSavingsGoalRequest"
+      responses:
+        "200":
+          description: The updated savings goal.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinanceSavingsGoalResponse"
+        "404":
+          description: The goal does not exist for this owner.
+        "422":
+          description: The savings goal fields are invalid.
+    delete:
+      operationId: deleteFinanceSavingsGoal
+      summary: Delete a savings goal
+      tags: [Finance]
+      security:
+        - cookieAuth: []
+      responses:
+        "204":
+          description: The goal was deleted.
+        "404":
+          description: The goal does not exist for this owner.
   /finance/overview:
     get:
       operationId: getFinanceOverview
@@ -1028,6 +1260,153 @@ components:
         occurred_at:
           type: string
           format: date-time
+    FinanceBudget:
+      type: object
+      additionalProperties: false
+      required: [id, category_id, category_name, month, currency, target_amount, spent, remaining, is_over_budget]
+      properties:
+        id: { type: integer, format: int64 }
+        category_id: { type: integer, format: int64 }
+        category_name: { type: string }
+        month: { type: string, pattern: '^\\d{4}-\\d{2}$' }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        target_amount: { $ref: "#/components/schemas/FinanceAmount" }
+        spent: { $ref: "#/components/schemas/FinanceAmount" }
+        remaining: { $ref: "#/components/schemas/FinanceAmount" }
+        is_over_budget: { type: boolean }
+    FinanceBudgetResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/FinanceBudget" }
+    FinanceBudgetListResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/FinanceBudget" }
+    CreateFinanceBudgetRequest:
+      type: object
+      additionalProperties: false
+      required: [category_id, month, currency, target_amount]
+      properties:
+        category_id: { type: integer, format: int64 }
+        month: { type: string, pattern: '^\\d{4}-\\d{2}$' }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        target_amount: { $ref: "#/components/schemas/FinanceAmount" }
+    UpdateFinanceBudgetRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        category_id: { type: integer, format: int64 }
+        month: { type: string, pattern: '^\\d{4}-\\d{2}$' }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        target_amount: { $ref: "#/components/schemas/FinanceAmount" }
+    FinanceSubscription:
+      type: object
+      additionalProperties: false
+      required: [id, name, account_id, account_name, category_id, category_name, amount, currency, billing_cycle, next_renewal_on, status]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        account_id: { type: integer, format: int64 }
+        account_name: { type: [string, "null"] }
+        category_id: { type: [integer, "null"], format: int64 }
+        category_name: { type: [string, "null"] }
+        amount: { $ref: "#/components/schemas/FinanceAmount" }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        billing_cycle: { type: string, enum: [monthly, quarterly, yearly] }
+        next_renewal_on: { type: string, format: date }
+        status: { type: string, enum: [active, paused, canceled] }
+    FinanceSubscriptionResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/FinanceSubscription" }
+    FinanceSubscriptionListResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/FinanceSubscription" }
+    CreateFinanceSubscriptionRequest:
+      type: object
+      additionalProperties: false
+      required: [account_id, name, amount, billing_cycle, next_renewal_on]
+      properties:
+        account_id: { type: integer, format: int64 }
+        category_id: { type: [integer, "null"], format: int64 }
+        name: { type: string, maxLength: 120 }
+        amount: { $ref: "#/components/schemas/FinanceAmount" }
+        billing_cycle: { type: string, enum: [monthly, quarterly, yearly] }
+        next_renewal_on: { type: string, format: date }
+    UpdateFinanceSubscriptionRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        account_id: { type: integer, format: int64 }
+        category_id: { type: [integer, "null"], format: int64 }
+        name: { type: string, maxLength: 120 }
+        amount: { $ref: "#/components/schemas/FinanceAmount" }
+        billing_cycle: { type: string, enum: [monthly, quarterly, yearly] }
+        next_renewal_on: { type: string, format: date }
+        status: { type: string, enum: [active, paused, canceled] }
+    FinanceSavingsGoal:
+      type: object
+      additionalProperties: false
+      required: [id, name, target_amount, current_amount, currency, target_date, progress_percent, remaining_amount, required_monthly_pace]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        target_amount: { $ref: "#/components/schemas/FinanceAmount" }
+        current_amount: { $ref: "#/components/schemas/FinanceAmount" }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        target_date: { type: string, format: date }
+        progress_percent: { type: integer, minimum: 0, maximum: 100 }
+        remaining_amount: { $ref: "#/components/schemas/FinanceAmount" }
+        required_monthly_pace: { $ref: "#/components/schemas/FinanceAmount" }
+    FinanceSavingsGoalResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/FinanceSavingsGoal" }
+    FinanceSavingsGoalListResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/FinanceSavingsGoal" }
+    CreateFinanceSavingsGoalRequest:
+      type: object
+      additionalProperties: false
+      required: [name, target_amount, currency, target_date]
+      properties:
+        name: { type: string, maxLength: 120 }
+        target_amount: { $ref: "#/components/schemas/FinanceAmount" }
+        current_amount: { $ref: "#/components/schemas/FinanceAmount" }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        target_date: { type: string, format: date }
+    UpdateFinanceSavingsGoalRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name: { type: string, maxLength: 120 }
+        target_amount: { $ref: "#/components/schemas/FinanceAmount" }
+        current_amount: { $ref: "#/components/schemas/FinanceAmount" }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        target_date: { type: string, format: date }
     FinanceAmount:
       type: string
       pattern: '^-?\d{1,15}(\.\d{1,4})?$'

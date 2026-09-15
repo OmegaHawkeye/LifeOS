@@ -16,6 +16,18 @@ export type CreateTransaction =
   paths["/finance/transactions"]["post"]["requestBody"]["content"]["application/json"];
 export type UpdateTransaction =
   paths["/finance/transactions/{transaction}"]["patch"]["requestBody"]["content"]["application/json"];
+export type FinanceBudget =
+  paths["/finance/budgets"]["get"]["responses"][200]["content"]["application/json"]["data"][number];
+export type FinanceSubscription =
+  paths["/finance/subscriptions"]["get"]["responses"][200]["content"]["application/json"]["data"][number];
+export type FinanceSavingsGoal =
+  paths["/finance/savings-goals"]["get"]["responses"][200]["content"]["application/json"]["data"][number];
+export type CreateFinanceBudget =
+  paths["/finance/budgets"]["post"]["requestBody"]["content"]["application/json"];
+export type CreateFinanceSubscription =
+  paths["/finance/subscriptions"]["post"]["requestBody"]["content"]["application/json"];
+export type CreateFinanceSavingsGoal =
+  paths["/finance/savings-goals"]["post"]["requestBody"]["content"]["application/json"];
 
 export async function getFinanceAccounts(): Promise<FinanceAccount[]> {
   const { data, response } = await apiClient.GET("/finance/accounts");
@@ -108,4 +120,87 @@ export async function deleteFinanceTransaction(id: number): Promise<void> {
   if (!response.ok) {
     throw new Error("LifeOS could not delete your transaction.");
   }
+}
+
+export async function getFinanceBudgets(
+  month: string,
+): Promise<FinanceBudget[]> {
+  const { data, response } = await apiClient.GET("/finance/budgets", {
+    params: { query: { month } },
+  });
+  if (!response.ok || !data) throw new Error("Could not load budgets.");
+  return data.data;
+}
+
+export async function createFinanceBudget(
+  budget: CreateFinanceBudget,
+): Promise<FinanceBudget> {
+  const { data, response } = await apiClient.POST("/finance/budgets", {
+    body: budget,
+  });
+  if (!response.ok || !data) throw new Error("Could not save budget.");
+  return data.data;
+}
+
+export async function deleteFinanceBudget(id: number): Promise<void> {
+  const { response } = await apiClient.DELETE("/finance/budgets/{budget}", {
+    params: { path: { budget: id } },
+  });
+  if (!response.ok) throw new Error("Could not delete budget.");
+}
+
+export async function getFinanceSubscriptions(): Promise<
+  FinanceSubscription[]
+> {
+  const { data, response } = await apiClient.GET("/finance/subscriptions");
+  if (!response.ok || !data) throw new Error("Could not load subscriptions.");
+  return data.data;
+}
+
+export async function createFinanceSubscription(
+  subscription: CreateFinanceSubscription,
+): Promise<FinanceSubscription> {
+  const { data, response } = await apiClient.POST("/finance/subscriptions", {
+    body: subscription,
+  });
+  if (!response.ok || !data) throw new Error("Could not save subscription.");
+  return data.data;
+}
+
+export async function updateFinanceSubscription(
+  id: number,
+  updates: paths["/finance/subscriptions/{subscription}"]["patch"]["requestBody"]["content"]["application/json"],
+): Promise<FinanceSubscription> {
+  const { data, response } = await apiClient.PATCH(
+    "/finance/subscriptions/{subscription}",
+    {
+      params: { path: { subscription: id } },
+      body: updates,
+    },
+  );
+  if (!response.ok || !data) throw new Error("Could not update subscription.");
+  return data.data;
+}
+
+export async function getFinanceSavingsGoals(): Promise<FinanceSavingsGoal[]> {
+  const { data, response } = await apiClient.GET("/finance/savings-goals");
+  if (!response.ok || !data) throw new Error("Could not load savings goals.");
+  return data.data;
+}
+
+export async function createFinanceSavingsGoal(
+  goal: CreateFinanceSavingsGoal,
+): Promise<FinanceSavingsGoal> {
+  const { data, response } = await apiClient.POST("/finance/savings-goals", {
+    body: goal,
+  });
+  if (!response.ok || !data) throw new Error("Could not save savings goal.");
+  return data.data;
+}
+
+export async function deleteFinanceSavingsGoal(id: number): Promise<void> {
+  const { response } = await apiClient.DELETE("/finance/savings-goals/{goal}", {
+    params: { path: { goal: id } },
+  });
+  if (!response.ok) throw new Error("Could not delete savings goal.");
 }

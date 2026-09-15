@@ -22,5 +22,6 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call(FinanceSeeder::class);
+        $this->call(FinancePlanningSeeder::class);
     }
 }

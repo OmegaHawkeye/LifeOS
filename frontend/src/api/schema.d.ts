@@ -90,6 +90,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/finance/budgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List monthly category budgets with currency-matched spending */
+        get: operations["listFinanceBudgets"];
+        put?: never;
+        /** Create a category budget for one month */
+        post: operations["createFinanceBudget"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finance/budgets/{budget}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                budget: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a monthly category budget */
+        delete: operations["deleteFinanceBudget"];
+        options?: never;
+        head?: never;
+        /** Update a monthly category budget */
+        patch: operations["updateFinanceBudget"];
+        trace?: never;
+    };
     "/finance/categories": {
         parameters: {
             query?: never;
@@ -140,6 +178,81 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/finance/savings-goals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List savings goals with progress and monthly pace */
+        get: operations["listFinanceSavingsGoals"];
+        put?: never;
+        /** Create a savings goal */
+        post: operations["createFinanceSavingsGoal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finance/savings-goals/{goal}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a savings goal */
+        delete: operations["deleteFinanceSavingsGoal"];
+        options?: never;
+        head?: never;
+        /** Update a savings goal */
+        patch: operations["updateFinanceSavingsGoal"];
+        trace?: never;
+    };
+    "/finance/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List recurring expense subscriptions and renewals */
+        get: operations["listFinanceSubscriptions"];
+        put?: never;
+        /** Add a recurring expense subscription */
+        post: operations["createFinanceSubscription"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finance/subscriptions/{subscription}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subscription: number;
+            };
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update subscription details or status */
+        patch: operations["updateFinanceSubscription"];
         trace?: never;
     };
     "/finance/transactions": {
@@ -262,11 +375,38 @@ export interface components {
             /** @enum {string} */
             type: "checking" | "savings" | "credit_card" | "cash" | "investment" | "other";
         };
+        CreateFinanceBudgetRequest: {
+            /** Format: int64 */
+            category_id: number;
+            currency: string;
+            month: string;
+            target_amount: components["schemas"]["FinanceAmount"];
+        };
         CreateFinanceCategoryRequest: {
             color?: string | null;
             name: string;
             /** @enum {string} */
             type: "income" | "expense";
+        };
+        CreateFinanceSavingsGoalRequest: {
+            currency: string;
+            current_amount?: components["schemas"]["FinanceAmount"];
+            name: string;
+            target_amount: components["schemas"]["FinanceAmount"];
+            /** Format: date */
+            target_date: string;
+        };
+        CreateFinanceSubscriptionRequest: {
+            /** Format: int64 */
+            account_id: number;
+            amount: components["schemas"]["FinanceAmount"];
+            /** @enum {string} */
+            billing_cycle: "monthly" | "quarterly" | "yearly";
+            /** Format: int64 */
+            category_id?: number | null;
+            name: string;
+            /** Format: date */
+            next_renewal_on: string;
         };
         CreateFinanceTransactionRequest: {
             /** Format: int64 */
@@ -315,6 +455,25 @@ export interface components {
             data: components["schemas"]["FinanceAccount"];
         };
         FinanceAmount: string;
+        FinanceBudget: {
+            /** Format: int64 */
+            category_id: number;
+            category_name: string;
+            currency: string;
+            /** Format: int64 */
+            id: number;
+            is_over_budget: boolean;
+            month: string;
+            remaining: components["schemas"]["FinanceAmount"];
+            spent: components["schemas"]["FinanceAmount"];
+            target_amount: components["schemas"]["FinanceAmount"];
+        };
+        FinanceBudgetListResponse: {
+            data: components["schemas"]["FinanceBudget"][];
+        };
+        FinanceBudgetResponse: {
+            data: components["schemas"]["FinanceBudget"];
+        };
         FinanceCategory: {
             color: string | null;
             /** Format: int64 */
@@ -353,6 +512,50 @@ export interface components {
             income: components["schemas"]["FinanceAmount"];
             net_cashflow: components["schemas"]["FinanceAmount"];
             spending: components["schemas"]["FinanceAmount"];
+        };
+        FinanceSavingsGoal: {
+            currency: string;
+            current_amount: components["schemas"]["FinanceAmount"];
+            /** Format: int64 */
+            id: number;
+            name: string;
+            progress_percent: number;
+            remaining_amount: components["schemas"]["FinanceAmount"];
+            required_monthly_pace: components["schemas"]["FinanceAmount"];
+            target_amount: components["schemas"]["FinanceAmount"];
+            /** Format: date */
+            target_date: string;
+        };
+        FinanceSavingsGoalListResponse: {
+            data: components["schemas"]["FinanceSavingsGoal"][];
+        };
+        FinanceSavingsGoalResponse: {
+            data: components["schemas"]["FinanceSavingsGoal"];
+        };
+        FinanceSubscription: {
+            /** Format: int64 */
+            account_id: number;
+            account_name: string | null;
+            amount: components["schemas"]["FinanceAmount"];
+            /** @enum {string} */
+            billing_cycle: "monthly" | "quarterly" | "yearly";
+            /** Format: int64 */
+            category_id: number | null;
+            category_name: string | null;
+            currency: string;
+            /** Format: int64 */
+            id: number;
+            name: string;
+            /** Format: date */
+            next_renewal_on: string;
+            /** @enum {string} */
+            status: "active" | "paused" | "canceled";
+        };
+        FinanceSubscriptionListResponse: {
+            data: components["schemas"]["FinanceSubscription"][];
+        };
+        FinanceSubscriptionResponse: {
+            data: components["schemas"]["FinanceSubscription"];
         };
         FinanceTransaction: {
             /** Format: int64 */
@@ -455,9 +658,38 @@ export interface components {
                 status: "challenge_required";
             };
         };
+        UpdateFinanceBudgetRequest: {
+            /** Format: int64 */
+            category_id?: number;
+            currency?: string;
+            month?: string;
+            target_amount?: components["schemas"]["FinanceAmount"];
+        };
         UpdateFinanceCategoryRequest: {
             color?: string | null;
             name?: string;
+        };
+        UpdateFinanceSavingsGoalRequest: {
+            currency?: string;
+            current_amount?: components["schemas"]["FinanceAmount"];
+            name?: string;
+            target_amount?: components["schemas"]["FinanceAmount"];
+            /** Format: date */
+            target_date?: string;
+        };
+        UpdateFinanceSubscriptionRequest: {
+            /** Format: int64 */
+            account_id?: number;
+            amount?: components["schemas"]["FinanceAmount"];
+            /** @enum {string} */
+            billing_cycle?: "monthly" | "quarterly" | "yearly";
+            /** Format: int64 */
+            category_id?: number | null;
+            name?: string;
+            /** Format: date */
+            next_renewal_on?: string;
+            /** @enum {string} */
+            status?: "active" | "paused" | "canceled";
         };
         UpdateFinanceTransactionRequest: {
             /** Format: int64 */
@@ -729,6 +961,140 @@ export interface operations {
             };
         };
     };
+    listFinanceBudgets: {
+        parameters: {
+            query?: {
+                month?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Monthly budget targets with spent and remaining amounts. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceBudgetListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFinanceBudget: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFinanceBudgetRequest"];
+            };
+        };
+        responses: {
+            /** @description The created budget including current spending. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceBudgetResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The budget fields are invalid or duplicate. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteFinanceBudget: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                budget: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The budget was deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The budget does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateFinanceBudget: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                budget: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFinanceBudgetRequest"];
+            };
+        };
+        responses: {
+            /** @description The updated budget. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceBudgetResponse"];
+                };
+            };
+            /** @description The budget does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The budget fields are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     listFinanceCategories: {
         parameters: {
             query?: never;
@@ -882,6 +1248,222 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Error"];
                 };
+            };
+        };
+    };
+    listFinanceSavingsGoals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Owner savings goals ordered by deadline. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceSavingsGoalListResponse"];
+                };
+            };
+        };
+    };
+    createFinanceSavingsGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFinanceSavingsGoalRequest"];
+            };
+        };
+        responses: {
+            /** @description The created savings goal. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceSavingsGoalResponse"];
+                };
+            };
+            /** @description The savings goal fields are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteFinanceSavingsGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The goal was deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The goal does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateFinanceSavingsGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFinanceSavingsGoalRequest"];
+            };
+        };
+        responses: {
+            /** @description The updated savings goal. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceSavingsGoalResponse"];
+                };
+            };
+            /** @description The goal does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The savings goal fields are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFinanceSubscriptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Owner subscriptions ordered by next renewal date. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceSubscriptionListResponse"];
+                };
+            };
+        };
+    };
+    createFinanceSubscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFinanceSubscriptionRequest"];
+            };
+        };
+        responses: {
+            /** @description The created subscription. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceSubscriptionResponse"];
+                };
+            };
+            /** @description The account or category does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The subscription fields are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateFinanceSubscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subscription: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFinanceSubscriptionRequest"];
+            };
+        };
+        responses: {
+            /** @description The updated subscription. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceSubscriptionResponse"];
+                };
+            };
+            /** @description The subscription does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The subscription fields are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
