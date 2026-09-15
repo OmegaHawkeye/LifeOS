@@ -50,13 +50,13 @@ class HealthController
 
     public function storeSample(Request $request): Response
     {
-        $data = $request->validate(['source_id' => 'required|integer|min:1', 'sync_run_id' => 'sometimes|nullable|integer|min:1', 'external_id' => 'sometimes|nullable|string|max:255', 'sample_type' => 'required|in:steps,sleep,heart_rate,workouts,calories,weight', 'value' => 'required|numeric', 'unit' => 'required|string|max:32', 'recorded_at' => 'required|date', 'ended_at' => 'sometimes|nullable|date', 'confidence' => 'sometimes|nullable|numeric|between:0,1', 'metadata' => 'sometimes|array', 'is_manual' => 'sometimes|boolean']);
+        $data = $request->validate(['source_id' => 'required|integer|min:1', 'sync_run_id' => 'sometimes|nullable|integer|min:1', 'external_id' => 'required_unless:is_manual,true|nullable|string|max:255', 'sample_type' => 'required|in:steps,sleep,heart_rate,workouts,calories,weight', 'value' => 'required|numeric', 'unit' => 'required|string|max:32', 'recorded_at' => 'required|date', 'ended_at' => 'sometimes|nullable|date', 'confidence' => 'sometimes|nullable|numeric|between:0,1', 'metadata' => 'sometimes|array', 'is_manual' => 'sometimes|boolean']);
         $result = $this->health->ingest($request->user()->getAuthIdentifier(), $data);
         $response = (new HealthSampleResource($result['sample']))->response();
         if ($result['idempotent']) {
             $response->header('X-Idempotent', 'true')->setData(['data' => $result['sample'], 'meta' => ['idempotent' => true]]);
         }
 
-return $response->setStatusCode($result['idempotent'] ? 200 : 201);
+        return $response->setStatusCode($result['idempotent'] ? 200 : 201);
     }
 }

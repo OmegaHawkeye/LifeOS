@@ -5,6 +5,7 @@ namespace App\Modules\Health\Application;
 use App\Modules\Health\Models\HealthSample;
 use App\Modules\Health\Models\HealthSource;
 use App\Modules\Health\Models\HealthSyncRun;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class ManageHealthData
@@ -45,10 +46,11 @@ class ManageHealthData
     /** @return Collection<int, HealthSample> */
     public function samples(int|string $ownerId, ?string $type = null): Collection
     {
-        return HealthSample::query()->where('owner_id', $ownerId)->when($type, fn ($q) => $q->where('sample_type', $type))->orderByDesc('recorded_at')->get();
+        return HealthSample::query()->where('owner_id', $ownerId)->when($type, function (Builder $query) use ($type): void {
+            $query->where('sample_type', $type);
+        })->orderByDesc('recorded_at')->get();
     }
 
-    /** @return array{sample: HealthSample, idempotent: bool} */
     /**
      * @param  array<string, mixed>  $attributes
      * @return array{sample: HealthSample, idempotent: bool}
@@ -56,8 +58,15 @@ class ManageHealthData
     public function ingest(int|string $ownerId, array $attributes): array
     {
         $source = $this->ownedSource($ownerId, (int) $attributes['source_id']);
+        if (isset($attributes['sync_run_id'])) {
+            HealthSyncRun::query()->where('owner_id', $ownerId)->where('source_id', $source->id)->findOrFail($attributes['sync_run_id']);
+        }
         $existing = isset($attributes['external_id']) ? HealthSample::query()->where('owner_id', $ownerId)->where('source_id', $source->id)->where('external_id', $attributes['external_id'])->first() : null;
         if ($existing) {
+            if ($existing->is_manual && (string) $existing->value !== (string) $attributes['value']) {
+                $existing->update(['conflict_status' => 'conflict']);
+            }
+
             return ['sample' => $existing, 'idempotent' => true];
         } $sample = new HealthSample($attributes);
         $sample->owner_id = $ownerId;
