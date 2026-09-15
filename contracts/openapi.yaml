@@ -691,6 +691,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /health/sources:
+    get:
+      operationId: listHealthSources
+      summary: List the authenticated owner's health data sources
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200": { description: Health sources., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSourceListResponse" } } } }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: createHealthSource
+      summary: Register a health data source
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateHealthSourceRequest" } } } }
+      responses:
+        "201": { description: The health source., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSourceResponse" } } } }
+        "422": { description: Invalid source fields. }
+  /health/sync-runs:
+    post:
+      operationId: startHealthSyncRun
+      summary: Start a health import or sync run
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [source_id], properties: { source_id: { type: integer, format: int64 } } } } } }
+      responses:
+        "201": { description: Running sync run., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSyncRunResponse" } } } }
+  /health/sync-runs/{run}:
+    patch:
+      operationId: finishHealthSyncRun
+      summary: Finish a health sync run
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ name: run, in: path, required: true, schema: { type: integer, format: int64 } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [status], properties: { status: { type: string, enum: [success, partial_success, failure] }, imported_count: { type: integer }, skipped_count: { type: integer }, failed_count: { type: integer } } } } } }
+      responses:
+        "200": { description: Finished sync run., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSyncRunResponse" } } } }
+  /health/samples:
+    get:
+      operationId: listHealthSamples
+      summary: List normalized health samples
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      parameters: [{ name: sample_type, in: query, schema: { type: string, enum: [steps, sleep, heart_rate, workouts, calories, weight] } }]
+      responses:
+        "200": { description: Health samples., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSampleListResponse" } } } }
+    post:
+      operationId: ingestHealthSample
+      summary: Ingest one normalized health sample idempotently
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateHealthSampleRequest" } } } }
+      responses:
+        "200": { description: Existing sample returned for an idempotent retry., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSampleResponse" } } } }
+        "201": { description: Created sample., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSampleResponse" } } } }
   /finance/transfers:
     get:
       operationId: listFinanceTransfers
@@ -1407,6 +1462,89 @@ components:
         current_amount: { $ref: "#/components/schemas/FinanceAmount" }
         currency: { type: string, pattern: '^[A-Z]{3}$' }
         target_date: { type: string, format: date }
+    HealthSource:
+      type: object
+      required: [id, key, name, kind]
+      properties:
+        id: { type: integer, format: int64 }
+        key: { type: string }
+        name: { type: string }
+        kind: { type: string }
+        metadata: { type: [object, "null"] }
+        revoked_at: { type: [string, "null"], format: date-time }
+    HealthSourceResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/HealthSource" } }
+    HealthSourceListResponse:
+      type: object
+      required: [data]
+      properties: { data: { type: array, items: { $ref: "#/components/schemas/HealthSource" } } }
+    CreateHealthSourceRequest:
+      type: object
+      required: [key, name, kind]
+      properties:
+        key: { type: string, maxLength: 80 }
+        name: { type: string, maxLength: 120 }
+        kind: { type: string, maxLength: 32 }
+        metadata: { type: object }
+    HealthSyncRun:
+      type: object
+      required: [id, source_id, status, imported_count, skipped_count, failed_count]
+      properties:
+        id: { type: integer, format: int64 }
+        source_id: { type: integer, format: int64 }
+        status: { type: string, enum: [running, success, partial_success, failure] }
+        imported_count: { type: integer }
+        skipped_count: { type: integer }
+        failed_count: { type: integer }
+        error_summary: { type: [object, "null"] }
+        started_at: { type: string, format: date-time }
+        finished_at: { type: [string, "null"], format: date-time }
+    HealthSyncRunResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/HealthSyncRun" } }
+    HealthSample:
+      type: object
+      required: [id, source_id, sample_type, value, unit, recorded_at, is_manual, conflict_status]
+      properties:
+        id: { type: integer, format: int64 }
+        source_id: { type: integer, format: int64 }
+        sync_run_id: { type: [integer, "null"], format: int64 }
+        external_id: { type: [string, "null"] }
+        sample_type: { type: string, enum: [steps, sleep, heart_rate, workouts, calories, weight] }
+        value: { $ref: "#/components/schemas/FinanceAmount" }
+        unit: { type: string }
+        recorded_at: { type: string, format: date-time }
+        ended_at: { type: [string, "null"], format: date-time }
+        confidence: { type: [string, "null"] }
+        metadata: { type: [object, "null"] }
+        is_manual: { type: boolean }
+        conflict_status: { type: string }
+    HealthSampleResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/HealthSample" } }
+    HealthSampleListResponse:
+      type: object
+      required: [data]
+      properties: { data: { type: array, items: { $ref: "#/components/schemas/HealthSample" } } }
+    CreateHealthSampleRequest:
+      type: object
+      required: [source_id, sample_type, value, unit, recorded_at]
+      properties:
+        source_id: { type: integer, format: int64 }
+        sync_run_id: { type: [integer, "null"], format: int64 }
+        external_id: { type: [string, "null"] }
+        sample_type: { type: string, enum: [steps, sleep, heart_rate, workouts, calories, weight] }
+        value: { $ref: "#/components/schemas/FinanceAmount" }
+        unit: { type: string, maxLength: 32 }
+        recorded_at: { type: string, format: date-time }
+        ended_at: { type: [string, "null"], format: date-time }
+        confidence: { type: [string, "null"] }
+        metadata: { type: object }
+        is_manual: { type: boolean }
     FinanceAmount:
       type: string
       pattern: '^-?\d{1,15}(\.\d{1,4})?$'

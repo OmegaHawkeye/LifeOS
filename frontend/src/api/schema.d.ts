@@ -311,6 +311,76 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/health/samples": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List normalized health samples */
+        get: operations["listHealthSamples"];
+        put?: never;
+        /** Ingest one normalized health sample idempotently */
+        post: operations["ingestHealthSample"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/health/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the authenticated owner's health data sources */
+        get: operations["listHealthSources"];
+        put?: never;
+        /** Register a health data source */
+        post: operations["createHealthSource"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/health/sync-runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start a health import or sync run */
+        post: operations["startHealthSyncRun"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/health/sync-runs/{run}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Finish a health sync run */
+        patch: operations["finishHealthSyncRun"];
+        trace?: never;
+    };
     "/me": {
         parameters: {
             query?: never;
@@ -432,6 +502,30 @@ export interface components {
             /** Format: int64 */
             to_account_id: number;
             to_amount?: components["schemas"]["FinanceAmount"];
+        };
+        CreateHealthSampleRequest: {
+            confidence?: string | null;
+            /** Format: date-time */
+            ended_at?: string | null;
+            external_id?: string | null;
+            is_manual?: boolean;
+            metadata?: Record<string, never>;
+            /** Format: date-time */
+            recorded_at: string;
+            /** @enum {string} */
+            sample_type: "steps" | "sleep" | "heart_rate" | "workouts" | "calories" | "weight";
+            /** Format: int64 */
+            source_id: number;
+            /** Format: int64 */
+            sync_run_id?: number | null;
+            unit: string;
+            value: components["schemas"]["FinanceAmount"];
+        };
+        CreateHealthSourceRequest: {
+            key: string;
+            kind: string;
+            metadata?: Record<string, never>;
+            name: string;
         };
         Error: {
             message: string;
@@ -608,6 +702,68 @@ export interface components {
         };
         FinanceTransferResponse: {
             data: components["schemas"]["FinanceTransfer"];
+        };
+        HealthSample: {
+            confidence?: string | null;
+            conflict_status: string;
+            /** Format: date-time */
+            ended_at?: string | null;
+            external_id?: string | null;
+            /** Format: int64 */
+            id: number;
+            is_manual: boolean;
+            metadata?: Record<string, never> | null;
+            /** Format: date-time */
+            recorded_at: string;
+            /** @enum {string} */
+            sample_type: "steps" | "sleep" | "heart_rate" | "workouts" | "calories" | "weight";
+            /** Format: int64 */
+            source_id: number;
+            /** Format: int64 */
+            sync_run_id?: number | null;
+            unit: string;
+            value: components["schemas"]["FinanceAmount"];
+        };
+        HealthSampleListResponse: {
+            data: components["schemas"]["HealthSample"][];
+        };
+        HealthSampleResponse: {
+            data: components["schemas"]["HealthSample"];
+        };
+        HealthSource: {
+            /** Format: int64 */
+            id: number;
+            key: string;
+            kind: string;
+            metadata?: Record<string, never> | null;
+            name: string;
+            /** Format: date-time */
+            revoked_at?: string | null;
+        };
+        HealthSourceListResponse: {
+            data: components["schemas"]["HealthSource"][];
+        };
+        HealthSourceResponse: {
+            data: components["schemas"]["HealthSource"];
+        };
+        HealthSyncRun: {
+            error_summary?: Record<string, never> | null;
+            failed_count: number;
+            /** Format: date-time */
+            finished_at?: string | null;
+            /** Format: int64 */
+            id: number;
+            imported_count: number;
+            skipped_count: number;
+            /** Format: int64 */
+            source_id: number;
+            /** Format: date-time */
+            started_at?: string;
+            /** @enum {string} */
+            status: "running" | "success" | "partial_success" | "failure";
+        };
+        HealthSyncRunResponse: {
+            data: components["schemas"]["HealthSyncRun"];
         };
         LoginRequest: {
             /** Format: email */
@@ -1701,6 +1857,178 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listHealthSamples: {
+        parameters: {
+            query?: {
+                sample_type?: "steps" | "sleep" | "heart_rate" | "workouts" | "calories" | "weight";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Health samples. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthSampleListResponse"];
+                };
+            };
+        };
+    };
+    ingestHealthSample: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateHealthSampleRequest"];
+            };
+        };
+        responses: {
+            /** @description Existing sample returned for an idempotent retry. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthSampleResponse"];
+                };
+            };
+            /** @description Created sample. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthSampleResponse"];
+                };
+            };
+        };
+    };
+    listHealthSources: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Health sources. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthSourceListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createHealthSource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateHealthSourceRequest"];
+            };
+        };
+        responses: {
+            /** @description The health source. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthSourceResponse"];
+                };
+            };
+            /** @description Invalid source fields. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    startHealthSyncRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: int64 */
+                    source_id: number;
+                };
+            };
+        };
+        responses: {
+            /** @description Running sync run. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthSyncRunResponse"];
+                };
+            };
+        };
+    };
+    finishHealthSyncRun: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    failed_count?: number;
+                    imported_count?: number;
+                    skipped_count?: number;
+                    /** @enum {string} */
+                    status: "success" | "partial_success" | "failure";
+                };
+            };
+        };
+        responses: {
+            /** @description Finished sync run. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthSyncRunResponse"];
                 };
             };
         };

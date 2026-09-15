@@ -11,6 +11,7 @@ use App\Modules\Finance\Http\Controllers\FinanceTransferController;
 use App\Modules\Foundation\Http\Controllers\OwnerSettingsController;
 use App\Modules\Foundation\Http\Controllers\SessionController;
 use App\Modules\Foundation\Http\Resources\OwnerProfileResource;
+use App\Modules\Health\Http\Controllers\HealthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -80,5 +81,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             ->name('finance.transfers.index');
         Route::post('/finance/transfers', [FinanceTransferController::class, 'store'])
             ->name('finance.transfers.store');
+
+        Route::get('/health/sources', [HealthController::class, 'sources']);
+        Route::post('/health/sources', [HealthController::class, 'storeSource']);
+        Route::post('/health/sync-runs', [HealthController::class, 'startRun']);
+        Route::patch('/health/sync-runs/{run}', [HealthController::class, 'finishRun']);
+        Route::get('/health/samples', [HealthController::class, 'samples']);
+        Route::post('/health/samples', [HealthController::class, 'storeSample']);
     });
 });
