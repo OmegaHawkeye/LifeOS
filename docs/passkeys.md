@@ -12,6 +12,12 @@ never the passkey's private key, and uses no hosted login relay or email flow.
 - Give the home server a stable hostname such as `lifeos.home.arpa` and keep the
   same hostname after enrolling passkeys. Avoid a changing LAN IP; `localhost`
   on an iPhone refers to the iPhone, not the server.
+- The server publishes the matching
+  `/.well-known/apple-app-site-association` file. The iOS client can declare
+  `webcredentials:lifeos.home.arpa` once the build uses a paid Apple Developer
+  team; personal development teams cannot sign the Associated Domains
+  capability. If you use another hostname, change both values and serve the
+  host over trusted HTTPS.
 - Set `APP_URL`, `LIFEOS_PASSKEY_WEB_URL`, and
   `LIFEOS_PASSKEY_WEB_ORIGIN` to the LifeOS web URL, for example
   `https://lifeos.home.arpa`. The WebAuthn relying-party ID is its hostname
