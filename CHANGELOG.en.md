@@ -1,0 +1,52 @@
+# 0.11.0
+
+- Passkeys now work on web and iOS with Apple, 1Password, and compatible password managers.
+
+# 0.10.0
+
+- The iOS app supports secure two-factor setup, confirmation, and account management.
+
+# 0.9.0
+
+- The native Nutrition screen shows meals and daily targets and can log meals directly.
+
+# 0.8.0
+
+- The native Finance screen creates accounts and records income and expenses with a monthly overview.
+
+# 0.7.0
+
+- Web and mobile navigation now use consistent icons for each section.
+
+# 0.6.0
+
+- The Fitness app shows training and body progress and saves new measurements to your LifeOS server.
+
+# 0.5.0
+
+- The Today dashboard brings together daily Finance, Fitness, Nutrition, and routine summaries.
+- Web and mobile now share UI primitives and Tailwind design tokens.
+
+# 0.4.1
+
+- Mobile sign-in requests the authenticator code only after the password is verified.
+
+# 0.4.0
+
+- Selected Apple Health data can now sync privately from the iOS app to your LifeOS server.
+
+# 0.3.0
+
+- Encrypted local backups run automatically and can be restored.
+- Mobile sessions use short-lived access tokens and rotating, revocable refresh tokens.
+- The iPhone and iPad app now offers secure sign-in and native navigation.
+
+# 0.2.0
+
+- LifeOS data can now be exported as a ZIP archive.
+- Accounts and personal data can be permanently deleted after password and email confirmation.
+- Assets can now be tracked in a net-worth overview.
+
+# 0.1.0
+
+- Module-boundary issues between Fitness, Nutrition, and Foundation were fixed.

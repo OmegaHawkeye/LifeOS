@@ -1,0 +1,92 @@
+x-lifeos-environment: &lifeos-environment
+  APP_NAME: LifeOS
+  APP_ENV: production
+  APP_KEY: ${APP_KEY:?Set APP_KEY in the root .env file}
+  APP_DEBUG: "false"
+  APP_URL: ${APP_URL:-http://localhost:8080}
+  APP_TIMEZONE: Europe/Vienna
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_DATABASE: lifeos
+  DB_USERNAME: lifeos
+  DB_PASSWORD: ${HOME_SERVER_POSTGRES_PASSWORD:?Set HOME_SERVER_POSTGRES_PASSWORD in the root .env file}
+  SESSION_DRIVER: database
+  SESSION_ENCRYPT: "true"
+  CACHE_STORE: database
+  QUEUE_CONNECTION: database
+  FILESYSTEM_DISK: local
+  LIFEOS_BACKUP_DIRECTORY: /backups
+  LIFEOS_BACKUP_RETENTION_DAYS: ${LIFEOS_BACKUP_RETENTION_DAYS:-30}
+  LIFEOS_MOBILE_ACCESS_TOKEN_MINUTES: ${LIFEOS_MOBILE_ACCESS_TOKEN_MINUTES:-15}
+  LIFEOS_MOBILE_REFRESH_TOKEN_DAYS: ${LIFEOS_MOBILE_REFRESH_TOKEN_DAYS:-30}
+  LIFEOS_BACKUP_KEY_PATH: /app/storage/app/private/backup-recovery.key
+  LIFEOS_BACKUP_STATUS_PATH: /app/storage/app/private/backup-status.json
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lifeos
+      POSTGRES_USER: lifeos
+      POSTGRES_PASSWORD: ${HOME_SERVER_POSTGRES_PASSWORD:?Set HOME_SERVER_POSTGRES_PASSWORD in the root .env file}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lifeos -d lifeos"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    volumes:
+      - lifeos-home-postgres:/var/lib/postgresql
+
+  lifeos:
+    build: .
+    restart: unless-stopped
+    init: true
+    environment: *lifeos-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${LIFEOS_PORT:-8080}:8080"
+    volumes:
+      - lifeos-home-storage:/app/storage
+      - type: bind
+        source: ${LIFEOS_BACKUP_HOST_PATH:-./backups}
+        target: /backups
+        bind:
+          create_host_path: true
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://127.0.0.1:8080/api/v1/readiness >/dev/null || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  scheduler:
+    build: .
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      disable: true
+    entrypoint: ["php"]
+    command: ["artisan", "schedule:work"]
+    environment: *lifeos-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - lifeos-home-storage:/app/storage
+      - type: bind
+        source: ${LIFEOS_BACKUP_HOST_PATH:-./backups}
+        target: /backups
+        bind:
+          create_host_path: true
+
+volumes:
+  lifeos-home-postgres:
+  lifeos-home-storage:

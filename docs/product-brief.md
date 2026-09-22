@@ -1,6 +1,6 @@
 # LifeOS Product Brief
 
-Status: MVP baseline | Owner and initial user: Julian | Related issue: OME-138 | Last updated: 2026-09-13
+Status: MVP baseline | Owner and initial user: Julian | Related issues: OME-138, OME-172 | Last updated: 2026-09-21
 
 ## Product statement
 
@@ -10,7 +10,7 @@ The product is deliberately personal before it is general. The first release opt
 
 ## Target user
 
-The MVP serves one user: Julian, using LifeOS across desktop, phone, and tablet. He wants more control over money, training, food, and routines, but does not want daily administration to become another project. He values privacy, clear trends, fast manual entry, and the ability to retain and export his own data.
+The MVP serves one user: Julian, using LifeOS across desktop, phone, and a wall-mounted tablet. LifeOS runs on a home server and remains usable by non-technical people after setup. He wants more control over money, training, food, and routines, but does not want daily administration to become another project. He values privacy, clear trends, fast manual entry, and the ability to retain and export his own data.
 
 Future multi-user needs may be researched later, but they must not shape the MVP architecture or interface unless a decision would otherwise make later evolution prohibitively expensive.
 
@@ -63,7 +63,7 @@ The first usable LifeOS release is a private, responsive single-user web app whe
 - Recipes, basic nutrition targets, weekly meal planning, and meal status.
 - A small set of goals and reminders plus a guided weekly review.
 - User-triggered export of all structured personal data in documented, portable formats.
-- Basic audit metadata for sensitive writes and operational backups for the hosted datastore.
+- Basic audit metadata for sensitive writes and guided, configurable backups on the home server.
 
 ### Post-MVP
 
@@ -103,7 +103,8 @@ The product should favor these flows over module completeness. A dashboard card 
 - All LifeOS data is private by default and visible only to the authenticated owner.
 - Production secrets and personal production data never belong in the repository, fixtures, screenshots, logs, or analytics payloads.
 - Collect only data required for an included workflow. Analytics and error reporting must avoid personal domain values by default.
-- Sensitive values must be encrypted in transit and protected at rest using the hosting and database provider's supported controls.
+- LifeOS data stays on the user's home server and local devices; it is not sent to LifeOS-operated cloud services. Health data is read through the platform's explicit HealthKit/Health Connect permissions and synced to the user's own server.
+- Sensitive values must be protected in transit and at rest using controls available on the user's devices and home-server installation.
 - Destructive and security-relevant actions should be attributable through timestamps and appropriate audit metadata.
 - The owner can export all structured data without vendor-specific lock-in. Finance, fitness, nutrition, goals, and settings should have documented JSON and/or CSV representations; files should retain their original format and metadata where practical.
 - Export and deletion behavior must be designed before storing highly sensitive files such as progress photos or health exports.
@@ -111,11 +112,11 @@ The product should favor these flows over module completeness. A dashboard card 
 
 ## Deployment decision
 
-LifeOS starts as a **private hosted-first application**, not as a local-first system.
+LifeOS is a **self-hosted home-server application**. The home server is the source of truth; web and mobile devices connect to it over the user's home network. LifeOS must not require a hosted account, cloud database, vendor telemetry, or a third-party storage service for core functionality.
 
-The production source of truth is a hosted database behind authenticated server-side access. The same application must run locally for development using isolated non-production data. A PWA shell may cache static assets and support resilient reads where straightforward, but offline writes, peer synchronization, and merge-conflict handling are explicitly post-MVP.
+HealthKit and Health Connect are device-platform integrations, not LifeOS cloud integrations: the mobile app reads only the health data the user grants and syncs selected records directly to their own home server. Any future remote access must remain an explicit user-configured path to that server, not a LifeOS relay or hosted data copy.
 
-This choice supports access from desktop, phone, and tablet and enables backups and a future wall dashboard without taking on a second synchronization architecture before the workflows are proven. It is conditional on strong access control, portable exports, and a documented self-hosting or migration path. The exact provider and technical stack belong to OME-139.
+The setup experience should work for non-technical home-server owners. Backups run daily with 30-day retention by default, configurable up to two years where storage permits. Recommend a NAS or second external drive as an independent target, while still allowing backups on the server itself so a separate device is never a setup prerequisite. The recovery objectives are documented in [the backup policy](backup-policy.md) and validated by restore drills.
 
 ## Product principles and success signals
 
@@ -131,16 +132,16 @@ The MVP is successful when Julian voluntarily uses it for several consecutive we
 
 - One owner account is sufficient for the first release.
 - Manual entry is acceptable when common actions are fast and mobile-friendly.
-- A hosted EU-region deployment can meet the initial privacy bar.
-- Internet connectivity is normally available when creating or editing data.
+- The user has a home server and devices can reach it over the home network.
+- Core LifeOS use must not depend on internet access; external health-platform access is limited to device-authorized APIs.
 - Existing calendar, notification, banking, and Apple Health systems remain external during the MVP.
 - Finance, fitness, and nutrition summaries can share goals, reminders, files, settings, and audit concepts without sharing their domain models.
 - LifeOS is a personal decision-support tool, not a regulated financial or medical product.
 
 ## Open questions
 
-- Which hosting region, provider, database, authentication method, and backup policy best satisfy the hosted-first decision? Resolve in OME-139.
-- What is the minimum recovery objective and acceptable backup retention before real personal data is stored?
+- Which home-server installation and update flow best supports non-technical users?
+- Which setup and update flow makes self-hosting approachable for non-technical home-server owners?
 - Which export formats and schemas provide the best balance between human readability and lossless re-import?
 - Which two or three dashboard signals are valuable enough to lead the first vertical slice?
 - What maximum interaction time should define "quick" for transaction, metric, meal, and workout capture?

@@ -1,6 +1,6 @@
 # ADR 0001: Initial stack and modular architecture
 
-- Status: Accepted
+- Status: Superseded by [ADR 0002](0002-self-hosted-home-server.md)
 - Date: 2026-09-13
 - Decision owners: Julian and the LifeOS project
 - Related issues: OME-138, OME-139
@@ -30,25 +30,25 @@ LifeOS will use a **Laravel API backend, a React web PWA, PostgreSQL, and a late
 
 ### Stack
 
-| Concern | Choice |
-| --- | --- |
-| Backend | Laravel 13 on PHP 8.4 or a later Laravel-supported PHP release |
-| API | JSON REST API under `/api/v1`, documented with OpenAPI 3.1 |
-| Web | React, TypeScript in strict mode, Vite, and a web app manifest |
-| Web data access | Generated TypeScript API types/client plus TanStack Query |
-| Web routing | React Router |
-| Styling | Tailwind CSS with repository-owned accessible components |
-| Mobile | React Native when a native use case is approved; not scaffolded for the MVP |
-| Database | PostgreSQL with Laravel migrations and Eloquent |
-| Authentication | Laravel Sanctum |
-| Validation | Laravel Form Requests at HTTP boundaries and domain validation in use cases/value objects |
-| Background work | Laravel database queue and a worker process from the same application image |
-| Scheduled work | Laravel Scheduler, triggered by the hosting platform |
-| File storage | Laravel Filesystem; local adapter in development and private S3-compatible storage in production when file features arrive |
-| Tests | PHPUnit for backend, Vitest and Testing Library for web, Playwright for critical browser workflows |
-| Static analysis and style | PHPStan/Larastan and Laravel Pint; TypeScript, ESLint, and Prettier |
-| Deployment | Docker on Render in Frankfurt, with Render Postgres in the same region |
-| CI | GitHub Actions running install, formatting checks, lint/static analysis, tests, API-contract checks, and production builds |
+| Concern                   | Choice                                                                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Backend                   | Laravel 13 on PHP 8.4 or a later Laravel-supported PHP release                                                             |
+| API                       | JSON REST API under `/api/v1`, documented with OpenAPI 3.1                                                                 |
+| Web                       | React, TypeScript in strict mode, Vite, and a web app manifest                                                             |
+| Web data access           | Generated TypeScript API types/client plus TanStack Query                                                                  |
+| Web routing               | React Router                                                                                                               |
+| Styling                   | Tailwind CSS with repository-owned accessible components                                                                   |
+| Mobile                    | React Native when a native use case is approved; not scaffolded for the MVP                                                |
+| Database                  | PostgreSQL with Laravel migrations and Eloquent                                                                            |
+| Authentication            | Laravel Sanctum                                                                                                            |
+| Validation                | Laravel Form Requests at HTTP boundaries and domain validation in use cases/value objects                                  |
+| Background work           | Laravel database queue and a worker process from the same application image                                                |
+| Scheduled work            | Laravel Scheduler, triggered by the hosting platform                                                                       |
+| File storage              | Laravel Filesystem; local adapter in development and private S3-compatible storage in production when file features arrive |
+| Tests                     | PHPUnit for backend, Vitest and Testing Library for web, Playwright for critical browser workflows                         |
+| Static analysis and style | PHPStan/Larastan and Laravel Pint; TypeScript, ESLint, and Prettier                                                        |
+| Deployment                | Docker on Render in Frankfurt, with Render Postgres in the same region                                                     |
+| CI                        | GitHub Actions running install, formatting checks, lint/static analysis, tests, API-contract checks, and production builds |
 
 OME-140 will pin exact dependency versions and lockfiles to the then-current stable releases. Major upgrades are deliberate changes with passing tests and migrations; dependencies do not float in production.
 
@@ -114,14 +114,14 @@ Dashboard composes the public query hooks and summary types of the other fronten
 
 ### Module ownership
 
-| Module | Owns | Publishes or consumes |
-| --- | --- | --- |
+| Module     | Owns                                                                                                                     | Publishes or consumes                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
 | Foundation | Identity wrapper, owner profile, settings, generic goals, files, notification preferences/messages, audit events, outbox | User context, settings queries, goal summaries, file and notification services, audit writer |
-| Finance | Accounts, categories, transactions, transfers, budgets, subscriptions, savings goals, assets, import metadata | Cash-flow and actionable finance summaries; consumes settings and notifications |
-| Fitness | Body metrics, fitness targets, exercises, workout templates/sessions/sets, progress-photo associations | Body/workout trends and next-workout summaries; consumes settings, files, and Health queries |
-| Nutrition | Ingredients, recipes, servings, meals, targets, meal plans, prep state, shopping lists | Daily/weekly nutrition summaries; consumes settings and notifications |
-| Health | Health samples, sources, import/sync runs, provenance, deduplication, and conflict decisions | Normalized health queries and import results; consumes audit and file services |
-| Dashboard | Dashboard preferences and composition rules only | Composes published read models from Foundation, Finance, Fitness, Nutrition, and Health |
+| Finance    | Accounts, categories, transactions, transfers, budgets, subscriptions, savings goals, assets, import metadata            | Cash-flow and actionable finance summaries; consumes settings and notifications              |
+| Fitness    | Body metrics, fitness targets, exercises, workout templates/sessions/sets, progress-photo associations                   | Body/workout trends and next-workout summaries; consumes settings, files, and Health queries |
+| Nutrition  | Ingredients, recipes, servings, meals, targets, meal plans, prep state, shopping lists                                   | Daily/weekly nutrition summaries; consumes settings and notifications                        |
+| Health     | Health samples, sources, import/sync runs, provenance, deduplication, and conflict decisions                             | Normalized health queries and import results; consumes audit and file services               |
+| Dashboard  | Dashboard preferences and composition rules only                                                                         | Composes published read models from Foundation, Finance, Fitness, Nutrition, and Health      |
 
 Dashboard never becomes the source of truth for another module's facts. It may cache derived read models only when measurement proves that live composition is insufficient.
 
@@ -219,7 +219,7 @@ This would reduce initial API and client-state work. It was rejected as the prim
 
 ### Laravel API with Vue web
 
-Vue is technically suitable. React was selected because React Native is the likely native client and the two clients can share TypeScript API code, validation helpers, query conventions, design tokens, and developer knowledge. Cross-platform component sharing is optional, not a goal.
+Vue is technically suitable. React was selected because React Native is the native client and both apps should share TypeScript API code, validation helpers, query conventions, design tokens, and UI primitives through `packages/ui`. Components may use platform-specific renderers where browser DOM and native views differ, while keeping a shared API and visual language.
 
 ### Native-first or local-first application
 
