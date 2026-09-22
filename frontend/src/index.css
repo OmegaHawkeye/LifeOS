@@ -1,12 +1,8 @@
 @import "tailwindcss";
+@import "@lifeos/ui/theme.css";
+@source "../../ui/src";
 
 @custom-variant dark (&:where(.dark, .dark *));
-
-@theme {
-  --font-sans:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-}
 
 :root {
   font-family: var(--font-sans);
@@ -19,4 +15,11 @@
 
 body {
   margin: 0;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
 }

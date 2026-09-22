@@ -22,12 +22,26 @@ export type FinanceSubscription =
   paths["/finance/subscriptions"]["get"]["responses"][200]["content"]["application/json"]["data"][number];
 export type FinanceSavingsGoal =
   paths["/finance/savings-goals"]["get"]["responses"][200]["content"]["application/json"]["data"][number];
+export type FinanceAsset =
+  paths["/finance/assets"]["get"]["responses"][200]["content"]["application/json"]["data"][number];
+export type FinanceAssetValuation =
+  paths["/finance/assets/{asset}/valuations"]["get"]["responses"][200]["content"]["application/json"]["data"][number];
+export type FinanceNetWorth =
+  paths["/finance/net-worth"]["get"]["responses"][200]["content"]["application/json"]["data"];
 export type CreateFinanceBudget =
   paths["/finance/budgets"]["post"]["requestBody"]["content"]["application/json"];
 export type CreateFinanceSubscription =
   paths["/finance/subscriptions"]["post"]["requestBody"]["content"]["application/json"];
 export type CreateFinanceSavingsGoal =
   paths["/finance/savings-goals"]["post"]["requestBody"]["content"]["application/json"];
+export type CreateFinanceCategory =
+  paths["/finance/categories"]["post"]["requestBody"]["content"]["application/json"];
+export type CreateFinanceAccount =
+  paths["/finance/accounts"]["post"]["requestBody"]["content"]["application/json"];
+export type CreateFinanceAsset =
+  paths["/finance/assets"]["post"]["requestBody"]["content"]["application/json"];
+export type CreateFinanceAssetValuation =
+  paths["/finance/assets/{asset}/valuations"]["post"]["requestBody"]["content"]["application/json"];
 
 export async function getFinanceAccounts(): Promise<FinanceAccount[]> {
   const { data, response } = await apiClient.GET("/finance/accounts");
@@ -46,6 +60,89 @@ export async function getFinanceCategories(): Promise<FinanceCategory[]> {
     throw new Error("LifeOS could not load your categories.");
   }
 
+  return data.data;
+}
+
+export async function createFinanceAccount(
+  account: CreateFinanceAccount,
+): Promise<FinanceAccount> {
+  const { data, response } = await apiClient.POST("/finance/accounts", {
+    body: account,
+  });
+  if (!response.ok || !data) throw new Error("Could not create account.");
+  return data.data;
+}
+
+export async function updateFinanceAccount(
+  id: number,
+  include_in_net_worth: boolean,
+): Promise<void> {
+  const { response } = await apiClient.PATCH("/finance/accounts/{account}", {
+    params: { path: { account: id } },
+    body: { include_in_net_worth },
+  });
+  if (!response.ok) throw new Error("Could not update account selection.");
+}
+
+export async function getFinanceAssets(): Promise<FinanceAsset[]> {
+  const { data, response } = await apiClient.GET("/finance/assets");
+  if (!response.ok || !data) throw new Error("Could not load assets.");
+  return data.data;
+}
+
+export async function createFinanceAsset(
+  asset: CreateFinanceAsset,
+): Promise<void> {
+  const { response } = await apiClient.POST("/finance/assets", { body: asset });
+  if (!response.ok) throw new Error("Could not create asset.");
+}
+
+export async function updateFinanceAsset(
+  id: number,
+  values: { is_archived?: boolean; include_in_net_worth?: boolean },
+): Promise<void> {
+  const { response } = await apiClient.PATCH("/finance/assets/{asset}", {
+    params: { path: { asset: id } },
+    body: values,
+  });
+  if (!response.ok) throw new Error("Could not update asset.");
+}
+
+export async function getFinanceAssetValuations(
+  asset: number,
+): Promise<FinanceAssetValuation[]> {
+  const { data, response } = await apiClient.GET(
+    "/finance/assets/{asset}/valuations",
+    { params: { path: { asset } } },
+  );
+  if (!response.ok || !data) throw new Error("Could not load valuations.");
+  return data.data;
+}
+
+export async function createFinanceAssetValuation(
+  asset: number,
+  body: CreateFinanceAssetValuation,
+): Promise<void> {
+  const { response } = await apiClient.POST(
+    "/finance/assets/{asset}/valuations",
+    { params: { path: { asset } }, body },
+  );
+  if (!response.ok) throw new Error("Could not record valuation.");
+}
+
+export async function getFinanceNetWorth(): Promise<FinanceNetWorth> {
+  const { data, response } = await apiClient.GET("/finance/net-worth");
+  if (!response.ok || !data) throw new Error("Could not load net worth.");
+  return data.data;
+}
+
+export async function createFinanceCategory(
+  category: CreateFinanceCategory,
+): Promise<FinanceCategory> {
+  const { data, response } = await apiClient.POST("/finance/categories", {
+    body: category,
+  });
+  if (!response.ok || !data) throw new Error("Could not create category.");
   return data.data;
 }
 

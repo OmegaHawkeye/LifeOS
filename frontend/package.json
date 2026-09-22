@@ -10,8 +10,8 @@
     "contract:generate": "openapi-typescript ../contracts/openapi.yaml --output src/api/schema.d.ts --alphabetize",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "format:repo": "prettier --write . ../scripts ../package.json ../README.md '../*.yaml' ../.github",
-    "format:repo:check": "prettier --check . ../scripts ../package.json ../README.md '../*.yaml' ../.github",
+    "format:repo": "prettier --write . ../mobile ../scripts ../package.json ../README.md '../*.yaml' ../.github",
+    "format:repo:check": "prettier --check . ../mobile ../scripts ../package.json ../README.md '../*.yaml' ../.github",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
@@ -21,6 +21,8 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
+    "@laravel/passkeys": "^0.4.0",
+    "@lifeos/ui": "workspace:*",
     "@tanstack/react-query": "^5.102.8",
     "openapi-fetch": "^0.17.0",
     "react": "^19.2.8",

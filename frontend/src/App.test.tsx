@@ -19,6 +19,7 @@ import {
   signOut,
 } from "./modules/Foundation/auth";
 import {
+  getBackupStatus,
   getOwnerSettings,
   updateOwnerSettings,
 } from "./modules/Foundation/settings";
@@ -32,9 +33,31 @@ vi.mock("./modules/Foundation/auth", () => ({
 }));
 
 vi.mock("./modules/Foundation/settings", () => ({
+  getBackupStatus: vi.fn(),
   getOwnerSettings: vi.fn(),
   updateOwnerSettings: vi.fn(),
 }));
+
+vi.mock("@/api/client", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/api/client")>();
+
+  return {
+    ...actual,
+    apiClient: {
+      ...actual.apiClient,
+      GET: vi.fn().mockResolvedValue({
+        data: undefined,
+        response: new Response(null, { status: 500 }),
+      }),
+    },
+    apiFetch: vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ data: [] }), {
+        headers: { "Content-Type": "application/json" },
+      }),
+    ),
+    initializeCsrfProtection: vi.fn().mockResolvedValue(undefined),
+  };
+});
 
 const owner = { id: 1, name: "Julian", email: "owner@example.test" };
 const settings = {
@@ -43,6 +66,7 @@ const settings = {
   measurement_system: "metric" as const,
   theme: "system" as const,
   mask_sensitive_data_by_default: true,
+  notifications_enabled: false,
 };
 
 describe("LifeOS authenticated app shell", () => {
@@ -68,6 +92,13 @@ describe("LifeOS authenticated app shell", () => {
     vi.mocked(completeTwoFactorChallenge).mockResolvedValue(owner);
     vi.mocked(signOut).mockResolvedValue(undefined);
     vi.mocked(getOwnerSettings).mockResolvedValue(settings);
+    vi.mocked(getBackupStatus).mockResolvedValue({
+      status: "ok",
+      last_attempt_at: "2026-09-21T02:00:00+02:00",
+      last_successful_backup_at: "2026-09-21T02:00:00+02:00",
+      retention_days: 30,
+      scheduled_time: "02:00",
+    });
     vi.mocked(updateOwnerSettings).mockImplementation(async (values) => ({
       ...settings,
       ...values,
@@ -131,6 +162,9 @@ describe("LifeOS authenticated app shell", () => {
         within(navigation).getByRole("link", { name: label }),
       ).toBeVisible();
     }
+    expect(within(navigation).getAllByTestId(/^navigation-icon-/)).toHaveLength(
+      6,
+    );
 
     await user.click(
       within(navigation).getByRole("link", { name: "Settings" }),
@@ -138,15 +172,36 @@ describe("LifeOS authenticated app shell", () => {
     expect(
       await screen.findByRole("heading", { name: "Settings" }),
     ).toBeVisible();
+    expect(
+      await screen.findByText(/Automatic daily backups · 30 days/),
+    ).toBeVisible();
+    expect(await screen.findByText(/Last successful backup:/)).toBeVisible();
     await user.selectOptions(screen.getByLabelText("Appearance"), "dark");
+    await user.click(screen.getByLabelText(/Enable in-app reminders/));
     await user.click(screen.getByRole("button", { name: "Save settings" }));
 
     await waitFor(() =>
       expect(updateOwnerSettings).toHaveBeenCalledWith({
         ...settings,
         theme: "dark",
+        notifications_enabled: true,
       }),
     );
     expect(await screen.findByText("Settings saved.")).toBeVisible();
+  });
+
+  it("returns to sign in when any API request reports an expired session", async () => {
+    vi.mocked(getCurrentOwner).mockResolvedValue(owner);
+    window.history.replaceState({}, "", "/settings");
+    render(<App />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Settings" }),
+    ).toBeVisible();
+    window.dispatchEvent(new Event("lifeos:unauthorized"));
+
+    expect(
+      await screen.findByRole("heading", { name: "Sign in" }),
+    ).toBeVisible();
   });
 });

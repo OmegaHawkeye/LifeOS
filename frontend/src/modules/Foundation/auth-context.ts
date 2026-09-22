@@ -10,6 +10,7 @@ export type AuthContextValue = {
   updateTheme: (theme: OwnerSettings["theme"]) => void;
   signIn: (email: string, password: string) => Promise<void>;
   verifyTwoFactor: (code: string) => Promise<void>;
+  refreshOwner: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 

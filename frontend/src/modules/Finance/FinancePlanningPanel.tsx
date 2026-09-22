@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   createFinanceBudget,
+  createFinanceCategory,
   createFinanceSavingsGoal,
   createFinanceSubscription,
   deleteFinanceBudget,
@@ -23,14 +24,21 @@ type Props = {
   month: string;
   accounts: FinanceAccount[];
   categories: FinanceCategory[];
+  onCategoryCreated: (category: FinanceCategory) => void;
 };
 
-export function FinancePlanningPanel({ month, accounts, categories }: Props) {
+export function FinancePlanningPanel({
+  month,
+  accounts,
+  categories,
+  onCategoryCreated,
+}: Props) {
   const [budgets, setBudgets] = useState<FinanceBudget[]>([]);
   const [subscriptions, setSubscriptions] = useState<FinanceSubscription[]>([]);
   const [goals, setGoals] = useState<FinanceSavingsGoal[]>([]);
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
   const currencies = useMemo(
     () => [...new Set(accounts.map((account) => account.currency))],
     [accounts],
@@ -97,6 +105,24 @@ export function FinancePlanningPanel({ month, accounts, categories }: Props) {
     }
   }
 
+  async function addExpenseCategory() {
+    if (!categoryName.trim()) return;
+    setSaving(true);
+    setError(false);
+    try {
+      const category = await createFinanceCategory({
+        name: categoryName.trim(),
+        type: "expense",
+      });
+      onCategoryCreated(category);
+      setCategoryName("");
+    } catch {
+      setError(true);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const alerts = [
     ...budgets
       .filter((budget) => budget.is_over_budget)
@@ -131,7 +157,7 @@ export function FinancePlanningPanel({ month, accounts, categories }: Props) {
   return (
     <section
       aria-labelledby="planning-title"
-      className="mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7"
+      className="mt-8 rounded-3xl border border-stone-200 bg-white p-5 pr-8 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7 sm:pr-10 lg:pr-16"
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -170,65 +196,97 @@ export function FinancePlanningPanel({ month, accounts, categories }: Props) {
         </div>
       )}
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-3">
-        <div>
+      <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="md:col-span-2 xl:col-span-1">
           <h3 className="font-semibold">Monthly budgets</h3>
-          <form
-            className="mt-3 grid gap-2"
-            onSubmit={(event) =>
-              void submit(event, async (form) =>
-                createFinanceBudget({
-                  category_id: Number(form.get("category")),
-                  month,
-                  currency: String(form.get("currency")),
-                  target_amount: String(form.get("target")),
-                }),
-              )
-            }
-          >
-            <select
-              aria-label="Budget category"
-              className={fieldClass}
-              name="category"
-              required
+          {expenseCategories.length === 0 ? (
+            <div className="mt-3 rounded-xl bg-stone-50 p-3 dark:bg-white/5">
+              <p className="text-xs text-stone-500 dark:text-stone-400">
+                Create an expense category first.
+              </p>
+              <div className="mt-2 flex gap-2">
+                <input
+                  aria-label="New expense category"
+                  className={fieldClass}
+                  minLength={1}
+                  onChange={(event) =>
+                    setCategoryName(event.currentTarget.value)
+                  }
+                  placeholder="e.g. Groceries"
+                  value={categoryName}
+                />
+                <button
+                  className={secondaryButtonClass}
+                  disabled={saving || !categoryName.trim()}
+                  onClick={() => void addExpenseCategory()}
+                  type="button"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          ) : accounts.length === 0 ? (
+            <p className="mt-3 rounded-xl bg-stone-50 p-3 text-xs text-stone-500 dark:bg-white/5 dark:text-stone-400">
+              Create a finance account first. Its currency will be available for
+              budgets.
+            </p>
+          ) : (
+            <form
+              className="mt-3 grid gap-2"
+              onSubmit={(event) =>
+                void submit(event, async (form) =>
+                  createFinanceBudget({
+                    category_id: Number(form.get("category")),
+                    month,
+                    currency: String(form.get("currency")),
+                    target_amount: String(form.get("target")),
+                  }),
+                )
+              }
             >
-              <option value="">Expense category</option>
-              {expenseCategories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <div className="flex gap-2">
               <select
-                aria-label="Budget currency"
+                aria-label="Budget category"
                 className={fieldClass}
-                name="currency"
+                name="category"
                 required
               >
-                {currencies.map((currency) => (
-                  <option key={currency}>{currency}</option>
+                {expenseCategories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
                 ))}
               </select>
-              <input
-                aria-label="Budget target"
-                className={fieldClass}
-                min="0.01"
-                name="target"
-                placeholder="Monthly target"
-                required
-                step="0.01"
-                type="number"
-              />
-            </div>
-            <button
-              className={primaryButtonClass}
-              disabled={saving || expenseCategories.length === 0}
-              type="submit"
-            >
-              Add budget for {month}
-            </button>
-          </form>
+              <div className="flex gap-2">
+                <select
+                  aria-label="Budget currency"
+                  className={fieldClass}
+                  name="currency"
+                  required
+                >
+                  {currencies.map((currency) => (
+                    <option key={currency}>{currency}</option>
+                  ))}
+                </select>
+                <input
+                  aria-label="Budget target"
+                  className={fieldClass}
+                  min="0.01"
+                  name="target"
+                  placeholder="Monthly target"
+                  required
+                  step="0.01"
+                  type="number"
+                />
+              </div>
+              <button
+                className={primaryButtonClass}
+                disabled={saving}
+                type="submit"
+              >
+                Add budget for {month}
+              </button>
+            </form>
+          )}
           <ul className="mt-4 space-y-3">
             {budgets.map((budget) => (
               <li
@@ -532,6 +590,8 @@ function daysUntil(date: string): number {
 const fieldClass =
   "min-w-0 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm dark:border-white/10 dark:bg-stone-950";
 const primaryButtonClass =
-  "rounded-xl bg-stone-900 px-3 py-2 text-sm font-semibold text-white disabled:opacity-50 dark:bg-white dark:text-stone-900";
+  "rounded-xl bg-stone-900 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900";
+const secondaryButtonClass =
+  "rounded-xl border border-stone-300 px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/15";
 const textButtonClass =
   "mt-2 text-xs font-semibold text-stone-600 underline underline-offset-2 dark:text-stone-300";

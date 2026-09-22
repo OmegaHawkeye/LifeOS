@@ -60,6 +60,46 @@ export async function signOut(): Promise<void> {
   }
 }
 
+export async function changePassword(
+  currentPassword: string,
+  password: string,
+  passwordConfirmation: string,
+): Promise<void> {
+  const { response } = await apiClient.PUT("/auth/password", {
+    body: {
+      current_password: currentPassword,
+      password,
+      password_confirmation: passwordConfirmation,
+    },
+  });
+
+  if (response.status === 422) {
+    throw new Error("The current password or new password is invalid.");
+  }
+  if (!response.ok) {
+    throw new Error("LifeOS could not change your password.");
+  }
+}
+
+export async function deleteOwnerAccount(
+  currentPassword: string,
+  emailConfirmation: string,
+): Promise<void> {
+  const { response } = await apiClient.DELETE("/account", {
+    body: {
+      current_password: currentPassword,
+      email_confirmation: emailConfirmation,
+    },
+  });
+
+  if (response.status === 422) {
+    throw new Error("The password or email confirmation is incorrect.");
+  }
+  if (!response.ok) {
+    throw new Error("LifeOS could not delete this account.");
+  }
+}
+
 async function verifyTwoFactor(
   path: "/auth/two-factor/confirm" | "/auth/two-factor/challenge",
   code: string,

@@ -1,15 +1,121 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { Passkeys } from "@laravel/passkeys";
+import { usePasskeyVerify } from "@laravel/passkeys/react";
+import { apiFetch, initializeCsrfProtection } from "@/api/client";
+import { environment } from "@/config/environment";
 import { useAuth } from "./auth-context";
 
+Passkeys.configure({ fetch: { credentials: "include" } });
+
 export function LoginPage() {
-  const { pendingTwoFactor, signIn, verifyTwoFactor } = useAuth();
+  const { pendingTwoFactor, refreshOwner, signIn, verifyTwoFactor } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreparingPasskey, setIsPreparingPasskey] = useState(true);
+  const mobilePasskeyState = new URLSearchParams(window.location.search).get(
+    "mobile_passkey_state",
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    void (async () => {
+      try {
+        await initializeCsrfProtection();
+        if (mobilePasskeyState) {
+          const response = await apiFetch(
+            `${environment.apiBaseUrl}/api/v1/mobile/passkeys/prepare`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ state: mobilePasskeyState }),
+            },
+          );
+          if (!response.ok) {
+            throw new Error("This passkey sign-in request has expired.");
+          }
+        }
+      } catch (caughtError) {
+        if (mounted) {
+          setError(
+            caughtError instanceof Error
+              ? caughtError.message
+              : "LifeOS could not prepare passkey sign-in.",
+          );
+        }
+      } finally {
+        if (mounted) {
+          setIsPreparingPasskey(false);
+        }
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [mobilePasskeyState]);
+
+  const passkeyLogin = usePasskeyVerify({
+    autofill: !isPreparingPasskey && !mobilePasskeyState && !pendingTwoFactor,
+    routes: {
+      options: `${environment.apiBaseUrl}/passkeys/login/options`,
+      submit: `${environment.apiBaseUrl}/passkeys/login`,
+    },
+    onSuccess: (result) => {
+      if (!mobilePasskeyState) {
+        void refreshOwner()
+          .then(() =>
+            navigate(
+              result.redirect
+                ? new URL(result.redirect, window.location.origin).pathname
+                : "/dashboard",
+              { replace: true },
+            ),
+          )
+          .catch((caughtError) => {
+            setError(
+              caughtError instanceof Error
+                ? caughtError.message
+                : "LifeOS could not complete passkey sign-in.",
+            );
+          });
+        return;
+      }
+
+      void (async () => {
+        try {
+          const response = await apiFetch(
+            `${environment.apiBaseUrl}/api/v1/mobile/passkeys/complete`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ state: mobilePasskeyState }),
+            },
+          );
+          if (!response.ok) {
+            throw new Error("LifeOS could not complete passkey sign-in.");
+          }
+          const payload = (await response.json()) as {
+            data?: { callback_url?: string };
+          };
+          if (!payload.data?.callback_url) {
+            throw new Error("LifeOS returned an invalid passkey response.");
+          }
+          window.location.assign(payload.data.callback_url);
+        } catch (caughtError) {
+          setError(
+            caughtError instanceof Error
+              ? caughtError.message
+              : "LifeOS could not complete passkey sign-in.",
+          );
+        }
+      })();
+    },
+  });
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -153,6 +259,38 @@ export function LoginPage() {
                 : "Sign in"}
           </button>
         </form>
+        {!pendingTwoFactor && (
+          <div className="mt-4 space-y-2">
+            <button
+              className="w-full rounded-xl border border-stone-300 px-4 py-3 font-semibold transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/15 dark:hover:bg-white/5"
+              disabled={
+                !passkeyLogin.isSupported ||
+                passkeyLogin.isLoading ||
+                isPreparingPasskey
+              }
+              onClick={() =>
+                void initializeCsrfProtection().then(() =>
+                  passkeyLogin.verify(),
+                )
+              }
+              type="button"
+            >
+              {isPreparingPasskey
+                ? "Preparing secure sign-in…"
+                : passkeyLogin.isLoading
+                  ? "Waiting for passkey…"
+                  : "Sign in with a passkey"}
+            </button>
+            {passkeyLogin.error && (
+              <p
+                className="text-sm text-red-700 dark:text-red-300"
+                role="alert"
+              >
+                {passkeyLogin.error}
+              </p>
+            )}
+          </div>
+        )}
       </section>
     </main>
   );

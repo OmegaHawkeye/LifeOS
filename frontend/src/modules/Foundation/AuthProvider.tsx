@@ -53,6 +53,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    const handleUnauthorized = () => {
+      setOwner(null);
+      setPendingTwoFactor(null);
+    };
+
+    window.addEventListener("lifeos:unauthorized", handleUnauthorized);
+    return () =>
+      window.removeEventListener("lifeos:unauthorized", handleUnauthorized);
+  }, []);
+
+  useEffect(() => {
     const root = document.documentElement;
     const media = window.matchMedia("(prefers-color-scheme: dark)");
     const applyTheme = () => {
@@ -98,6 +109,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setTheme((await getOwnerSettings()).theme);
         } catch {
           // Sign-in remains successful even if preferences are temporarily unavailable.
+        }
+      },
+      refreshOwner: async () => {
+        const currentOwner = await getCurrentOwner();
+        if (!currentOwner) {
+          throw new Error("Passkey sign-in did not create an owner session.");
+        }
+        setOwner(currentOwner);
+        setLoadError(false);
+        try {
+          setTheme((await getOwnerSettings()).theme);
+        } catch {
+          // The authenticated session remains valid when settings are unavailable.
         }
       },
       signOut: async () => {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   createFinanceTransaction,
+  createFinanceAccount,
   deleteFinanceTransaction,
   getFinanceAccounts,
   getFinanceCategories,
@@ -19,6 +20,7 @@ import type {
   UpdateTransaction,
 } from "./finance";
 import { FinancePlanningPanel } from "./FinancePlanningPanel";
+import { FinanceAssetsPanel } from "./FinanceAssetsPanel";
 
 type TransactionType = "income" | "expense";
 type FormValues = {
@@ -63,6 +65,9 @@ export function FinancePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [accountName, setAccountName] = useState("");
+  const [accountCurrency, setAccountCurrency] = useState("EUR");
+  const [accountSaving, setAccountSaving] = useState(false);
 
   const apiFilters = useMemo<TransactionFilters>(
     () => ({
@@ -227,8 +232,28 @@ export function FinancePage() {
     }
   }
 
+  async function addAccount(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAccountSaving(true);
+    try {
+      const account = await createFinanceAccount({
+        name: accountName.trim(),
+        type: "checking",
+        currency: accountCurrency,
+        opening_balance: "0",
+      });
+      setAccounts((current) => [...current, account]);
+      setAccountName("");
+    } finally {
+      setAccountSaving(false);
+    }
+  }
+
   return (
-    <section aria-labelledby="page-title" className="mx-auto w-full max-w-6xl">
+    <section
+      aria-labelledby="page-title"
+      className="mx-auto w-full max-w-[1400px] pr-1 lg:pr-8 2xl:pr-14"
+    >
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
@@ -294,8 +319,53 @@ export function FinancePage() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-5 xl:grid-cols-[minmax(0,1.4fr)_minmax(18rem,0.8fr)]">
-        <div className="grid gap-4 sm:grid-cols-3">
+      {accounts.length === 0 && (
+        <form
+          className="mt-8 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 dark:border-emerald-400/20 dark:bg-emerald-950/20 sm:p-7"
+          onSubmit={addAccount}
+        >
+          <h2 className="text-lg font-semibold">
+            Set up your first finance account
+          </h2>
+          <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">
+            An account provides the currency needed for budgets and
+            transactions.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_8rem_auto]">
+            <input
+              aria-label="Account name"
+              className={fieldClass}
+              onChange={(event) => setAccountName(event.currentTarget.value)}
+              placeholder="e.g. Main account"
+              required
+              value={accountName}
+            />
+            <select
+              aria-label="Account currency"
+              className={fieldClass}
+              onChange={(event) =>
+                setAccountCurrency(event.currentTarget.value)
+              }
+              value={accountCurrency}
+            >
+              <option>EUR</option>
+              <option>USD</option>
+              <option>CHF</option>
+              <option>GBP</option>
+            </select>
+            <button
+              className={primaryButtonClass}
+              disabled={accountSaving}
+              type="submit"
+            >
+              {accountSaving ? "Adding…" : "Add account"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.8fr)]">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {overview?.totals.length ? (
             overview.totals.map((total) => (
               <div
@@ -327,7 +397,7 @@ export function FinancePage() {
               </div>
             ))
           ) : (
-            <div className="rounded-3xl border border-dashed border-stone-300 bg-white/70 p-6 text-sm leading-6 text-stone-500 dark:border-white/15 dark:bg-stone-900/60 dark:text-stone-400 sm:col-span-3">
+            <div className="rounded-3xl border border-dashed border-stone-300 bg-white/70 p-6 text-sm leading-6 text-stone-500 dark:border-white/15 dark:bg-stone-900/60 dark:text-stone-400 sm:col-span-2 lg:col-span-3">
               No cashflow recorded for this month yet. Add your first
               transaction below to start your overview.
             </div>
@@ -386,7 +456,12 @@ export function FinancePage() {
         month={month}
         accounts={accounts}
         categories={categories}
+        onCategoryCreated={(category) =>
+          setCategories((current) => [...current, category])
+        }
       />
+
+      <FinanceAssetsPanel />
 
       <div className="mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-4">

@@ -12,5 +12,9 @@ export {
   signOut,
 } from "./auth";
 export type { OwnerProfile, TwoFactorLoginState } from "./auth";
-export { getOwnerSettings, updateOwnerSettings } from "./settings";
+export {
+  downloadOwnerDataExport,
+  getOwnerSettings,
+  updateOwnerSettings,
+} from "./settings";
 export type { OwnerSettings, OwnerSettingsUpdate } from "./settings";

@@ -7,6 +7,13 @@ import {
   useAuth,
 } from "@/modules/Foundation";
 import { FinancePage } from "@/modules/Finance/FinancePage";
+import { DashboardPage } from "@/modules/Dashboard/DashboardPage";
+import { WeeklyReviewPage } from "@/modules/Dashboard/WeeklyReviewPage";
+import { FitnessPage } from "@/modules/Fitness/FitnessPage";
+import { NutritionPage } from "@/modules/Nutrition/NutritionPage";
+import { HealthPage } from "@/modules/Health/HealthPage";
+import { WallDashboardPage } from "@/modules/Dashboard/WallDashboardPage";
+import { PasskeyManagementPage } from "@/modules/Foundation/PasskeyManagementPage";
 
 const modules = [
   {
@@ -71,18 +78,27 @@ function ProtectedRoutes() {
     <AppShell>
       <Routes>
         <Route path="finance" element={<FinancePage />} />
-        {modules.map((module) => (
-          <Route
-            key={module.path}
-            path={module.path}
-            element={
-              <ModulePage
-                title={module.label}
-                description={module.description}
-              />
-            }
-          />
-        ))}
+        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="review" element={<WeeklyReviewPage />} />
+        <Route path="fitness" element={<FitnessPage />} />
+        <Route path="nutrition" element={<NutritionPage />} />
+        <Route path="health" element={<HealthPage />} />
+        {modules
+          .filter(
+            (module) => module.path !== "dashboard" && module.path !== "health",
+          )
+          .map((module) => (
+            <Route
+              key={module.path}
+              path={module.path}
+              element={
+                <ModulePage
+                  title={module.label}
+                  description={module.description}
+                />
+              }
+            />
+          ))}
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
@@ -135,13 +151,35 @@ function AppRoutes() {
 
   return (
     <Routes>
+      <Route path="/passkeys/manage" element={<PasskeyManagementPage />} />
       <Route
         path="/login"
         element={owner ? <Navigate to="/dashboard" replace /> : <LoginPage />}
       />
+      <Route path="/wall" element={<WallDashboardRoute />} />
       <Route path="/*" element={<ProtectedRoutes />} />
     </Routes>
   );
+}
+
+function WallDashboardRoute() {
+  const { isLoading, loadError, owner } = useAuth();
+
+  if (isLoading) {
+    return (
+      <main className="grid min-h-svh place-items-center">Loading LifeOS…</main>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <main className="grid min-h-svh place-items-center">
+        LifeOS is temporarily unavailable.
+      </main>
+    );
+  }
+
+  return owner ? <WallDashboardPage /> : <Navigate to="/login" replace />;
 }
 
 export default function App() {

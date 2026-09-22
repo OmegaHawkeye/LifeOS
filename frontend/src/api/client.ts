@@ -40,7 +40,27 @@ async function fetchWithCsrfToken(request: Request): Promise<Response> {
     headers.set("X-XSRF-TOKEN", csrfToken);
   }
 
-  return fetch(new Request(request, { credentials: "include", headers }));
+  const response = await fetch(
+    new Request(request, { credentials: "include", headers }),
+  );
+
+  if (response.status === 401) {
+    window.dispatchEvent(new Event("lifeos:unauthorized"));
+  }
+
+  return response;
+}
+
+/**
+ * Fetch an API endpoint with the same credentials, CSRF token and auth
+ * handling as the typed OpenAPI client. Use this for endpoints that have not
+ * been added to the generated schema yet.
+ */
+export async function apiFetch(
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+): Promise<Response> {
+  return fetchWithCsrfToken(new Request(input, init));
 }
 
 function readCookie(name: string): string | undefined {

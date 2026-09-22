@@ -4,3 +4,11 @@ node_modules
 playwright-report
 src/api/schema.d.ts
 test-results
+../mobile/ios
+../mobile/android
+../mobile/dist
+pnpm-lock.yaml
+../pnpm-lock.yaml
+../mobile/pnpm-lock.yaml
+../mobile/modules/lifeos-healthkit/pnpm-lock.yaml
+../mobile/src/uniwind-types.d.ts
