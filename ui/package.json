@@ -1,0 +1,33 @@
+{
+  "name": "@lifeos/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "react-native": "./src/SummaryCard.native.tsx",
+      "default": "./src/SummaryCard.web.tsx"
+    },
+    "./icons": {
+      "types": "./src/AppIcon.types.ts",
+      "react-native": "./src/AppIcon.native.tsx",
+      "default": "./src/AppIcon.web.tsx"
+    },
+    "./theme.css": "./theme.css"
+  },
+  "peerDependencies": {
+    "@types/react": ">=19",
+    "react": ">=19",
+    "react-native-svg": ">=15",
+    "react-native": ">=0.86"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    },
+    "react-native-svg": {
+      "optional": true
+    }
+  }
+}

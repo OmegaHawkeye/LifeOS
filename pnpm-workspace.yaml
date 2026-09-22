@@ -1,0 +1,8 @@
+packages:
+  - "."
+  - "frontend"
+  - "mobile"
+  - "mobile/modules/*"
+  - "ui"
+
+sharedWorkspaceLockfile: false

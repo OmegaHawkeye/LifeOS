@@ -2,10 +2,16 @@ import { spawn } from "node:child_process";
 import process from "node:process";
 
 const processes = [
-  spawn("php", ["artisan", "serve"], {
-    cwd: new URL("../backend", import.meta.url),
-    stdio: "inherit",
-  }),
+  spawn(
+    "php",
+    process.env.LIFEOS_DEV_HOST
+      ? ["artisan", "serve", "--host", process.env.LIFEOS_DEV_HOST]
+      : ["artisan", "serve"],
+    {
+      cwd: new URL("../backend", import.meta.url),
+      stdio: "inherit",
+    },
+  ),
   spawn("pnpm", ["dev"], {
     cwd: new URL("../frontend", import.meta.url),
     stdio: "inherit",

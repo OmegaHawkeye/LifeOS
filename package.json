@@ -1,21 +1,22 @@
 {
   "name": "lifeos",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.11.0",
   "packageManager": "pnpm@11.18.0",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
-    "build": "pnpm --dir frontend build",
-    "check": "pnpm format:check && pnpm lint && pnpm contract:check && pnpm test && pnpm build",
+    "build": "pnpm --dir frontend build && pnpm --dir mobile build:ios",
+    "check": "pnpm format:check && pnpm lint && pnpm contract:check && pnpm changelog:check && pnpm test && pnpm build",
+    "changelog:check": "node scripts/changelog.mjs",
     "contract:check": "pnpm --dir frontend contract:check",
     "contract:generate": "pnpm --dir frontend contract:generate",
     "dev": "node scripts/dev.mjs",
     "format": "composer --working-dir=backend pint && pnpm --dir frontend format:repo",
     "format:check": "composer --working-dir=backend pint:test && pnpm --dir frontend format:repo:check",
-    "lint": "composer --working-dir=backend analyse && pnpm --dir frontend lint && node scripts/check-module-boundaries.mjs",
+    "lint": "composer --working-dir=backend analyse && pnpm --dir frontend lint && pnpm --dir mobile typecheck && node scripts/check-module-boundaries.mjs",
     "setup": "node scripts/setup.mjs",
-    "test": "composer --working-dir=backend test && pnpm --dir frontend test && node --test scripts/*.test.mjs && pnpm --dir frontend test:e2e"
+    "test": "composer --working-dir=backend test && pnpm --dir frontend test && pnpm --dir mobile test && node --test scripts/*.test.mjs && pnpm --dir frontend test:e2e"
   }
 }

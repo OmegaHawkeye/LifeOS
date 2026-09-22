@@ -1,0 +1,49 @@
+{
+  "name": "mobile",
+  "version": "0.11.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@lifeos/ui": "workspace:*",
+    "expo": "~57.0.24",
+    "expo-build-properties": "~57.0.21",
+    "expo-crypto": "~57.0.3",
+    "expo-secure-store": "~57.0.4",
+    "expo-status-bar": "~57.0.1",
+    "expo-web-browser": "~57.0.3",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-svg": "15.15.4",
+    "tailwindcss": "^4.3.3",
+    "uniwind": "^1.12.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "29.5.14",
+    "@types/react": "~19.2.2",
+    "jest": "~29.7.0",
+    "jest-expo": "~57.0.5",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "test": "jest --runInBand",
+    "typecheck": "tsc --noEmit",
+    "build:ios": "expo export --platform ios"
+  },
+  "private": true,
+  "jest": {
+    "preset": "jest-expo",
+    "testMatch": [
+      "**/*.test.ts",
+      "**/*.test.tsx"
+    ],
+    "moduleNameMapper": {
+      "^@lifeos/ui$": "<rootDir>/../ui/src/SummaryCard.native.tsx",
+      "\\.css$": "<rootDir>/src/test/styleMock.js"
+    }
+  }
+}
