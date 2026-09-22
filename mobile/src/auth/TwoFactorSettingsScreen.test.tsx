@@ -28,10 +28,10 @@ describe("TwoFactorSettingsScreen", () => {
     expect(service.beginSetup).toHaveBeenCalledWith("current password");
     expect(await screen.findByText("PRIVATESETUPSECRET")).toBeTruthy();
 
-    await fireEvent.changeText(
-      screen.getByLabelText("Authenticator code"),
-      "123456",
-    );
+    const setupCode = screen.getByLabelText("Authenticator code");
+    expect(setupCode.props.textContentType).toBe("oneTimeCode");
+    expect(setupCode.props.autoComplete).toBeUndefined();
+    await fireEvent.changeText(setupCode, "123456");
     await fireEvent.press(
       screen.getByRole("button", { name: "Confirm authenticator" }),
     );
@@ -59,10 +59,10 @@ describe("TwoFactorSettingsScreen", () => {
       screen.getByLabelText("Current password"),
       "current password",
     );
-    await fireEvent.changeText(
-      screen.getByLabelText("Authenticator code"),
-      "123456",
-    );
+    const disableCode = screen.getByLabelText("Authenticator code");
+    expect(disableCode.props.textContentType).toBe("oneTimeCode");
+    expect(disableCode.props.autoComplete).toBeUndefined();
+    await fireEvent.changeText(disableCode, "123456");
     await fireEvent.press(
       screen.getByRole("button", { name: "Disable two-factor authentication" }),
     );

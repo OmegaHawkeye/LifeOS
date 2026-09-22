@@ -239,23 +239,21 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
               placeholderTextColor="#758078"
               value={name}
             />
-            <View className="flex-row gap-3">
-              <TextInput
+            <View className="flex-row flex-wrap gap-3">
+              <MealNutrientField
                 accessibilityLabel="Meal calories"
-                className="min-h-12 min-w-0 flex-1 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
-                keyboardType="decimal-pad"
+                hint="Optional · kcal"
+                label="Calories"
                 onChangeText={setCalories}
-                placeholder="Calories (optional)"
-                placeholderTextColor="#758078"
+                placeholder="e.g. 450"
                 value={calories}
               />
-              <TextInput
+              <MealNutrientField
                 accessibilityLabel="Meal protein"
-                className="min-h-12 min-w-0 flex-1 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
-                keyboardType="decimal-pad"
+                hint="Optional · g"
+                label="Protein"
                 onChangeText={setProtein}
-                placeholder="Protein g (optional)"
-                placeholderTextColor="#758078"
+                placeholder="e.g. 25"
                 value={protein}
               />
             </View>
@@ -286,6 +284,42 @@ const nutrients = [
   { key: "carbohydrate_grams", label: "Carbs", unit: "g" },
   { key: "fat_grams", label: "Fat", unit: "g" },
 ] as const;
+
+function MealNutrientField({
+  accessibilityLabel,
+  hint,
+  label,
+  onChangeText,
+  placeholder,
+  value,
+}: {
+  accessibilityLabel: string;
+  hint: string;
+  label: string;
+  onChangeText: (value: string) => void;
+  placeholder: string;
+  value: string;
+}) {
+  return (
+    <View className="min-w-[140px] flex-1 gap-1.5">
+      <View className="flex-row flex-wrap items-baseline justify-between gap-x-2">
+        <Text className="text-sm font-semibold text-lifeos-primary">
+          {label}
+        </Text>
+        <Text className="text-sm font-medium text-lifeos-muted">{hint}</Text>
+      </View>
+      <TextInput
+        accessibilityLabel={accessibilityLabel}
+        className="min-h-12 min-w-0 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+        keyboardType="decimal-pad"
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="#758078"
+        value={value}
+      />
+    </View>
+  );
+}
 
 function NutritionButton({
   disabled = false,

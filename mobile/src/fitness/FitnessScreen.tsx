@@ -126,26 +126,51 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
         </View>
       ) : (
         <>
-          <View className="flex-row flex-wrap gap-3">
-            <SummaryCard
-              title="This week"
-              detail={`${state.snapshot.dashboard.weekly_workouts.completed} of ${state.snapshot.dashboard.weekly_workouts.planned} planned workouts · ${state.snapshot.dashboard.weekly_workouts.streak_days}-day streak`}
-            />
-            <SummaryCard
-              title="Next workout"
-              detail={
-                state.snapshot.dashboard.next_workout?.name ??
-                "No workout planned yet. Your routines will appear here when scheduled."
-              }
-            />
-            <SummaryCard
-              title="Latest body progress"
-              detail={latestMetricDetail(state.snapshot)}
-            />
-            <SummaryCard
-              title="Recent training"
-              detail={latestSessionDetail(state.snapshot)}
-            />
+          <View
+            className="flex-row flex-wrap gap-3"
+            testID="fitness-summary-cards"
+          >
+            <View
+              className="w-full sm:w-[48%] md:w-[48%] xl:w-[23%]"
+              testID="fitness-summary-card"
+            >
+              <SummaryCard
+                title="This week"
+                detail={weeklyWorkoutDetail(
+                  state.snapshot.dashboard.weekly_workouts,
+                )}
+              />
+            </View>
+            <View
+              className="w-full sm:w-[48%] md:w-[48%] xl:w-[23%]"
+              testID="fitness-summary-card"
+            >
+              <SummaryCard
+                title="Next workout"
+                detail={
+                  state.snapshot.dashboard.next_workout?.name ??
+                  "Nothing scheduled yet."
+                }
+              />
+            </View>
+            <View
+              className="w-full sm:w-[48%] md:w-[48%] xl:w-[23%]"
+              testID="fitness-summary-card"
+            >
+              <SummaryCard
+                title="Latest body progress"
+                detail={latestMetricDetail(state.snapshot)}
+              />
+            </View>
+            <View
+              className="w-full sm:w-[48%] md:w-[48%] xl:w-[23%]"
+              testID="fitness-summary-card"
+            >
+              <SummaryCard
+                title="Recent training"
+                detail={latestSessionDetail(state.snapshot)}
+              />
+            </View>
           </View>
 
           <View className="mt-2 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
@@ -277,15 +302,40 @@ function ActionButton({
 function latestMetricDetail(snapshot: FitnessSnapshot): string {
   const latest = snapshot.metrics[0];
   return latest
-    ? `${metricLabels[latest.metric_type as MetricType] ?? latest.metric_type}: ${latest.value} ${latest.unit} · ${latest.measured_at.slice(0, 10)}`
+    ? `${metricLabels[latest.metric_type as MetricType] ?? latest.metric_type}: ${latest.value} ${latest.unit} · ${metricDateLabel(latest.measured_at)}`
     : "No body metrics yet. Record your first measurement below.";
+}
+
+function weeklyWorkoutDetail(
+  summary: FitnessSnapshot["dashboard"]["weekly_workouts"],
+): string {
+  const { completed, planned, streak_days: streakDays } = summary;
+
+  if (completed === 0 && planned === 0) {
+    return "No workouts completed this week.";
+  }
+
+  if (planned > 0) {
+    return `${completed} of ${planned} workouts completed · ${streakDays}-day streak`;
+  }
+
+  return `${completed} ${completed === 1 ? "workout" : "workouts"} completed this week · ${streakDays}-day streak`;
 }
 
 function latestSessionDetail(snapshot: FitnessSnapshot): string {
   const session = snapshot.sessions.find((item) => item.status === "completed");
   return session
-    ? `${session.name} · ${session.exercises.length} exercises`
+    ? `${session.name} · ${session.exercises.length} ${session.exercises.length === 1 ? "exercise" : "exercises"}`
     : "No completed workouts yet. Your training history will appear here.";
+}
+
+function metricDateLabel(value: string): string {
+  return new Intl.DateTimeFormat(undefined, {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(new Date(value));
 }
 
 function metricUnit(

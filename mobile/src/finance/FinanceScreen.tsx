@@ -151,16 +151,16 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
         </View>
       ) : (
         <>
-          <View className="flex-row items-center justify-between rounded-[18px] border border-lifeos-border bg-lifeos-surface p-3">
-            <ActionButton
-              label="Previous month"
+          <View className="flex-row items-center rounded-[18px] border border-lifeos-border bg-lifeos-surface p-3">
+            <MonthNavigationButton
+              direction="previous"
               onPress={() => setMonth((value) => shiftMonth(value, -1))}
             />
-            <Text className="font-semibold text-lifeos-primary">
+            <Text className="flex-1 text-center font-semibold text-lifeos-primary">
               {formatMonth(month)}
             </Text>
-            <ActionButton
-              label="Next month"
+            <MonthNavigationButton
+              direction="next"
               onPress={() => setMonth((value) => shiftMonth(value, 1))}
             />
           </View>
@@ -400,6 +400,32 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
         </Text>
       ) : null}
     </ScrollView>
+  );
+}
+
+function MonthNavigationButton({
+  direction,
+  onPress,
+}: {
+  direction: "previous" | "next";
+  onPress: () => void;
+}) {
+  const isPrevious = direction === "previous";
+
+  return (
+    <Pressable
+      accessibilityLabel={isPrevious ? "Previous month" : "Next month"}
+      accessibilityRole="button"
+      className="h-11 w-11 items-center justify-center rounded-xl border border-lifeos-border bg-lifeos-background active:opacity-70"
+      onPress={onPress}
+    >
+      <Text
+        className="text-2xl font-medium leading-[28px] text-lifeos-primary"
+        accessible={false}
+      >
+        {isPrevious ? "‹" : "›"}
+      </Text>
+    </Pressable>
   );
 }
 

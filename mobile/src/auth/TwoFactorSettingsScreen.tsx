@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -156,13 +157,16 @@ export function TwoFactorSettingsScreen({
           </Text>
           <TextInput
             accessibilityLabel="Authenticator code"
-            autoComplete="one-time-code"
             className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
             keyboardType="number-pad"
             maxLength={6}
             onChangeText={setCode}
             placeholder="6-digit code"
             placeholderTextColor="#758078"
+            {...Platform.select({
+              ios: { textContentType: "oneTimeCode" },
+              android: { autoComplete: "one-time-code" },
+            })}
             value={code}
           />
           <Action
@@ -191,13 +195,16 @@ export function TwoFactorSettingsScreen({
           />
           <TextInput
             accessibilityLabel="Authenticator code"
-            autoComplete="one-time-code"
             className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
             keyboardType="number-pad"
             maxLength={6}
             onChangeText={setCode}
             placeholder="6-digit code"
             placeholderTextColor="#758078"
+            {...Platform.select({
+              ios: { textContentType: "oneTimeCode" },
+              android: { autoComplete: "one-time-code" },
+            })}
             value={code}
           />
           <Action

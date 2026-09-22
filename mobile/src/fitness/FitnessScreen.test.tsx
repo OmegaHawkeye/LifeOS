@@ -87,14 +87,26 @@ describe("native Fitness screen", () => {
         notes: null,
       }),
     );
-    expect(await screen.findByText(/Upper body · 1 exercises/)).toBeTruthy();
-    expect(screen.getByText(/Weight: 72.4 kg/)).toBeTruthy();
+    expect(await screen.findByText(/Upper body · 1 exercise$/)).toBeTruthy();
+    expect(screen.getByText(/Weight: 72.4 kg ·/)).toBeTruthy();
+    expect(screen.queryByText(/2026-09-21/)).toBeNull();
+    expect(
+      screen.getByTestId("fitness-summary-cards").props.className,
+    ).toContain("flex-row flex-wrap");
+    expect(screen.getAllByTestId("fitness-summary-card")).toHaveLength(4);
+    for (const card of screen.getAllByTestId("fitness-summary-card")) {
+      expect(card.props.className).toContain("w-full sm:w-[48%] md:w-[48%]");
+    }
     expect(service.loadFitnessSnapshot).toHaveBeenCalledTimes(2);
   });
 
   test("provides a useful empty state when no activity exists", async () => {
     await render(<FitnessScreen service={fitnessService()} />);
 
+    expect(
+      await screen.findByText("No workouts completed this week."),
+    ).toBeTruthy();
+    expect(screen.getByText("Nothing scheduled yet.")).toBeTruthy();
     expect(
       await screen.findByText(
         "No body metrics yet. Record your first measurement below.",

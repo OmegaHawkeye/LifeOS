@@ -96,7 +96,10 @@ describe("LifeOS native shell", () => {
       "private password",
       "LifeOS iOS device",
     );
-    expect(await screen.findByLabelText("Authenticator code")).toBeTruthy();
+    const authenticatorCode =
+      await screen.findByLabelText("Authenticator code");
+    expect(authenticatorCode.props.textContentType).toBe("oneTimeCode");
+    expect(authenticatorCode.props.autoComplete).toBeUndefined();
     expect(screen.queryByLabelText("LifeOS password")).toBeNull();
 
     await fireEvent.changeText(

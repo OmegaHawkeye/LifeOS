@@ -134,6 +134,8 @@ describe("FinanceScreen", () => {
 
     expect(screen.getAllByText("••••").length).toBeGreaterThan(1);
     expect(screen.queryByText("€250.00")).toBeNull();
+    expect(screen.getByText("‹")).toBeTruthy();
+    expect(screen.getByText("›")).toBeTruthy();
     await fireEvent.press(
       screen.getByRole("button", { name: "Previous month" }),
     );

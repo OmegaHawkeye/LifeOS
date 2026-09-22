@@ -69,6 +69,11 @@ describe("NutritionScreen", () => {
     await render(<NutritionScreen service={service} />);
     expect(await screen.findByText("— / 2,000 kcal")).toBeTruthy();
     expect(screen.getByText("No meals logged today.")).toBeTruthy();
+    expect(screen.getAllByText("Calories")).toHaveLength(2);
+    expect(screen.getByText("Optional · kcal")).toBeTruthy();
+    expect(screen.getByPlaceholderText("e.g. 450")).toBeTruthy();
+    expect(screen.getByText("Optional · g")).toBeTruthy();
+    expect(screen.getByPlaceholderText("e.g. 25")).toBeTruthy();
 
     await fireEvent.press(screen.getByRole("button", { name: "Snack" }));
     await fireEvent.changeText(screen.getByLabelText("Meal name"), "Apple");

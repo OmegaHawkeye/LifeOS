@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -28,9 +29,11 @@ export function SignInScreen() {
   const [code, setCode] = useState("");
   const [challenge, setChallenge] = useState<MobileLoginChallenge | null>(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [passkeyError, setPasskeyError] = useState<string | null>(null);
 
   async function signInWithPasskey(): Promise<void> {
     setIsSigningIn(true);
+    setPasskeyError(null);
     try {
       const pkce = await createPasskeyPkce();
       const loginUrl = await beginPasskeySignIn(pkce.state, pkce.challenge);
@@ -54,7 +57,9 @@ export function SignInScreen() {
 
       await completePasskeySignIn(state, code, pkce.verifier);
     } catch {
-      // The provider exposes safe errors to the screen.
+      setPasskeyError(
+        "Passkey sign-in could not be completed. Try again or use your password.",
+      );
     } finally {
       setIsSigningIn(false);
     }
@@ -94,161 +99,179 @@ export function SignInScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={styles.page}
     >
-      <View style={styles.card}>
-        <View style={styles.brandRow}>
-          <View style={styles.brandMark}>
-            <Text style={styles.brandGlyph}>L</Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollView}
+        testID="sign-in-scroll"
+      >
+        <View style={styles.card}>
+          <View style={styles.brandRow}>
+            <View style={styles.brandMark}>
+              <Text style={styles.brandGlyph}>L</Text>
+            </View>
+            <Text style={styles.brandName}>LifeOS</Text>
           </View>
-          <Text style={styles.brandName}>LifeOS</Text>
-        </View>
-        <Text style={styles.eyebrow}>Your home, in context</Text>
-        <Text style={styles.title}>Sign in</Text>
-        <Text style={styles.description}>
-          {challenge === null
-            ? "Connect securely to the LifeOS server on your home network."
-            : challenge.status === "setup_required"
-              ? "Your authenticator isn't set up yet. Add LifeOS to your authenticator app with this setup key, then enter its 6-digit code."
-              : "Password verified. Enter the current code from your authenticator app."}
-        </Text>
-
-        {challenge === null ? (
-          <>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              accessibilityLabel="LifeOS email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect={false}
-              keyboardType="email-address"
-              onChangeText={setEmail}
-              placeholder="you@example.com"
-              placeholderTextColor="#8b938f"
-              returnKeyType="next"
-              style={styles.input}
-              textContentType="emailAddress"
-              value={email}
-            />
-
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              accessibilityLabel="LifeOS password"
-              autoComplete="password"
-              onChangeText={setPassword}
-              placeholder="Your password"
-              placeholderTextColor="#8b938f"
-              returnKeyType="done"
-              secureTextEntry
-              style={styles.input}
-              textContentType="password"
-              value={password}
-            />
-          </>
-        ) : (
-          <>
-            {challenge.status === "setup_required" ? (
-              <View style={styles.setupKey}>
-                <Text style={styles.label}>Authenticator setup key</Text>
-                <Text selectable style={styles.secret}>
-                  {challenge.secret}
-                </Text>
-                <Text style={styles.setupHint}>
-                  Keep this key private. It is shown only during setup and is
-                  not saved on this device.
-                </Text>
-              </View>
-            ) : null}
-            <Text style={styles.label}>Authenticator code</Text>
-            <TextInput
-              accessibilityLabel="Authenticator code"
-              autoComplete="one-time-code"
-              keyboardType="number-pad"
-              maxLength={6}
-              onChangeText={setCode}
-              placeholder="6-digit code"
-              placeholderTextColor="#8b938f"
-              returnKeyType="done"
-              style={styles.input}
-              textContentType="oneTimeCode"
-              value={code}
-            />
-            <Pressable
-              accessibilityRole="button"
-              disabled={isSigningIn}
-              onPress={() => void useDifferentAccount()}
-              style={styles.backButton}
-            >
-              <Text style={styles.backButtonText}>Use a different account</Text>
-            </Pressable>
-          </>
-        )}
-
-        {error !== null && (
-          <Text accessibilityRole="alert" style={styles.error}>
-            {error}
+          <Text style={styles.eyebrow}>Your home, in context</Text>
+          <Text style={styles.title}>Sign in</Text>
+          <Text style={styles.description}>
+            {challenge === null
+              ? "Connect securely to the LifeOS server on your home network."
+              : challenge.status === "setup_required"
+                ? "Your authenticator isn't set up yet. Add LifeOS to your authenticator app with this setup key, then enter its 6-digit code."
+                : "Password verified. Enter the current code from your authenticator app."}
           </Text>
-        )}
 
-        <Pressable
-          accessibilityRole="button"
-          disabled={
-            isSigningIn ||
-            (challenge === null && (email.trim() === "" || password === "")) ||
-            (challenge !== null && code.length !== 6)
-          }
-          onPress={() => void submit()}
-          style={({ pressed }) => [
-            styles.submitButton,
-            (pressed || isSigningIn) && styles.submitButtonPressed,
-            ((challenge === null && (email.trim() === "" || password === "")) ||
-              (challenge !== null && code.length !== 6)) &&
-              styles.submitButtonDisabled,
-          ]}
-        >
-          {isSigningIn ? (
-            <ActivityIndicator color="#102c20" />
+          {challenge === null ? (
+            <>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                accessibilityLabel="LifeOS email"
+                autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect={false}
+                keyboardType="email-address"
+                onChangeText={setEmail}
+                placeholder="you@example.com"
+                placeholderTextColor="#8b938f"
+                returnKeyType="next"
+                style={styles.input}
+                textContentType="emailAddress"
+                value={email}
+              />
+
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                accessibilityLabel="LifeOS password"
+                autoComplete="password"
+                onChangeText={setPassword}
+                placeholder="Your password"
+                placeholderTextColor="#8b938f"
+                returnKeyType="done"
+                secureTextEntry
+                style={styles.input}
+                textContentType="password"
+                value={password}
+              />
+            </>
           ) : (
-            <Text style={styles.submitText}>
-              {challenge === null
-                ? "Continue"
-                : challenge.status === "setup_required"
-                  ? "Confirm authenticator"
-                  : "Verify code"}
+            <>
+              {challenge.status === "setup_required" ? (
+                <View style={styles.setupKey}>
+                  <Text style={styles.label}>Authenticator setup key</Text>
+                  <Text selectable style={styles.secret}>
+                    {challenge.secret}
+                  </Text>
+                  <Text style={styles.setupHint}>
+                    Keep this key private. It is shown only during setup and is
+                    not saved on this device.
+                  </Text>
+                </View>
+              ) : null}
+              <Text style={styles.label}>Authenticator code</Text>
+              <TextInput
+                accessibilityLabel="Authenticator code"
+                keyboardType="number-pad"
+                maxLength={6}
+                onChangeText={setCode}
+                placeholder="6-digit code"
+                placeholderTextColor="#8b938f"
+                returnKeyType="done"
+                style={styles.input}
+                {...Platform.select({
+                  ios: { textContentType: "oneTimeCode" },
+                  android: { autoComplete: "one-time-code" },
+                })}
+                value={code}
+              />
+              <Pressable
+                accessibilityRole="button"
+                disabled={isSigningIn}
+                onPress={() => void useDifferentAccount()}
+                style={styles.backButton}
+              >
+                <Text style={styles.backButtonText}>
+                  Use a different account
+                </Text>
+              </Pressable>
+            </>
+          )}
+
+          {(error !== null || passkeyError !== null) && (
+            <Text accessibilityRole="alert" style={styles.error}>
+              {error ?? passkeyError}
             </Text>
           )}
-        </Pressable>
-        {challenge === null ? (
+
           <Pressable
             accessibilityRole="button"
-            disabled={isSigningIn}
-            onPress={() => void signInWithPasskey()}
-            style={styles.passkeyButton}
+            disabled={
+              isSigningIn ||
+              (challenge === null &&
+                (email.trim() === "" || password === "")) ||
+              (challenge !== null && code.length !== 6)
+            }
+            onPress={() => void submit()}
+            style={({ pressed }) => [
+              styles.submitButton,
+              (pressed || isSigningIn) && styles.submitButtonPressed,
+              ((challenge === null &&
+                (email.trim() === "" || password === "")) ||
+                (challenge !== null && code.length !== 6)) &&
+                styles.submitButtonDisabled,
+            ]}
           >
             {isSigningIn ? (
-              <ActivityIndicator color="#17251e" />
+              <ActivityIndicator color="#102c20" />
             ) : (
-              <Text style={styles.passkeyButtonText}>
-                Sign in with a passkey
+              <Text style={styles.submitText}>
+                {challenge === null
+                  ? "Continue"
+                  : challenge.status === "setup_required"
+                    ? "Confirm authenticator"
+                    : "Verify code"}
               </Text>
             )}
           </Pressable>
-        ) : null}
-        <Text style={styles.privacyNote}>
-          Your credentials stay on this device and are sent only to your LifeOS
-          server.
-        </Text>
-      </View>
+          {challenge === null ? (
+            <Pressable
+              accessibilityRole="button"
+              disabled={isSigningIn}
+              onPress={() => void signInWithPasskey()}
+              style={styles.passkeyButton}
+            >
+              {isSigningIn ? (
+                <ActivityIndicator color="#17251e" />
+              ) : (
+                <Text style={styles.passkeyButtonText}>
+                  Sign in with a passkey
+                </Text>
+              )}
+            </Pressable>
+          ) : null}
+          <Text style={styles.privacyNote}>
+            Your credentials stay on this device and are sent only to your
+            LifeOS server.
+          </Text>
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   page: {
-    alignItems: "center",
     backgroundColor: "#f3f6f4",
     flex: 1,
-    justifyContent: "center",
     padding: 24,
   },
+  scrollContent: {
+    alignItems: "center",
+    flexGrow: 1,
+    justifyContent: "center",
+  },
+  scrollView: { flex: 1, width: "100%" },
   card: {
     backgroundColor: "#ffffff",
     borderColor: "#e2e9e4",
@@ -324,7 +347,17 @@ const styles = StyleSheet.create({
     minHeight: 50,
     paddingHorizontal: 14,
   },
-  error: { color: "#a33d36", fontSize: 14, lineHeight: 20, marginTop: 16 },
+  error: {
+    backgroundColor: "#fdf0ef",
+    borderColor: "#f0d3d0",
+    borderRadius: 12,
+    borderWidth: 1,
+    color: "#913b35",
+    fontSize: 14,
+    lineHeight: 20,
+    marginTop: 16,
+    padding: 12,
+  },
   submitButton: {
     alignItems: "center",
     backgroundColor: "#4dc995",
