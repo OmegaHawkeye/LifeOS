@@ -11,10 +11,14 @@ import type {
   LogNutritionMeal,
   MobileNutritionService,
   NutritionDashboard,
+  UpdateNutritionTarget,
 } from "./mobileNutritionService";
 
 type NutritionScreenProps = {
-  service: Pick<MobileNutritionService, "loadDashboard" | "logMeal">;
+  service: Pick<
+    MobileNutritionService,
+    "loadDashboard" | "logMeal" | "updateTarget"
+  >;
 };
 
 type ScreenState =
@@ -31,13 +35,24 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
   const [name, setName] = useState("");
   const [calories, setCalories] = useState("");
   const [protein, setProtein] = useState("");
+  const [targetDraft, setTargetDraft] = useState<
+    NutritionDashboard["target"]
+  >({
+    calories: null,
+    protein_grams: null,
+    carbohydrate_grams: null,
+    fat_grams: null,
+  });
   const [saving, setSaving] = useState(false);
+  const [savingTarget, setSavingTarget] = useState(false);
   const [formError, setFormError] = useState(false);
 
   const reload = useCallback(async () => {
     setState({ status: "loading" });
     try {
-      setState({ status: "ready", dashboard: await service.loadDashboard() });
+      const dashboard = await service.loadDashboard();
+      setTargetDraft(dashboard.target);
+      setState({ status: "ready", dashboard });
     } catch {
       setState({ status: "error" });
     }
@@ -81,6 +96,34 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
       setFormError(true);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function saveTarget() {
+    const parsedTarget = {
+      calories: optionalNonNegativeNumber(targetDraft.calories ?? ""),
+      protein_grams: optionalNonNegativeNumber(
+        targetDraft.protein_grams ?? "",
+      ),
+      carbohydrate_grams: optionalNonNegativeNumber(
+        targetDraft.carbohydrate_grams ?? "",
+      ),
+      fat_grams: optionalNonNegativeNumber(targetDraft.fat_grams ?? ""),
+    };
+    if (Object.values(parsedTarget).some((value) => value === false)) {
+      setFormError(true);
+      return;
+    }
+
+    setSavingTarget(true);
+    setFormError(false);
+    try {
+      await service.updateTarget(parsedTarget as UpdateNutritionTarget);
+      await reload();
+    } catch {
+      setFormError(true);
+    } finally {
+      setSavingTarget(false);
     }
   }
 
@@ -151,6 +194,38 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
                 </View>
               ))}
             </View>
+          </View>
+
+          <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
+            <Text className="text-lg font-bold text-lifeos-primary">
+              Daily nutrition target
+            </Text>
+            <Text className="text-sm leading-[21px] text-lifeos-muted">
+              Set the targets used on this device and the web dashboard.
+            </Text>
+            <View className="flex-row flex-wrap gap-3">
+              {targetFields.map(({ key, label, unit, placeholder }) => (
+                <MealNutrientField
+                  key={key}
+                  accessibilityLabel={`Daily ${label.toLowerCase()} target`}
+                  hint={unit}
+                  label={label}
+                  onChangeText={(value) =>
+                    setTargetDraft((current) => ({
+                      ...current,
+                      [key]: value.trim() === "" ? null : value,
+                    }))
+                  }
+                  placeholder={placeholder}
+                  value={targetDraft[key] ?? ""}
+                />
+              ))}
+            </View>
+            <NutritionButton
+              disabled={savingTarget}
+              label={savingTarget ? "Saving…" : "Save daily target"}
+              onPress={() => void saveTarget()}
+            />
           </View>
 
           <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
@@ -283,6 +358,13 @@ const nutrients = [
   { key: "protein_grams", label: "Protein", unit: "g" },
   { key: "carbohydrate_grams", label: "Carbs", unit: "g" },
   { key: "fat_grams", label: "Fat", unit: "g" },
+] as const;
+
+const targetFields = [
+  { key: "calories", label: "Calories", unit: "kcal", placeholder: "2000" },
+  { key: "protein_grams", label: "Protein", unit: "g", placeholder: "120" },
+  { key: "carbohydrate_grams", label: "Carbs", unit: "g", placeholder: "240" },
+  { key: "fat_grams", label: "Fat", unit: "g", placeholder: "65" },
 ] as const;
 
 function MealNutrientField({

@@ -37,4 +37,23 @@ describe("MobileNutritionService", () => {
       body: JSON.stringify(meal),
     });
   });
+
+  test("patches the persisted daily nutrition target", async () => {
+    const request = jest.fn().mockResolvedValue({ data: {} });
+    const service = new MobileNutritionService({ api: { request } as never });
+    const target = {
+      calories: 2100,
+      protein_grams: 130,
+      carbohydrate_grams: 240,
+      fat_grams: 65,
+    };
+
+    await service.updateTarget(target);
+
+    expect(request).toHaveBeenCalledWith("/nutrition/target", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(target),
+    });
+  });
 });

@@ -38,8 +38,12 @@ const dashboard: NutritionDashboard = {
 describe("NutritionScreen", () => {
   test("shows persisted targets and meals and can log a meal", async () => {
     let snapshot = dashboard;
-    const service: Pick<MobileNutritionService, "loadDashboard" | "logMeal"> = {
+    const service: Pick<
+      MobileNutritionService,
+      "loadDashboard" | "logMeal" | "updateTarget"
+    > = {
       loadDashboard: jest.fn(async () => snapshot),
+      updateTarget: jest.fn(),
       logMeal: jest.fn(async (meal) => {
         snapshot = {
           ...dashboard,
@@ -69,7 +73,7 @@ describe("NutritionScreen", () => {
     await render(<NutritionScreen service={service} />);
     expect(await screen.findByText("— / 2,000 kcal")).toBeTruthy();
     expect(screen.getByText("No meals logged today.")).toBeTruthy();
-    expect(screen.getAllByText("Calories")).toHaveLength(2);
+    expect(screen.getAllByText("Calories")).toHaveLength(3);
     expect(screen.getByText("Optional · kcal")).toBeTruthy();
     expect(screen.getByPlaceholderText("e.g. 450")).toBeTruthy();
     expect(screen.getByText("Optional · g")).toBeTruthy();
@@ -93,13 +97,48 @@ describe("NutritionScreen", () => {
     expect(await screen.findByText("Apple")).toBeTruthy();
   });
 
+  test("edits and persists the daily nutrition target", async () => {
+    const service: Pick<
+      MobileNutritionService,
+      "loadDashboard" | "logMeal" | "updateTarget"
+    > = {
+      loadDashboard: jest.fn().mockResolvedValue(dashboard),
+      logMeal: jest.fn(),
+      updateTarget: jest.fn().mockResolvedValue(undefined),
+    };
+
+    await render(<NutritionScreen service={service} />);
+    await fireEvent.changeText(
+      await screen.findByLabelText("Daily calories target"),
+      "2100",
+    );
+    await fireEvent.changeText(
+      screen.getByLabelText("Daily protein target"),
+      "130",
+    );
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Save daily target" }),
+    );
+
+    expect(service.updateTarget).toHaveBeenCalledWith({
+      calories: 2100,
+      protein_grams: 130,
+      carbohydrate_grams: 240,
+      fat_grams: 65,
+    });
+  });
+
   test("shows an error and retries when the server cannot load nutrition data", async () => {
-    const service: Pick<MobileNutritionService, "loadDashboard" | "logMeal"> = {
+    const service: Pick<
+      MobileNutritionService,
+      "loadDashboard" | "logMeal" | "updateTarget"
+    > = {
       loadDashboard: jest
         .fn()
         .mockRejectedValueOnce(new Error("offline"))
         .mockResolvedValue(dashboard),
       logMeal: jest.fn(),
+      updateTarget: jest.fn(),
     };
     await render(<NutritionScreen service={service} />);
 

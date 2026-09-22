@@ -52,6 +52,14 @@ export type LogNutritionMeal = {
   fat_grams: number | null;
 };
 
+export type UpdateNutritionTarget = {
+  calories: number | null;
+  protein_grams: number | null;
+  carbohydrate_grams: number | null;
+  fat_grams: number | null;
+  notes?: string | null;
+};
+
 type MobileNutritionServiceOptions = {
   api: Pick<MobileAuthService, "request">;
   now?: () => Date;
@@ -79,6 +87,14 @@ export class MobileNutritionService {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(meal),
+    });
+  }
+
+  async updateTarget(target: UpdateNutritionTarget): Promise<void> {
+    await this.api.request<ApiEnvelope<unknown>>("/nutrition/target", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(target),
     });
   }
 }
