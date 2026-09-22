@@ -29,6 +29,7 @@ function fitnessService(
   return {
     loadFitnessSnapshot: jest.fn().mockResolvedValue(emptySnapshot),
     recordMetric: jest.fn().mockResolvedValue(undefined),
+    createGoal: jest.fn().mockResolvedValue(undefined),
     ...overrides,
   } as unknown as MobileFitnessService;
 }
@@ -134,5 +135,25 @@ describe("native Fitness screen", () => {
 
     expect(await screen.findByText("Record a body metric")).toBeTruthy();
     expect(service.loadFitnessSnapshot).toHaveBeenCalledTimes(2);
+  });
+
+  test("creates a goal for the selected metric", async () => {
+    const service = fitnessService();
+    await render(<FitnessScreen service={service} />);
+    await fireEvent.changeText(screen.getByLabelText("Goal target"), "70");
+    await fireEvent.changeText(
+      screen.getByLabelText("Goal target date"),
+      "2026-12-31",
+    );
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Save fitness goal" }),
+    );
+
+    expect(service.createGoal).toHaveBeenCalledWith({
+      metric_type: "weight",
+      target_value: 70,
+      unit: "kg",
+      target_date: "2026-12-31",
+    });
   });
 });

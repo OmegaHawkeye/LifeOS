@@ -56,6 +56,28 @@ describe("MobileFitnessService", () => {
     });
   });
 
+  test("creates a fitness goal with the authenticated JSON API", async () => {
+    const request = jest.fn().mockResolvedValue({ data: { id: 14 } });
+
+    await serviceWithRequest(request).createGoal({
+      metric_type: "weight",
+      target_value: 70,
+      unit: "kg",
+      target_date: "2026-12-31",
+    });
+
+    expect(request).toHaveBeenCalledWith("/fitness/goals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        metric_type: "weight",
+        target_value: 70,
+        unit: "kg",
+        target_date: "2026-12-31",
+      }),
+    });
+  });
+
   test("does not swallow expired-session errors from settings", async () => {
     const request = jest
       .fn()

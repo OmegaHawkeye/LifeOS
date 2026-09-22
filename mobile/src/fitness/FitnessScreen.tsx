@@ -14,7 +14,10 @@ import type { MobileFitnessService } from "./mobileFitnessService";
 
 type MetricType = "weight" | "body_fat" | "waist" | "chest";
 type FitnessScreenProps = {
-  service: Pick<MobileFitnessService, "loadFitnessSnapshot" | "recordMetric">;
+  service: Pick<
+    MobileFitnessService,
+    "loadFitnessSnapshot" | "recordMetric" | "createGoal"
+  >;
 };
 
 type ScreenState =
@@ -35,7 +38,10 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
   const [value, setValue] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState("");
+  const [goalTarget, setGoalTarget] = useState("");
+  const [goalDate, setGoalDate] = useState("");
   const [saving, setSaving] = useState(false);
+  const [savingGoal, setSavingGoal] = useState(false);
   const [saveError, setSaveError] = useState(false);
 
   const reload = useCallback(async () => {
@@ -89,6 +95,32 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
       setSaveError(true);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const saveGoal = async () => {
+    const parsedTarget = Number(goalTarget.trim().replace(",", "."));
+    if (!Number.isFinite(parsedTarget) || parsedTarget <= 0 || (goalDate && !isCalendarDate(goalDate))) {
+      setSaveError(true);
+      return;
+    }
+
+    setSavingGoal(true);
+    setSaveError(false);
+    try {
+      await service.createGoal({
+        metric_type: metricType,
+        target_value: parsedTarget,
+        unit,
+        target_date: goalDate || null,
+      });
+      setGoalTarget("");
+      setGoalDate("");
+      await reload();
+    } catch {
+      setSaveError(true);
+    } finally {
+      setSavingGoal(false);
     }
   };
 
@@ -252,6 +284,41 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
                 disabled={saving || state.status !== "ready"}
                 label={saving ? "Saving…" : "Save measurement"}
                 onPress={() => void saveMetric()}
+              />
+            </View>
+          </View>
+
+          <View className="rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
+            <Text className="text-xl font-bold text-lifeos-primary">
+              Set a fitness goal
+            </Text>
+            <Text className="mt-2 text-sm leading-[21px] text-lifeos-muted">
+              Track a target alongside your body measurements.
+            </Text>
+            <View className="mt-5 gap-4">
+              <Field label={`Target (${unit})`}>
+                <TextInput
+                  accessibilityLabel="Goal target"
+                  className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-base text-lifeos-primary"
+                  keyboardType="decimal-pad"
+                  onChangeText={setGoalTarget}
+                  placeholder="Target value"
+                  value={goalTarget}
+                />
+              </Field>
+              <Field label="Target date">
+                <TextInput
+                  accessibilityLabel="Goal target date"
+                  className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-base text-lifeos-primary"
+                  onChangeText={setGoalDate}
+                  placeholder="YYYY-MM-DD (optional)"
+                  value={goalDate}
+                />
+              </Field>
+              <ActionButton
+                disabled={savingGoal || goalTarget.trim().length === 0}
+                label={savingGoal ? "Saving…" : "Save fitness goal"}
+                onPress={() => void saveGoal()}
               />
             </View>
           </View>

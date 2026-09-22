@@ -77,6 +77,13 @@ export type CreateFitnessMetric = {
   notes: string | null;
 };
 
+export type CreateFitnessGoal = {
+  metric_type: string;
+  target_value: number;
+  unit: string;
+  target_date: string | null;
+};
+
 type MobileFitnessServiceOptions = {
   api: Pick<MobileAuthService, "request">;
 };
@@ -124,6 +131,14 @@ export class MobileFitnessService {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(metric),
+    });
+  }
+
+  async createGoal(goal: CreateFitnessGoal): Promise<void> {
+    await this.api.request("/fitness/goals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(goal),
     });
   }
 }
