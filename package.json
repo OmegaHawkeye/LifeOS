@@ -2,6 +2,26 @@
   "name": "lifeos",
   "private": true,
   "version": "0.11.0",
+  "description": "Free, open-source personal dashboard for self-hosted home servers, computers, and wall tablets.",
+  "homepage": "https://github.com/OmegaHawkeye/LifeOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OmegaHawkeye/LifeOS.git"
+  },
+  "githubUrl": "https://github.com/OmegaHawkeye/LifeOS",
+  "bugs": {
+    "url": "https://github.com/OmegaHawkeye/LifeOS/issues"
+  },
+  "keywords": [
+    "lifeos",
+    "self-hosted",
+    "home-server",
+    "personal-dashboard",
+    "privacy",
+    "healthkit",
+    "laravel",
+    "react"
+  ],
   "packageManager": "pnpm@11.18.0",
   "engines": {
     "node": ">=24"
