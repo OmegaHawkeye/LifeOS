@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Modules\Foundation\Application\Authentication\Totp;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthFlowTest extends TestCase
@@ -101,5 +102,19 @@ class AuthFlowTest extends TestCase
             'email' => 'owner@example.test',
             'password' => 'wrong password',
         ])->assertTooManyRequests();
+    }
+
+    public function test_owner_can_change_password_with_current_password(): void
+    {
+        $owner = User::factory()->create(['password' => 'correct horse battery staple']);
+        $this->actingAs($owner);
+
+        $this->putJson('/api/v1/auth/password', [
+            'current_password' => 'correct horse battery staple',
+            'password' => 'a considerably safer password',
+            'password_confirmation' => 'a considerably safer password',
+        ])->assertNoContent();
+
+        $this->assertTrue(Hash::check('a considerably safer password', $owner->refresh()->password));
     }
 }

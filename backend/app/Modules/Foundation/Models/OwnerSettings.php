@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['timezone', 'currency', 'measurement_system', 'theme', 'mask_sensitive_data_by_default'])]
+#[Fillable(['timezone', 'currency', 'measurement_system', 'theme', 'mask_sensitive_data_by_default', 'notifications_enabled'])]
 #[Hidden(['user_id'])]
 class OwnerSettings extends Model
 {
@@ -23,6 +23,7 @@ class OwnerSettings extends Model
             'measurement_system' => 'metric',
             'theme' => 'system',
             'mask_sensitive_data_by_default' => true,
+            'notifications_enabled' => false,
         ];
     }
 
@@ -41,6 +42,7 @@ class OwnerSettings extends Model
     {
         return [
             'mask_sensitive_data_by_default' => 'boolean',
+            'notifications_enabled' => 'boolean',
         ];
     }
 }

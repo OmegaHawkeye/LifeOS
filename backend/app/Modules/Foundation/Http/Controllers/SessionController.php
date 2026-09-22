@@ -4,6 +4,7 @@ namespace App\Modules\Foundation\Http\Controllers;
 
 use App\Models\User;
 use App\Modules\Foundation\Application\Authentication\OwnerSecondFactor;
+use App\Modules\Foundation\Http\Requests\ChangePasswordRequest;
 use App\Modules\Foundation\Http\Requests\LoginRequest;
 use App\Modules\Foundation\Http\Requests\VerifyTwoFactorRequest;
 use App\Modules\Foundation\Http\Resources\OwnerProfileResource;
@@ -72,6 +73,15 @@ class SessionController
         Auth::forgetGuards();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        return response()->noContent();
+    }
+
+    public function changePassword(ChangePasswordRequest $request): Response
+    {
+        /** @var User $owner */
+        $owner = $request->user();
+        $owner->update(['password' => $request->string('password')->toString()]);
 
         return response()->noContent();
     }

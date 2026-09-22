@@ -7,6 +7,7 @@ use App\Modules\Health\Models\HealthSource;
 use App\Modules\Health\Models\HealthSyncRun;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ManageHealthData
 {
@@ -15,6 +16,10 @@ class ManageHealthData
     {
         $source = HealthSource::query()->where('owner_id', $ownerId)->where('key', $attributes['key'])->first();
         if ($source) {
+            if ($source->revoked_at !== null && ($attributes['kind'] ?? null) === 'healthkit') {
+                $source->update(['revoked_at' => null]);
+            }
+
             return $source;
         } $source = new HealthSource($attributes);
         $source->owner_id = $ownerId;
@@ -76,8 +81,47 @@ class ManageHealthData
         return ['sample' => $sample->refresh(), 'idempotent' => false];
     }
 
+    public function deleteImportedSample(int|string $ownerId, int $sourceId, string $externalId): void
+    {
+        $source = $this->ownedHealthKitSource($ownerId, $sourceId);
+        $sample = HealthSample::query()
+            ->where('owner_id', $ownerId)
+            ->where('source_id', $source->id)
+            ->where('external_id', $externalId)
+            ->where('is_manual', false)
+            ->first();
+
+        if ($sample !== null) {
+            $sample->delete();
+        }
+    }
+
+    public function disconnectHealthKit(int|string $ownerId, int $sourceId): void
+    {
+        DB::transaction(function () use ($ownerId, $sourceId): void {
+            $source = $this->ownedHealthKitSource($ownerId, $sourceId);
+            HealthSample::query()
+                ->where('owner_id', $ownerId)
+                ->where('source_id', $source->id)
+                ->where('is_manual', false)
+                ->delete();
+            $source->update(['revoked_at' => now()]);
+        });
+    }
+
     private function ownedSource(int|string $ownerId, int $id): HealthSource
     {
-        return HealthSource::query()->where('owner_id', $ownerId)->findOrFail($id);
+        return HealthSource::query()
+            ->where('owner_id', $ownerId)
+            ->whereNull('revoked_at')
+            ->findOrFail($id);
+    }
+
+    private function ownedHealthKitSource(int|string $ownerId, int $id): HealthSource
+    {
+        return HealthSource::query()
+            ->where('owner_id', $ownerId)
+            ->where('kind', 'healthkit')
+            ->findOrFail($id);
     }
 }

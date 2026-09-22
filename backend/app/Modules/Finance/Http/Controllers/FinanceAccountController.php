@@ -4,6 +4,7 @@ namespace App\Modules\Finance\Http\Controllers;
 
 use App\Modules\Finance\Application\ManageFinanceAccounts;
 use App\Modules\Finance\Http\Requests\StoreFinanceAccountRequest;
+use App\Modules\Finance\Http\Requests\UpdateFinanceAccountRequest;
 use App\Modules\Finance\Http\Resources\FinanceAccountResource;
 use App\Modules\Foundation\Application\Settings\ManageOwnerSettings;
 use Illuminate\Http\JsonResponse;
@@ -36,5 +37,14 @@ class FinanceAccountController
         return (new FinanceAccountResource($account))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
+    }
+
+    public function update(UpdateFinanceAccountRequest $request, int $account): FinanceAccountResource
+    {
+        return new FinanceAccountResource($this->accounts->update(
+            $request->user()->getAuthIdentifier(),
+            $account,
+            $request->validated(),
+        ));
     }
 }

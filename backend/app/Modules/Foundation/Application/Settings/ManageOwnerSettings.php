@@ -14,6 +14,13 @@ class ManageOwnerSettings
             ->value('currency') ?? 'EUR';
     }
 
+    public function timezoneForOwnerId(int|string $ownerId): string
+    {
+        return OwnerSettings::query()
+            ->where('user_id', $ownerId)
+            ->value('timezone') ?? config('app.timezone');
+    }
+
     public function forOwner(User $owner): OwnerSettings
     {
         return $owner->settings()->first() ?? new OwnerSettings(OwnerSettings::defaults());

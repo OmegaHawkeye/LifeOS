@@ -25,6 +25,7 @@ class SettingsTest extends TestCase
                     'measurement_system' => 'metric',
                     'theme' => 'system',
                     'mask_sensitive_data_by_default' => true,
+                    'notifications_enabled' => false,
                 ],
             ]);
 
@@ -34,6 +35,7 @@ class SettingsTest extends TestCase
             'measurement_system' => 'imperial',
             'theme' => 'dark',
             'mask_sensitive_data_by_default' => false,
+            'notifications_enabled' => true,
         ])->assertOk();
 
         $this->getJson('/api/v1/settings')
@@ -42,7 +44,8 @@ class SettingsTest extends TestCase
             ->assertJsonPath('data.currency', 'CHF')
             ->assertJsonPath('data.measurement_system', 'imperial')
             ->assertJsonPath('data.theme', 'dark')
-            ->assertJsonPath('data.mask_sensitive_data_by_default', false);
+            ->assertJsonPath('data.mask_sensitive_data_by_default', false)
+            ->assertJsonPath('data.notifications_enabled', true);
     }
 
     public function test_owner_settings_reject_invalid_values_without_overwriting_saved_values(): void

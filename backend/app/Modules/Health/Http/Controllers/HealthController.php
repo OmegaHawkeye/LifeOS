@@ -2,11 +2,13 @@
 
 namespace App\Modules\Health\Http\Controllers;
 
+use App\Modules\Health\Application\GetHealthTrendsSummary;
 use App\Modules\Health\Application\ImportAppleHealthXml;
 use App\Modules\Health\Application\ManageHealthData;
 use App\Modules\Health\Http\Resources\HealthSampleResource;
 use App\Modules\Health\Http\Resources\HealthSourceResource;
 use App\Modules\Health\Http\Resources\HealthSyncRunResource;
+use App\Modules\Health\Http\Resources\HealthTrendsSummaryResource;
 use App\Modules\Health\Models\HealthSource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,6 +40,13 @@ class HealthController
         return (new HealthSourceResource($source))->response()->setStatusCode(201);
     }
 
+    public function deleteSource(Request $request, int $source): Response
+    {
+        $this->health->disconnectHealthKit($request->user()->getAuthIdentifier(), $source);
+
+        return response()->noContent();
+    }
+
     public function startRun(Request $request): Response
     {
         $data = $request->validate(['source_id' => 'required|integer|min:1']);
@@ -57,6 +66,15 @@ class HealthController
         return HealthSampleResource::collection($this->health->samples($request->user()->getAuthIdentifier(), $request->query('sample_type')))->response();
     }
 
+    public function trends(Request $request, GetHealthTrendsSummary $summary): Response
+    {
+        $data = $request->validate(['range' => 'sometimes|in:7d,30d,90d,ytd']);
+
+        return (new HealthTrendsSummaryResource(
+            $summary->forOwner($request->user()->getAuthIdentifier(), $data['range'] ?? '30d'),
+        ))->response();
+    }
+
     public function storeSample(Request $request): Response
     {
         $data = $request->validate(['source_id' => 'required|integer|min:1', 'sync_run_id' => 'sometimes|nullable|integer|min:1', 'external_id' => 'required_unless:is_manual,true|nullable|string|max:255', 'sample_type' => 'required|in:steps,sleep,heart_rate,workouts,calories,weight', 'value' => 'required|numeric', 'unit' => 'required|string|max:32', 'recorded_at' => 'required|date', 'ended_at' => 'sometimes|nullable|date', 'confidence' => 'sometimes|nullable|numeric|between:0,1', 'metadata' => 'sometimes|array', 'is_manual' => 'sometimes|boolean']);
@@ -67,5 +85,16 @@ class HealthController
         }
 
         return $response->setStatusCode($result['idempotent'] ? 200 : 201);
+    }
+
+    public function deleteSample(Request $request, int $source, string $externalId): Response
+    {
+        $this->health->deleteImportedSample(
+            $request->user()->getAuthIdentifier(),
+            $source,
+            $externalId,
+        );
+
+        return response()->noContent();
     }
 }

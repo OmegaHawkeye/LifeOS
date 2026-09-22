@@ -23,5 +23,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call(FinanceSeeder::class);
         $this->call(FinancePlanningSeeder::class);
+        $this->call(FitnessSeeder::class);
+        $this->call(NutritionSeeder::class);
+        $this->call(RoutinesSeeder::class);
     }
 }

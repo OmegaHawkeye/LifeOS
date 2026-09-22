@@ -25,6 +25,7 @@ class UpdateOwnerSettingsRequest extends FormRequest
             'measurement_system' => ['sometimes', 'required', Rule::in(['metric', 'imperial'])],
             'theme' => ['sometimes', 'required', Rule::in(['system', 'light', 'dark'])],
             'mask_sensitive_data_by_default' => ['sometimes', 'required', 'boolean'],
+            'notifications_enabled' => ['sometimes', 'required', 'boolean'],
         ];
     }
 
@@ -40,6 +41,7 @@ class UpdateOwnerSettingsRequest extends FormRequest
                 'measurement_system',
                 'theme',
                 'mask_sensitive_data_by_default',
+                'notifications_enabled',
             ];
             $inputKeys = array_keys($this->all());
 

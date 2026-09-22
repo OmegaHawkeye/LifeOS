@@ -4,6 +4,40 @@
  */
 
 export interface paths {
+    "/account": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Permanently delete the authenticated owner's account and data */
+        delete: operations["deleteOwnerAccount"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/account/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download the authenticated owner's portable LifeOS data archive */
+        get: operations["downloadOwnerDataExport"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/login": {
         parameters: {
             query?: never;
@@ -32,6 +66,23 @@ export interface paths {
         put?: never;
         /** Revoke the current owner session */
         post: operations["logoutOwner"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Change the authenticated owner's password */
+        put: operations["changeOwnerPassword"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -72,6 +123,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/backup/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return safe local backup status for the authenticated owner */
+        get: operations["getBackupStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dashboard/weekly-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Summarize the previous full week across life domains */
+        get: operations["getWeeklyReview"];
+        /** Save review notes and next week's focus */
+        put: operations["saveWeeklyReview"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/finance/accounts": {
         parameters: {
             query?: never;
@@ -84,6 +170,76 @@ export interface paths {
         put?: never;
         /** Create a finance account */
         post: operations["createFinanceAccount"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finance/accounts/{account}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change whether an account contributes to net worth */
+        patch: operations["updateFinanceAccount"];
+        trace?: never;
+    };
+    "/finance/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List active owner assets with current manual values */
+        get: operations["listFinanceAssets"];
+        put?: never;
+        /** Create an asset and optionally record its first valuation */
+        post: operations["createFinanceAsset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/finance/assets/{asset}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Include or archive an asset */
+        patch: operations["updateFinanceAsset"];
+        trace?: never;
+    };
+    "/finance/assets/{asset}/valuations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List an asset's valuation history */
+        get: operations["listFinanceAssetValuations"];
+        put?: never;
+        /** Record a manual asset valuation */
+        post: operations["createFinanceAssetValuation"];
         delete?: never;
         options?: never;
         head?: never;
@@ -161,6 +317,23 @@ export interface paths {
         head?: never;
         /** Rename or recolor a category without changing its transaction references */
         patch: operations["updateFinanceCategory"];
+        trace?: never;
+    };
+    "/finance/net-worth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Summarize selected accounts and asset values without double-counting linked accounts */
+        get: operations["getFinanceNetWorth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/finance/overview": {
@@ -311,6 +484,268 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/fitness/body-metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List body metrics for the authenticated owner */
+        get: operations["listFitnessBodyMetrics"];
+        put?: never;
+        /** Record a body metric */
+        post: operations["createFitnessBodyMetric"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the authenticated owner's fitness summary */
+        get: operations["getFitnessDashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/exercises": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the owner's exercise library */
+        get: operations["listFitnessExercises"];
+        put?: never;
+        /** Add an exercise to the owner's library */
+        post: operations["createFitnessExercise"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/exercises/{exercise}/recent-performance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return the latest completed performance for one exercise */
+        get: operations["getFitnessRecentPerformance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/goals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the authenticated owner's fitness goals */
+        get: operations["listFitnessGoals"];
+        put?: never;
+        /** Create a fitness goal */
+        post: operations["createFitnessGoal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/goals/{goal}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update an owned fitness goal */
+        patch: operations["updateFitnessGoal"];
+        trace?: never;
+    };
+    "/fitness/progress-photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List private progress photos for the authenticated owner */
+        get: operations["listFitnessProgressPhotos"];
+        put?: never;
+        /** Upload a private progress photo */
+        post: operations["createFitnessProgressPhoto"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/progress-photos/{photo}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Permanently delete one of the authenticated owner's private photos */
+        delete: operations["deleteFitnessProgressPhoto"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/progress-photos/{photo}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream one private image after checking the authenticated owner */
+        get: operations["getFitnessProgressPhotoContent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/progress-photos/monthly-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the authenticated owner's monthly progress review prompt */
+        get: operations["getFitnessMonthlyProgressReview"];
+        /** Save the authenticated owner's monthly progress reflection */
+        put: operations["saveFitnessMonthlyProgressReview"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/workout-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List recent workout sessions and the active session */
+        get: operations["listFitnessWorkoutSessions"];
+        put?: never;
+        /** Start a template-based or ad-hoc workout */
+        post: operations["startFitnessWorkoutSession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/workout-sessions/{session}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete a workout after at least one set has been logged */
+        post: operations["completeFitnessWorkoutSession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/workout-sessions/{session}/exercises": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add an exercise to an active workout */
+        post: operations["addFitnessWorkoutSessionExercise"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/workout-sessions/{session}/exercises/{exercise}/sets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Log one set for an exercise in an active workout */
+        post: operations["logFitnessWorkoutSet"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fitness/workout-templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List reusable workout templates */
+        get: operations["listFitnessWorkoutTemplates"];
+        put?: never;
+        /** Create a reusable workout template */
+        post: operations["createFitnessWorkoutTemplate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health/imports": {
         parameters: {
             query?: never;
@@ -364,6 +799,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/health/sources/{source}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Disconnect a HealthKit source and delete its imported LifeOS records */
+        delete: operations["disconnectHealthKitSource"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/health/sources/{source}/samples/{externalId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete one imported sample after HealthKit reports it was removed */
+        delete: operations["deleteImportedHealthSample"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health/sync-runs": {
         parameters: {
             query?: never;
@@ -398,6 +867,23 @@ export interface paths {
         patch: operations["finishHealthSyncRun"];
         trace?: never;
     };
+    "/health/trends": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the authenticated owner's health trends for a period */
+        get: operations["getHealthTrends"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/me": {
         parameters: {
             query?: never;
@@ -415,6 +901,385 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/mobile/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Verify a mobile device's password before asking for an authenticator code */
+        post: operations["loginMobileOwner"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mobile/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rotate a one-time mobile refresh token */
+        post: operations["refreshMobileCredentials"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mobile/auth/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke a mobile device and its refresh-token family */
+        post: operations["revokeMobileDevice"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mobile/auth/two-factor/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel a pending mobile authenticator challenge */
+        post: operations["cancelMobileTwoFactorChallenge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mobile/auth/two-factor/challenge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete a mobile sign-in with its authenticator code */
+        post: operations["completeMobileTwoFactorChallenge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mobile/passkeys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start a short-lived browser passkey sign-in for a native app */
+        post: operations["beginMobilePasskeySignIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mobile/passkeys/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a one-time native callback code after Fortify verifies a passkey */
+        post: operations["completeMobilePasskeySignIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mobile/passkeys/exchange": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Exchange a one-time PKCE-bound passkey code for Sanctum mobile credentials */
+        post: operations["exchangeMobilePasskeyCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mobile/passkeys/management/redeem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Redeem a short-lived one-time handoff to manage passkeys in the system browser */
+        post: operations["redeemMobilePasskeyManagementSession"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mobile/passkeys/prepare": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bind a one-time mobile passkey request to the browser session */
+        post: operations["prepareMobilePasskeySignIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Build a weekly nutrition and adherence review for the owner */
+        get: operations["getNutritionDashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/meals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List meals, optionally filtered by date */
+        get: operations["listNutritionMeals"];
+        put?: never;
+        /** Log a recipe or free-form meal */
+        post: operations["logNutritionMeal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List planned meals for a Monday-starting week */
+        get: operations["listNutritionPlanItems"];
+        put?: never;
+        /** Add a recipe to a meal slot on a date */
+        post: operations["createNutritionPlanItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/plans/{item}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update a planned meal or its meal-prep status */
+        patch: operations["updateNutritionPlanItem"];
+        trace?: never;
+    };
+    "/nutrition/plans/copy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Copy a non-empty week into an empty week */
+        post: operations["copyNutritionPlanWeek"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/recipes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the owner's recipes with ingredients */
+        get: operations["listNutritionRecipes"];
+        put?: never;
+        /** Create a recipe with normalized ingredient quantities and units */
+        post: operations["createNutritionRecipe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/recipes/{recipe}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update an owner's recipe */
+        patch: operations["updateNutritionRecipe"];
+        trace?: never;
+    };
+    "/nutrition/shopping-lists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the owner's saved shopping lists */
+        get: operations["listNutritionShoppingLists"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/shopping-lists/{list}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a manual item to a shopping list */
+        post: operations["addNutritionShoppingListItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/shopping-lists/{list}/items/{item}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a shopping item */
+        delete: operations["deleteNutritionShoppingListItem"];
+        options?: never;
+        head?: never;
+        /** Edit, check off, or move a shopping item between store sections */
+        patch: operations["updateNutritionShoppingListItem"];
+        trace?: never;
+    };
+    "/nutrition/shopping-lists/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate a shopping list from planned meals in a date range */
+        post: operations["generateNutritionShoppingList"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/nutrition/target": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return the owner's daily nutrition target */
+        get: operations["getNutritionTarget"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update the owner's daily nutrition target */
+        patch: operations["updateNutritionTarget"];
+        trace?: never;
+    };
     "/readiness": {
         parameters: {
             query?: never;
@@ -426,6 +1291,178 @@ export interface paths {
         get: operations["getReadiness"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List today's active routines and recent completions */
+        get: operations["listRoutines"];
+        put?: never;
+        /** Create an owner routine */
+        post: operations["createRoutine"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routines/{routine}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update an owner routine */
+        patch: operations["updateRoutine"];
+        trace?: never;
+    };
+    "/routines/{routine}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete today's scheduled routine */
+        post: operations["completeRoutine"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/routines/{routine}/snooze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Snooze today's routine reminder */
+        post: operations["snoozeRoutine"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/passkeys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the current owner's passkeys without exposing credential material */
+        get: operations["getOwnerPasskeys"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/passkeys/{passkey}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove one of the current owner's passkeys */
+        delete: operations["deleteOwnerPasskey"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/passkeys/management-sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a three-minute one-time browser handoff for native passkey management */
+        post: operations["beginMobilePasskeyManagement"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/two-factor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Return the current owner's authenticator status */
+        get: operations["getTwoFactorStatus"];
+        put?: never;
+        post?: never;
+        /** Disable authenticator protection after password and code confirmation */
+        delete: operations["disableTwoFactor"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/two-factor/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm authenticator setup with a current code */
+        post: operations["confirmTwoFactorSetup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/security/two-factor/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Begin authenticator setup after password confirmation */
+        post: operations["beginTwoFactorSetup"];
         delete?: never;
         options?: never;
         head?: never;
@@ -454,6 +1491,48 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddFitnessWorkoutSessionExerciseRequest: {
+            /** Format: int64 */
+            exercise_id: number;
+            notes?: string | null;
+        };
+        BackupStatus: {
+            /** Format: date-time */
+            last_attempt_at: string | null;
+            /** Format: date-time */
+            last_successful_backup_at: string | null;
+            retention_days: number;
+            /** @constant */
+            scheduled_time: "02:00";
+            /** @enum {string} */
+            status: "never" | "ok" | "failed";
+        };
+        BackupStatusResponse: {
+            data: components["schemas"]["BackupStatus"];
+        };
+        BeginTwoFactorSetupRequest: {
+            current_password: string;
+        };
+        ChangePasswordRequest: {
+            /** Format: password */
+            current_password: string;
+            /** Format: password */
+            password: string;
+            /** Format: password */
+            password_confirmation: string;
+        };
+        CopyNutritionWeekRequest: {
+            /**
+             * Format: date
+             * @description Must be a Monday.
+             */
+            source_week_start: string;
+            /**
+             * Format: date
+             * @description Must be a different Monday with no planned items.
+             */
+            target_week_start: string;
+        };
         CreateFinanceAccountRequest: {
             /** @description Defaults to the owner's primary currency. */
             currency?: string;
@@ -461,6 +1540,24 @@ export interface components {
             opening_balance?: components["schemas"]["FinanceAmount"];
             /** @enum {string} */
             type: "checking" | "savings" | "credit_card" | "cash" | "investment" | "other";
+        };
+        CreateFinanceAssetRequest: {
+            /** Format: int64 */
+            account_id?: number | null;
+            /** @enum {string} */
+            asset_type: "investment" | "collectible" | "game_item" | "property" | "vehicle" | "other";
+            cost_basis?: string | null;
+            currency: string;
+            initial_value?: string | null;
+            name: string;
+            /** Format: date */
+            valued_at?: string;
+        };
+        CreateFinanceAssetValuationRequest: {
+            notes?: string | null;
+            value: string;
+            /** Format: date */
+            valued_at: string;
         };
         CreateFinanceBudgetRequest: {
             /** Format: int64 */
@@ -520,6 +1617,59 @@ export interface components {
             to_account_id: number;
             to_amount?: components["schemas"]["FinanceAmount"];
         };
+        CreateFitnessBodyMetricRequest: {
+            /** Format: date-time */
+            measured_at: string;
+            metric_type: string;
+            notes?: string | null;
+            unit: string;
+            value: number;
+        };
+        CreateFitnessExerciseRequest: {
+            equipment?: string | null;
+            muscle_group?: string | null;
+            name: string;
+            notes?: string | null;
+        };
+        CreateFitnessGoalRequest: {
+            metric_type: string;
+            notes?: string | null;
+            start_value?: number | null;
+            /** @enum {string} */
+            status?: "active" | "paused" | "completed" | "abandoned";
+            /** Format: date */
+            target_date?: string | null;
+            target_value: number;
+            unit: string;
+        };
+        CreateFitnessProgressPhotoRequest: {
+            /** @enum {string|null} */
+            angle?: "front" | "side" | "back" | "other" | null;
+            /** Format: int64 */
+            body_metric_id?: number | null;
+            notes?: string | null;
+            /** Format: binary */
+            photo: string;
+            /** Format: date */
+            photo_date: string;
+            tags?: string[];
+        };
+        CreateFitnessWorkoutTemplateRequest: {
+            exercises: {
+                /** Format: int64 */
+                exercise_id: number;
+                notes?: string | null;
+                position?: number;
+                target_reps?: string | null;
+                target_sets?: number | null;
+                target_weight?: number | null;
+                /** @enum {string|null} */
+                target_weight_unit?: "kg" | "lb" | null;
+            }[];
+            name: string;
+            notes?: string | null;
+            scheduled_days?: number[] | null;
+        };
         CreateHealthSampleRequest: {
             confidence?: string | null;
             /** Format: date-time */
@@ -544,6 +1694,28 @@ export interface components {
             metadata?: Record<string, never>;
             name: string;
         };
+        CreateRoutineRequest: {
+            days_of_week?: number[];
+            /** @enum {string} */
+            domain: "finance" | "fitness" | "nutrition" | "review" | "personal";
+            /** @enum {string} */
+            frequency: "daily" | "weekly";
+            reminder_time?: string | null;
+            title: string;
+        };
+        DeleteOwnerAccountRequest: {
+            /** Format: password */
+            current_password: string;
+            /**
+             * Format: email
+             * @description Must exactly match the authenticated owner's email address.
+             */
+            email_confirmation: string;
+        };
+        DisableTwoFactorRequest: {
+            code: string;
+            current_password: string;
+        };
         Error: {
             message: string;
         } & {
@@ -554,6 +1726,7 @@ export interface components {
             currency: string;
             /** Format: int64 */
             id: number;
+            include_in_net_worth: boolean;
             name: string;
             opening_balance: components["schemas"]["FinanceAmount"];
             /** @enum {string} */
@@ -566,6 +1739,47 @@ export interface components {
             data: components["schemas"]["FinanceAccount"];
         };
         FinanceAmount: string;
+        FinanceAsset: {
+            /** Format: int64 */
+            account_id: number | null;
+            account_name: string | null;
+            /** @enum {string} */
+            asset_type: "investment" | "collectible" | "game_item" | "property" | "vehicle" | "other";
+            cost_basis: string | null;
+            currency: string;
+            current_value: string | null;
+            /** Format: int64 */
+            id: number;
+            include_in_net_worth: boolean;
+            is_archived: boolean;
+            name: string;
+            /** @enum {string|null} */
+            source: "manual" | "synced" | null;
+            /** Format: date */
+            valued_at: string | null;
+        };
+        FinanceAssetListResponse: {
+            data: components["schemas"]["FinanceAsset"][];
+        };
+        FinanceAssetResponse: {
+            data: components["schemas"]["FinanceAsset"];
+        };
+        FinanceAssetValuation: {
+            /** Format: int64 */
+            id: number;
+            notes: string | null;
+            /** @enum {string} */
+            source: "manual" | "synced";
+            value: string;
+            /** Format: date */
+            valued_at: string;
+        };
+        FinanceAssetValuationListResponse: {
+            data: components["schemas"]["FinanceAssetValuation"][];
+        };
+        FinanceAssetValuationResponse: {
+            data: components["schemas"]["FinanceAssetValuation"];
+        };
         FinanceBudget: {
             /** Format: int64 */
             category_id: number;
@@ -609,6 +1823,54 @@ export interface components {
         };
         FinanceCategoryResponse: {
             data: components["schemas"]["FinanceCategory"];
+        };
+        FinanceNetWorth: {
+            accounts: components["schemas"]["FinanceNetWorthAccount"][];
+            asset_groups: components["schemas"]["FinanceNetWorthAssetGroup"][];
+            assets: components["schemas"]["FinanceNetWorthAsset"][];
+            totals: components["schemas"]["FinanceNetWorthTotal"][];
+        };
+        FinanceNetWorthAccount: {
+            balance: string;
+            currency: string;
+            /** @enum {string|null} */
+            excluded_reason: "linked_asset" | "not_selected" | null;
+            /** Format: int64 */
+            id: number;
+            included: boolean;
+            name: string;
+            selected: boolean;
+            type: string;
+        };
+        FinanceNetWorthAsset: {
+            /** Format: int64 */
+            account_id: number | null;
+            account_name: string | null;
+            asset_type: string;
+            cost_basis: string | null;
+            currency: string;
+            current_value: string | null;
+            /** Format: int64 */
+            id: number;
+            included: boolean;
+            name: string;
+            selected: boolean;
+            source: string | null;
+            /** Format: date */
+            valued_at: string | null;
+        };
+        FinanceNetWorthAssetGroup: {
+            amount: string;
+            asset_count: number;
+            asset_type: string;
+            currency: string;
+        };
+        FinanceNetWorthResponse: {
+            data: components["schemas"]["FinanceNetWorth"];
+        };
+        FinanceNetWorthTotal: {
+            amount: string;
+            currency: string;
         };
         FinanceOverview: {
             category_breakdown: components["schemas"]["FinanceCategoryBreakdown"][];
@@ -720,6 +1982,248 @@ export interface components {
         FinanceTransferResponse: {
             data: components["schemas"]["FinanceTransfer"];
         };
+        FitnessBodyMetric: {
+            external_id: string | null;
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            measured_at: string;
+            metric_type: string;
+            notes?: string | null;
+            source: string;
+            unit: string;
+            value: string;
+        };
+        FitnessBodyMetricListResponse: {
+            data: components["schemas"]["FitnessBodyMetric"][];
+        };
+        FitnessBodyMetricResponse: {
+            data: components["schemas"]["FitnessBodyMetric"];
+        };
+        FitnessDashboardGoal: {
+            /** Format: int64 */
+            id: number;
+            metric_type: string;
+            /** Format: date */
+            target_date: string | null;
+            target_value: string;
+            unit: string;
+        };
+        FitnessDashboardResponse: {
+            data: components["schemas"]["FitnessDashboardSummary"];
+        };
+        FitnessDashboardSummary: {
+            active_goals: components["schemas"]["FitnessDashboardGoal"][];
+            measurement_trends: components["schemas"]["FitnessMeasurementTrend"][];
+            next_workout: components["schemas"]["FitnessNextWorkout"] | null;
+            personal_records: components["schemas"]["FitnessPersonalRecord"][];
+            weekly_workouts: components["schemas"]["FitnessWeeklyWorkouts"];
+        };
+        FitnessExercise: {
+            equipment: string | null;
+            /** Format: int64 */
+            id: number;
+            muscle_group: string | null;
+            name: string;
+            notes: string | null;
+        };
+        FitnessExerciseListResponse: {
+            data: components["schemas"]["FitnessExercise"][];
+        };
+        FitnessExerciseResponse: {
+            data: components["schemas"]["FitnessExercise"];
+        };
+        FitnessGoal: {
+            /** Format: int64 */
+            id: number;
+            metric_type: string;
+            notes?: string | null;
+            start_value?: string | null;
+            /** @enum {string} */
+            status: "active" | "paused" | "completed" | "abandoned";
+            /** Format: date */
+            target_date?: string | null;
+            target_value: string;
+            unit: string;
+        };
+        FitnessGoalListResponse: {
+            data: components["schemas"]["FitnessGoal"][];
+        };
+        FitnessGoalResponse: {
+            data: components["schemas"]["FitnessGoal"];
+        };
+        FitnessMeasurementTrend: {
+            change: string;
+            /** @enum {string} */
+            direction: "up" | "down" | "steady";
+            latest_value: string;
+            metric_type: string;
+            points: {
+                /** Format: date */
+                date: string;
+                value: string;
+            }[];
+            unit: string;
+        };
+        FitnessMonthlyReview: {
+            is_due: boolean;
+            /** Format: date */
+            latest_photo_date: string | null;
+            month: string;
+            notes: string | null;
+            photo_count: number;
+            /** Format: date-time */
+            reviewed_at: string | null;
+        };
+        FitnessMonthlyReviewResponse: {
+            data: components["schemas"]["FitnessMonthlyReview"];
+        };
+        FitnessNextWorkout: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            scheduled_days: number[];
+            /** Format: date */
+            scheduled_for: string | null;
+        };
+        FitnessPersonalRecord: {
+            /** Format: date */
+            achieved_at: string | null;
+            /** Format: int64 */
+            exercise_id: number;
+            exercise_name: string;
+            reps: number | null;
+            weight: string;
+            /** @enum {string} */
+            weight_unit: "kg" | "lb";
+        };
+        FitnessProgressPhoto: {
+            /** @enum {string|null} */
+            angle: "front" | "side" | "back" | "other" | null;
+            body_metric: components["schemas"]["FitnessBodyMetric"] | null;
+            /** Format: uri-reference */
+            content_url: string;
+            file_size: number;
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            mime_type: "image/jpeg" | "image/png" | "image/webp";
+            notes: string | null;
+            /** Format: date */
+            photo_date: string;
+            tags: string[];
+        };
+        FitnessProgressPhotoListResponse: {
+            data: components["schemas"]["FitnessProgressPhoto"][];
+        };
+        FitnessProgressPhotoResponse: {
+            data: components["schemas"]["FitnessProgressPhoto"];
+        };
+        FitnessRecentPerformance: {
+            exercise: components["schemas"]["FitnessExercise"];
+            session: {
+                /** Format: date-time */
+                completed_at: string;
+                /** Format: int64 */
+                id: number;
+                name: string;
+            } | null;
+            sets: components["schemas"]["FitnessWorkoutSet"][];
+        };
+        FitnessRecentPerformanceResponse: {
+            data: components["schemas"]["FitnessRecentPerformance"];
+        };
+        FitnessWeeklyWorkouts: {
+            completed: number;
+            missed: number;
+            planned: number;
+            streak_days: number;
+        };
+        FitnessWorkoutSession: {
+            /** Format: date-time */
+            completed_at: string | null;
+            duration_minutes: number | null;
+            exercises: components["schemas"]["FitnessWorkoutSessionExercise"][];
+            /** Format: int64 */
+            id: number;
+            name: string;
+            notes: string | null;
+            /** Format: date-time */
+            started_at: string;
+            /** @enum {string} */
+            status: "in_progress" | "completed";
+            template: components["schemas"]["FitnessWorkoutTemplate"] | null;
+            /** Format: int64 */
+            template_id: number | null;
+        };
+        FitnessWorkoutSessionExercise: {
+            exercise: components["schemas"]["FitnessExercise"];
+            exercise_name: string;
+            /** Format: int64 */
+            id: number;
+            notes: string | null;
+            position: number;
+            sets: components["schemas"]["FitnessWorkoutSet"][];
+            target_reps: string | null;
+            target_sets: number | null;
+            target_weight: string | null;
+            /** @enum {string|null} */
+            target_weight_unit: "kg" | "lb" | null;
+        };
+        FitnessWorkoutSessionListResponse: {
+            data: components["schemas"]["FitnessWorkoutSession"][];
+        };
+        FitnessWorkoutSessionResponse: {
+            data: components["schemas"]["FitnessWorkoutSession"];
+        };
+        FitnessWorkoutSet: {
+            duration_seconds: number | null;
+            /** Format: int64 */
+            id: number;
+            notes: string | null;
+            reps: number | null;
+            rpe: string | null;
+            set_number: number;
+            weight: string | null;
+            /** @enum {string|null} */
+            weight_unit: "kg" | "lb" | null;
+        };
+        FitnessWorkoutSetResponse: {
+            data: components["schemas"]["FitnessWorkoutSet"];
+        };
+        FitnessWorkoutTemplate: {
+            exercises: components["schemas"]["FitnessWorkoutTemplateExercise"][];
+            /** Format: int64 */
+            id: number;
+            name: string;
+            notes: string | null;
+            scheduled_days: number[];
+        };
+        FitnessWorkoutTemplateExercise: {
+            exercise: components["schemas"]["FitnessExercise"];
+            /** Format: int64 */
+            id: number;
+            notes: string | null;
+            position: number;
+            target_reps: string | null;
+            target_sets: number | null;
+            target_weight: string | null;
+            /** @enum {string|null} */
+            target_weight_unit: "kg" | "lb" | null;
+        };
+        FitnessWorkoutTemplateListResponse: {
+            data: components["schemas"]["FitnessWorkoutTemplate"][];
+        };
+        FitnessWorkoutTemplateResponse: {
+            data: components["schemas"]["FitnessWorkoutTemplate"];
+        };
+        GenerateNutritionShoppingListRequest: {
+            /** Format: date */
+            end_date: string;
+            name?: string;
+            /** Format: date */
+            start_date: string;
+        };
         HealthSample: {
             confidence?: string | null;
             conflict_status: string;
@@ -782,11 +2286,346 @@ export interface components {
         HealthSyncRunResponse: {
             data: components["schemas"]["HealthSyncRun"];
         };
+        HealthTrend: {
+            change: string;
+            /** @enum {string} */
+            direction: "up" | "down" | "steady";
+            latest_value: string;
+            points: {
+                /** Format: date */
+                date: string;
+                value: string;
+            }[];
+            /** @enum {string} */
+            sample_type: "steps" | "sleep" | "workouts" | "calories" | "weight";
+            source_counts: {
+                imported: number;
+                manual: number;
+                sources: {
+                    count: number;
+                    /** Format: int64 */
+                    id: number;
+                    kind: string;
+                    name: string;
+                }[];
+            };
+            total: string;
+            unit: string;
+        };
+        HealthTrendsSummary: {
+            /** Format: date */
+            from: string;
+            /** @enum {string} */
+            range: "7d" | "30d" | "90d" | "ytd";
+            /** Format: date */
+            to: string;
+            trends: components["schemas"]["HealthTrend"][];
+        };
+        HealthTrendsSummaryResponse: {
+            data: components["schemas"]["HealthTrendsSummary"];
+        };
+        LogFitnessWorkoutSetRequest: {
+            duration_seconds?: number | null;
+            notes?: string | null;
+            reps?: number | null;
+            rpe?: number | null;
+            weight?: number | null;
+            /** @enum {string|null} */
+            weight_unit?: "kg" | "lb" | null;
+        };
         LoginRequest: {
             /** Format: email */
             email: string;
             /** Format: password */
             password: string;
+        };
+        MobileCredentialsResponse: {
+            data: {
+                access_token: string;
+                /** Format: date-time */
+                access_token_expires_at: string;
+                device_name: string;
+                refresh_token: string;
+                /** Format: date-time */
+                refresh_token_expires_at: string;
+                /** @constant */
+                token_type: "Bearer";
+            };
+        };
+        MobileLoginChallengeResponse: {
+            data: {
+                /** Format: date-time */
+                challenge_expires_at: string;
+                challenge_token: string;
+                /** @description Present only for initial enrollment and never persist this value on the client. */
+                secret?: string;
+                /** @enum {string} */
+                status: "challenge_required" | "setup_required";
+            };
+        };
+        MobileLoginRequest: {
+            device_name: string;
+            /** Format: email */
+            email: string;
+            /** Format: password */
+            password: string;
+        };
+        MobilePasskeyCallbackResponse: {
+            data: {
+                /** Format: uri */
+                callback_url: string;
+            };
+        };
+        MobilePasskeyExchangeRequest: {
+            code: string;
+            code_verifier: string;
+            state: string;
+        };
+        MobilePasskeyLoginUrlResponse: {
+            data: {
+                /** Format: uri */
+                login_url: string;
+            };
+        };
+        MobilePasskeyStartRequest: {
+            code_challenge: string;
+            state: string;
+        };
+        MobileRefreshRequest: {
+            refresh_token: string;
+        };
+        MobileTwoFactorCancelRequest: {
+            challenge_token: string;
+        };
+        MobileTwoFactorChallengeRequest: {
+            challenge_token: string;
+            code: string;
+        };
+        NutritionDashboard: {
+            review: components["schemas"]["NutritionDashboardReview"];
+            target: components["schemas"]["NutritionDashboardTarget"];
+            timezone: string;
+            today: components["schemas"]["NutritionDashboardToday"];
+            week: components["schemas"]["NutritionDashboardWeek"];
+            /** Format: date */
+            week_end: string;
+            /** Format: date */
+            week_start: string;
+        };
+        NutritionDashboardDay: {
+            /** Format: date */
+            date: string;
+            eaten: components["schemas"]["NutritionDashboardNutrients"];
+            eaten_meal_count: number;
+            planned: components["schemas"]["NutritionDashboardNutrients"];
+            planned_meal_count: number;
+        };
+        NutritionDashboardEatenMeal: {
+            calories: string | null;
+            carbohydrate_grams: string | null;
+            fat_grams: string | null;
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            meal_type: "breakfast" | "lunch" | "dinner" | "snack" | "other";
+            name: string;
+            protein_grams: string | null;
+        };
+        NutritionDashboardNutrients: {
+            calories: string | null;
+            carbohydrate_grams: string | null;
+            fat_grams: string | null;
+            protein_grams: string | null;
+        };
+        NutritionDashboardPlanMeal: {
+            calories: string | null;
+            carbohydrate_grams: string | null;
+            fat_grams: string | null;
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            meal_slot: "breakfast" | "lunch" | "dinner" | "snack";
+            protein_grams: string | null;
+            recipe_name: string;
+            servings: string;
+            /** @enum {string} */
+            status: "planned" | "prepped" | "eaten" | "skipped" | "replaced";
+        };
+        NutritionDashboardResponse: {
+            data: components["schemas"]["NutritionDashboard"];
+        };
+        NutritionDashboardReusableMeal: {
+            planned_count: number;
+            /** Format: int64 */
+            recipe_id: number;
+            recipe_name: string;
+        };
+        NutritionDashboardReview: {
+            next_week: {
+                can_copy: boolean;
+                has_plan: boolean;
+                /** Format: date */
+                start_date: string;
+            };
+            planning_gaps: string[];
+            reusable_meals: components["schemas"]["NutritionDashboardReusableMeal"][];
+        };
+        NutritionDashboardTarget: {
+            calories: string | null;
+            carbohydrate_grams: string | null;
+            fat_grams: string | null;
+            protein_grams: string | null;
+        };
+        NutritionDashboardToday: {
+            /** Format: date */
+            date: string;
+            eaten: components["schemas"]["NutritionDashboardNutrients"];
+            eaten_meal_count: number;
+            eaten_meals: components["schemas"]["NutritionDashboardEatenMeal"][];
+            plan: components["schemas"]["NutritionDashboardPlanMeal"][];
+            planned: components["schemas"]["NutritionDashboardNutrients"];
+            planned_meal_count: number;
+        };
+        NutritionDashboardWeek: {
+            daily: components["schemas"]["NutritionDashboardDay"][];
+            eaten: components["schemas"]["NutritionDashboardNutrients"];
+            eaten_meal_count: number;
+            planned: components["schemas"]["NutritionDashboardNutrients"];
+            planned_meal_count: number;
+            prep_needed_count: number;
+            shopping_list_missing: boolean;
+            status_counts: {
+                marked_eaten: number;
+                replaced: number;
+                skipped: number;
+            };
+        };
+        NutritionIngredientLine: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+            position: number;
+            quantity: string;
+            unit: string;
+        };
+        NutritionMeal: {
+            calories?: string | null;
+            carbohydrate_grams?: string | null;
+            /** Format: date-time */
+            eaten_at: string;
+            fat_grams?: string | null;
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            meal_type: "breakfast" | "lunch" | "dinner" | "snack" | "other";
+            name: string;
+            notes?: string | null;
+            protein_grams?: string | null;
+            /** Format: int64 */
+            recipe_id?: number | null;
+            servings: string;
+        };
+        NutritionMealListResponse: {
+            data: components["schemas"]["NutritionMeal"][];
+        };
+        NutritionMealResponse: {
+            data: components["schemas"]["NutritionMeal"];
+        };
+        NutritionPlanItem: {
+            calories?: string | null;
+            carbohydrate_grams?: string | null;
+            fat_grams?: string | null;
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            meal_slot: "breakfast" | "lunch" | "dinner" | "snack";
+            notes?: string | null;
+            /** Format: date */
+            plan_date: string;
+            protein_grams?: string | null;
+            /** Format: int64 */
+            recipe_id: number | null;
+            recipe_name: string;
+            servings: string;
+            /** @enum {string} */
+            status: "planned" | "prepped" | "eaten" | "skipped" | "replaced";
+        };
+        NutritionPlanItemListResponse: {
+            data: components["schemas"]["NutritionPlanItem"][];
+        };
+        NutritionPlanItemResponse: {
+            data: components["schemas"]["NutritionPlanItem"];
+        };
+        NutritionRecipe: {
+            calories?: string | null;
+            carbohydrate_grams?: string | null;
+            description?: string | null;
+            dietary_notes?: string | null;
+            fat_grams?: string | null;
+            /** Format: int64 */
+            id: number;
+            ingredients: components["schemas"]["NutritionIngredientLine"][];
+            instructions?: string | null;
+            micronutrients?: Record<string, never> | null;
+            name: string;
+            protein_grams?: string | null;
+            servings: number;
+            tags?: string[];
+        };
+        NutritionRecipeIngredientInput: {
+            name: string;
+            quantity: number;
+            unit: string;
+        };
+        NutritionRecipeListResponse: {
+            data: components["schemas"]["NutritionRecipe"][];
+        };
+        NutritionRecipeResponse: {
+            data: components["schemas"]["NutritionRecipe"];
+        };
+        NutritionShoppingItem: {
+            /** Format: int64 */
+            id: number;
+            is_checked: boolean;
+            is_manual: boolean;
+            name: string;
+            quantity?: string | null;
+            quantity_warning: boolean;
+            /** @enum {string} */
+            store_section: "produce" | "meat-seafood" | "dairy" | "bakery" | "frozen" | "pantry" | "other";
+            unit?: string | null;
+        };
+        NutritionShoppingItemResponse: {
+            data: components["schemas"]["NutritionShoppingItem"];
+        };
+        NutritionShoppingList: {
+            /** Format: date */
+            end_date: string;
+            /** Format: int64 */
+            id: number;
+            items: components["schemas"]["NutritionShoppingItem"][];
+            name: string;
+            /** Format: date */
+            start_date: string;
+            unavailable_recipe_count: number;
+        };
+        NutritionShoppingListListResponse: {
+            data: components["schemas"]["NutritionShoppingList"][];
+        };
+        NutritionShoppingListResponse: {
+            data: components["schemas"]["NutritionShoppingList"];
+        };
+        NutritionTarget: {
+            calories?: string | null;
+            carbohydrate_grams?: string | null;
+            fat_grams?: string | null;
+            /** Format: int64 */
+            id: number;
+            notes?: string | null;
+            protein_grams?: string | null;
+        };
+        NutritionTargetResponse: {
+            data: components["schemas"]["NutritionTarget"];
         };
         OwnerProfile: {
             /** Format: email */
@@ -803,6 +2642,7 @@ export interface components {
             mask_sensitive_data_by_default: boolean;
             /** @enum {string} */
             measurement_system: "metric" | "imperial";
+            notifications_enabled: boolean;
             /** @enum {string} */
             theme: "system" | "light" | "dark";
             /** @example Europe/Vienna */
@@ -811,11 +2651,154 @@ export interface components {
         OwnerSettingsResponse: {
             data: components["schemas"]["OwnerSettings"];
         };
+        PasskeyListResponse: {
+            data: {
+                /** Format: date-time */
+                created_at: string | null;
+                id: string;
+                /** Format: date-time */
+                last_used_at: string | null;
+                name: string;
+            }[];
+        };
+        PasskeyManagementRedeemRequest: {
+            token: string;
+        };
+        PasskeyManagementUrlResponse: {
+            data: {
+                /** Format: uri */
+                management_url: string;
+            };
+        };
+        PasskeyStateRequest: {
+            state: string;
+        };
         Readiness: {
             /** @constant */
             service: "lifeos-api";
             /** @constant */
             status: "ok";
+        };
+        Routine: {
+            days_of_week: number[] | null;
+            /** @enum {string} */
+            domain: "finance" | "fitness" | "nutrition" | "review" | "personal";
+            /** @enum {string} */
+            frequency: "daily" | "weekly";
+            /** Format: int64 */
+            id: number;
+            is_scheduled_today: boolean;
+            reminder_active: boolean;
+            /** @example 09:00:00 */
+            reminder_time: string | null;
+            /** Format: date-time */
+            snoozed_until: string | null;
+            /** @enum {string} */
+            status: "due" | "not_scheduled" | "completed" | "snoozed";
+            title: string;
+        };
+        RoutineActionResponse: {
+            data: {
+                /** Format: date-time */
+                completed_at?: string;
+                /** Format: date-time */
+                snoozed_until?: string;
+                /** @enum {string} */
+                status: "snoozed" | "completed";
+            };
+        };
+        RoutineDefinition: {
+            days_of_week: number[] | null;
+            /** @enum {string} */
+            domain: "finance" | "fitness" | "nutrition" | "review" | "personal";
+            /** @enum {string} */
+            frequency: "daily" | "weekly";
+            /** Format: int64 */
+            id: number;
+            is_active: boolean;
+            reminder_time: string | null;
+            title: string;
+        };
+        RoutineResponse: {
+            data: components["schemas"]["RoutineDefinition"];
+        };
+        RoutinesResponse: {
+            data: {
+                notifications_enabled: boolean;
+                recent_completions: {
+                    /** Format: date-time */
+                    completed_at: string | null;
+                    domain: string | null;
+                    routine_id: number;
+                    title: string | null;
+                }[];
+                routines: components["schemas"]["Routine"][];
+            };
+        };
+        SaveFitnessMonthlyReviewRequest: {
+            month: string;
+            notes?: string | null;
+        };
+        SaveWeeklyReviewRequest: {
+            next_week_focus?: string | null;
+            notes?: string | null;
+            /** Format: date */
+            week_start: string;
+        };
+        StartFitnessWorkoutSessionRequest: {
+            /** @description Required when no template_id is supplied. */
+            name?: string | null;
+            notes?: string | null;
+            /** Format: int64 */
+            template_id?: number | null;
+        };
+        StoreNutritionMealRequest: {
+            calories?: number | null;
+            carbohydrate_grams?: number | null;
+            /** Format: date-time */
+            eaten_at: string;
+            fat_grams?: number | null;
+            /** @enum {string} */
+            meal_type: "breakfast" | "lunch" | "dinner" | "snack" | "other";
+            name?: string;
+            notes?: string | null;
+            protein_grams?: number | null;
+            /** Format: int64 */
+            recipe_id?: number | null;
+            servings?: number;
+        };
+        StoreNutritionPlanItemRequest: {
+            /** @enum {string} */
+            meal_slot: "breakfast" | "lunch" | "dinner" | "snack";
+            notes?: string | null;
+            /** Format: date */
+            plan_date: string;
+            /** Format: int64 */
+            recipe_id: number;
+            servings?: number;
+            /** @enum {string} */
+            status?: "planned" | "prepped" | "eaten" | "skipped" | "replaced";
+        };
+        StoreNutritionRecipeRequest: {
+            calories?: number | null;
+            carbohydrate_grams?: number | null;
+            description?: string | null;
+            dietary_notes?: string | null;
+            fat_grams?: number | null;
+            ingredients: components["schemas"]["NutritionRecipeIngredientInput"][];
+            instructions?: string | null;
+            micronutrients?: Record<string, never> | null;
+            name: string;
+            protein_grams?: number | null;
+            servings: number;
+            tags?: string[];
+        };
+        StoreNutritionShoppingItemRequest: {
+            name: string;
+            quantity?: number | null;
+            /** @enum {string} */
+            store_section?: "produce" | "meat-seafood" | "dairy" | "bakery" | "frozen" | "pantry" | "other";
+            unit?: string | null;
         };
         TwoFactorCodeRequest: {
             code: string;
@@ -830,6 +2813,25 @@ export interface components {
                 /** @constant */
                 status: "challenge_required";
             };
+        };
+        TwoFactorSetupResponse: {
+            data: {
+                /** Format: uri */
+                otpauth_uri: string;
+                secret: string;
+            };
+        };
+        TwoFactorStatusResponse: {
+            data: {
+                enabled: boolean;
+            };
+        };
+        UpdateFinanceAccountRequest: {
+            include_in_net_worth?: boolean;
+        };
+        UpdateFinanceAssetRequest: {
+            include_in_net_worth?: boolean;
+            is_archived?: boolean;
         };
         UpdateFinanceBudgetRequest: {
             /** Format: int64 */
@@ -878,14 +2880,114 @@ export interface components {
             /** @enum {string} */
             type?: "income" | "expense";
         };
+        UpdateFitnessGoalRequest: {
+            notes?: string | null;
+            /** @enum {string} */
+            status?: "active" | "paused" | "completed" | "abandoned";
+            /** Format: date */
+            target_date?: string | null;
+            target_value?: number;
+        };
+        UpdateNutritionPlanItemRequest: {
+            /** @enum {string} */
+            meal_slot?: "breakfast" | "lunch" | "dinner" | "snack";
+            notes?: string | null;
+            /** Format: date */
+            plan_date?: string;
+            /** Format: int64 */
+            recipe_id?: number;
+            servings?: number;
+            /** @enum {string} */
+            status?: "planned" | "prepped" | "eaten" | "skipped" | "replaced";
+        };
+        UpdateNutritionRecipeRequest: {
+            calories?: number | null;
+            carbohydrate_grams?: number | null;
+            description?: string | null;
+            dietary_notes?: string | null;
+            fat_grams?: number | null;
+            ingredients?: components["schemas"]["NutritionRecipeIngredientInput"][];
+            instructions?: string | null;
+            micronutrients?: Record<string, never> | null;
+            name?: string;
+            protein_grams?: number | null;
+            servings?: number;
+            tags?: string[];
+        };
+        UpdateNutritionShoppingItemRequest: {
+            is_checked?: boolean;
+            name?: string;
+            quantity?: number | null;
+            /** @enum {string} */
+            store_section?: "produce" | "meat-seafood" | "dairy" | "bakery" | "frozen" | "pantry" | "other";
+            unit?: string | null;
+        };
+        UpdateNutritionTargetRequest: {
+            calories?: number | null;
+            carbohydrate_grams?: number | null;
+            fat_grams?: number | null;
+            notes?: string | null;
+            protein_grams?: number | null;
+        };
         UpdateOwnerSettingsRequest: {
             currency?: string;
             mask_sensitive_data_by_default?: boolean;
             /** @enum {string} */
             measurement_system?: "metric" | "imperial";
+            notifications_enabled?: boolean;
             /** @enum {string} */
             theme?: "system" | "light" | "dark";
             timezone?: string;
+        };
+        UpdateRoutineRequest: {
+            days_of_week?: number[];
+            /** @enum {string} */
+            domain?: "finance" | "fitness" | "nutrition" | "review" | "personal";
+            /** @enum {string} */
+            frequency?: "daily" | "weekly";
+            is_active?: boolean;
+            reminder_time?: string | null;
+            title?: string;
+        };
+        WeeklyReviewEntryResponse: {
+            data: {
+                next_week_focus: string | null;
+                notes: string | null;
+                /** Format: date-time */
+                reviewed_at: string | null;
+                /** Format: date */
+                week_start: string;
+            };
+        };
+        WeeklyReviewSummaryResponse: {
+            data: {
+                finance: {
+                    totals: {
+                        currency: string;
+                        expenses: string;
+                        income: string;
+                    }[];
+                    transaction_count: number;
+                };
+                fitness: {
+                    completed_workouts: number;
+                    workout_minutes: number | null;
+                };
+                nutrition: {
+                    calories: string | null;
+                    meals_logged: number;
+                    planned_meals: number;
+                    protein_grams: string | null;
+                };
+                review: {
+                    next_week_focus: string | null;
+                    notes: string | null;
+                } | null;
+                /** Format: date */
+                week_end: string;
+                /** Format: date */
+                week_start: string;
+            };
         };
     };
     responses: never;
@@ -896,6 +2998,79 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    deleteOwnerAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteOwnerAccountRequest"];
+            };
+        };
+        responses: {
+            /** @description The account, associated data, sessions, tokens, and private files were deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description The current password or exact email confirmation is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    downloadOwnerDataExport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A ZIP archive containing versioned structured data and private progress photos. */
+            200: {
+                headers: {
+                    /** @description Prevents the export from being stored by shared or browser caches. */
+                    "Cache-Control"?: string;
+                    /** @description Suggested filename for the downloaded archive. */
+                    "Content-Disposition"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/zip": string;
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     loginOwner: {
         parameters: {
             query?: never;
@@ -954,6 +3129,44 @@ export interface operations {
             };
             /** @description The request is not authenticated. */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    changeOwnerPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordRequest"];
+            };
+        };
+        responses: {
+            /** @description The password was changed. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The current or new password is invalid. */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1067,6 +3280,112 @@ export interface operations {
             };
         };
     };
+    getBackupStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Backup status without local paths, credentials, or private data. */
+            200: {
+                headers: {
+                    "Cache-Control"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BackupStatusResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getWeeklyReview: {
+        parameters: {
+            query?: {
+                week_start?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The requested week's summary and saved review notes. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyReviewSummaryResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The selected week must start on a Monday. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    saveWeeklyReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveWeeklyReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description The saved review entry. Fetch the summary endpoint for refreshed domain signals. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyReviewEntryResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The selected week must start on a Monday. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
     listFinanceAccounts: {
         parameters: {
             query?: never;
@@ -1131,6 +3450,248 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Error"];
                 };
+            };
+        };
+    };
+    updateFinanceAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                account: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFinanceAccountRequest"];
+            };
+        };
+        responses: {
+            /** @description Updated account. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceAccountResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Account not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid account selection. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFinanceAssets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Active assets ordered by type and name. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceAssetListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFinanceAsset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFinanceAssetRequest"];
+            };
+        };
+        responses: {
+            /** @description Created asset. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceAssetResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid asset or account ownership. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateFinanceAsset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFinanceAssetRequest"];
+            };
+        };
+        responses: {
+            /** @description Updated asset. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceAssetResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Asset not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid asset selection. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFinanceAssetValuations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Valuations newest first, with their manual or synced source. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceAssetValuationListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Asset not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFinanceAssetValuation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFinanceAssetValuationRequest"];
+            };
+        };
+        responses: {
+            /** @description Created valuation. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceAssetValuationResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Asset not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid valuation. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1381,6 +3942,33 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Error"];
                 };
+            };
+        };
+    };
+    getFinanceNetWorth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Owner net worth grouped by currency and asset type. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceNetWorthResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1878,6 +4466,786 @@ export interface operations {
             };
         };
     };
+    listFitnessBodyMetrics: {
+        parameters: {
+            query?: {
+                days?: number;
+                metric_type?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Body metrics. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessBodyMetricListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFitnessBodyMetric: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFitnessBodyMetricRequest"];
+            };
+        };
+        responses: {
+            /** @description Created body metric. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessBodyMetricResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid body metric. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getFitnessDashboard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Fitness dashboard summary. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessDashboardResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFitnessExercises: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Exercise library. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessExerciseListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFitnessExercise: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFitnessExerciseRequest"];
+            };
+        };
+        responses: {
+            /** @description Created exercise. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessExerciseResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid exercise. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getFitnessRecentPerformance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                exercise: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The latest completed session and its sets, if any. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessRecentPerformanceResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Exercise not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFitnessGoals: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Fitness goals. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessGoalListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFitnessGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFitnessGoalRequest"];
+            };
+        };
+        responses: {
+            /** @description Created fitness goal. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessGoalResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid goal. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateFitnessGoal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                goal: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateFitnessGoalRequest"];
+            };
+        };
+        responses: {
+            /** @description Updated fitness goal. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessGoalResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The goal does not belong to the owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid goal update. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFitnessProgressPhotos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The latest one hundred private progress photos. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessProgressPhotoListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFitnessProgressPhoto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["CreateFitnessProgressPhotoRequest"];
+            };
+        };
+        responses: {
+            /** @description Private photo metadata. Storage paths are never returned. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessProgressPhotoResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid metadata or image. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteFitnessProgressPhoto: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                photo: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Photo file and metadata deleted. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Photo not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getFitnessProgressPhotoContent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                photo: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Private image with no-store and nosniff headers. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/jpeg": string;
+                    "image/png": string;
+                    "image/webp": string;
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Photo not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getFitnessMonthlyProgressReview: {
+        parameters: {
+            query?: {
+                month?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Monthly prompt status and photo summary. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessMonthlyReviewResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    saveFitnessMonthlyProgressReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveFitnessMonthlyReviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Saved monthly reflection. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessMonthlyReviewResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid review month or notes. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFitnessWorkoutSessions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The owner's latest twenty workout sessions. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessWorkoutSessionListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    startFitnessWorkoutSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartFitnessWorkoutSessionRequest"];
+            };
+        };
+        responses: {
+            /** @description Started workout session. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessWorkoutSessionResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Template not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid session. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    completeFitnessWorkoutSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Completed workout session with exercises and sets. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessWorkoutSessionResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Active session not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A session needs at least one logged set. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    addFitnessWorkoutSessionExercise: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddFitnessWorkoutSessionExerciseRequest"];
+            };
+        };
+        responses: {
+            /** @description Updated workout session. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessWorkoutSessionResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session or exercise not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    logFitnessWorkoutSet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                exercise: number;
+                session: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LogFitnessWorkoutSetRequest"];
+            };
+        };
+        responses: {
+            /** @description Created workout set. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessWorkoutSetResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Active session or exercise not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid set. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listFitnessWorkoutTemplates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Workout templates with their exercises. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessWorkoutTemplateListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createFitnessWorkoutTemplate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateFitnessWorkoutTemplateRequest"];
+            };
+        };
+        responses: {
+            /** @description Created workout template. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FitnessWorkoutTemplateResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid template or exercise ownership. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     importAppleHealthXml: {
         parameters: {
             query?: never;
@@ -2032,6 +5400,75 @@ export interface operations {
             };
         };
     };
+    disconnectHealthKitSource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The source was revoked and its imported records deleted; manual records are retained. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The HealthKit source does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteImportedHealthSample: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                externalId: string;
+                source: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The imported sample was deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The HealthKit source does not exist for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     startHealthSyncRun: {
         parameters: {
             query?: never;
@@ -2091,6 +5528,42 @@ export interface operations {
             };
         };
     };
+    getHealthTrends: {
+        parameters: {
+            query?: {
+                range?: "7d" | "30d" | "90d" | "ytd";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Aggregated owner-scoped daily health trends. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthTrendsSummaryResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The requested range is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getOwnerProfile: {
         parameters: {
             query?: never;
@@ -2120,6 +5593,1011 @@ export interface operations {
             };
         };
     };
+    loginMobileOwner: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MobileLoginRequest"];
+            };
+        };
+        responses: {
+            /** @description The password was verified and a short-lived authenticator challenge was created; unconfigured accounts receive enrollment material instead. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MobileLoginChallengeResponse"];
+                };
+            };
+            /** @description The email or password are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Too many sign-in attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    refreshMobileCredentials: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MobileRefreshRequest"];
+            };
+        };
+        responses: {
+            /** @description The previous refresh token is consumed and replaced. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MobileCredentialsResponse"];
+                };
+            };
+            /** @description The refresh token is invalid, expired, or has already been used. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many refresh attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    revokeMobileDevice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MobileRefreshRequest"];
+            };
+        };
+        responses: {
+            /** @description The device credentials have been revoked. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The refresh token request is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many revocation attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cancelMobileTwoFactorChallenge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MobileTwoFactorCancelRequest"];
+            };
+        };
+        responses: {
+            /** @description The pending challenge was canceled. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The challenge token is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    completeMobileTwoFactorChallenge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MobileTwoFactorChallengeRequest"];
+            };
+        };
+        responses: {
+            /** @description The device's access and refresh credentials. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MobileCredentialsResponse"];
+                };
+            };
+            /** @description The challenge is invalid or expired, or the authenticator code is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Too many verification attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    beginMobilePasskeySignIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MobilePasskeyStartRequest"];
+            };
+        };
+        responses: {
+            /** @description The self-hosted LifeOS web origin to open for WebAuthn. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MobilePasskeyLoginUrlResponse"];
+                };
+            };
+            /** @description State or PKCE challenge is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many passkey attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    completeMobilePasskeySignIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasskeyStateRequest"];
+            };
+        };
+        responses: {
+            /** @description The app callback URL containing a one-time code and matching state. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MobilePasskeyCallbackResponse"];
+                };
+            };
+            /** @description The browser session is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description A verified passkey session is required */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    exchangeMobilePasskeyCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MobilePasskeyExchangeRequest"];
+            };
+        };
+        responses: {
+            /** @description The native app's short-lived access token and rotating refresh token. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MobileCredentialsResponse"];
+                };
+            };
+            /** @description The code is invalid */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too many passkey attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    redeemMobilePasskeyManagementSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasskeyManagementRedeemRequest"];
+            };
+        };
+        responses: {
+            /** @description The browser session is authenticated for passkey management. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The handoff is invalid */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    prepareMobilePasskeySignIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasskeyStateRequest"];
+            };
+        };
+        responses: {
+            /** @description The browser session is ready for the passkey ceremony. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The state is unknown or expired. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getNutritionDashboard: {
+        parameters: {
+            query: {
+                week_start: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Weekly totals, today's meals, planning gaps, and reusable meals. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionDashboardResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid week start date. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listNutritionMeals: {
+        parameters: {
+            query?: {
+                date?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Owner's meals */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionMealListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    logNutritionMeal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreNutritionMealRequest"];
+            };
+        };
+        responses: {
+            /** @description Logged meal with a nutrient snapshot. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionMealResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recipe not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid meal. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listNutritionPlanItems: {
+        parameters: {
+            query: {
+                week_start: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Planned meals for the requested week. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionPlanItemListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid week start date. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createNutritionPlanItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreNutritionPlanItemRequest"];
+            };
+        };
+        responses: {
+            /** @description The planned meal with nutrition for its serving count. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionPlanItemResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recipe not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid planned meal. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateNutritionPlanItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateNutritionPlanItemRequest"];
+            };
+        };
+        responses: {
+            /** @description The updated planned meal. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionPlanItemResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Planned meal or recipe not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid planned meal. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    copyNutritionPlanWeek: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CopyNutritionWeekRequest"];
+            };
+        };
+        responses: {
+            /** @description Copied items with statuses reset to planned. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionPlanItemListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Source is empty or destination is not empty. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listNutritionRecipes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Owner's recipes. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionRecipeListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createNutritionRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreNutritionRecipeRequest"];
+            };
+        };
+        responses: {
+            /** @description Created recipe. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionRecipeResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid recipe. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateNutritionRecipe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recipe: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateNutritionRecipeRequest"];
+            };
+        };
+        responses: {
+            /** @description Updated recipe. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionRecipeResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Recipe not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid recipe. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listNutritionShoppingLists: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Shopping lists with items, newest date range first. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionShoppingListListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    addNutritionShoppingListItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                list: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StoreNutritionShoppingItemRequest"];
+            };
+        };
+        responses: {
+            /** @description The created manual item. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionShoppingItemResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description List not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid shopping item. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteNutritionShoppingListItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item: number;
+                list: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Item removed. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Item or list not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateNutritionShoppingListItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item: number;
+                list: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateNutritionShoppingItemRequest"];
+            };
+        };
+        responses: {
+            /** @description The updated shopping item. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionShoppingItemResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Item or list not found for this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid shopping item. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    generateNutritionShoppingList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateNutritionShoppingListRequest"];
+            };
+        };
+        responses: {
+            /** @description Generated list; incompatible units and unavailable recipes are reported. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionShoppingListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid date range. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getNutritionTarget: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Daily nutrition target. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionTargetResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateNutritionTarget: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateNutritionTargetRequest"];
+            };
+        };
+        responses: {
+            /** @description Saved daily nutrition target. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NutritionTargetResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid nutrition target. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getReadiness: {
         parameters: {
             query?: never;
@@ -2137,6 +6615,453 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Readiness"];
                 };
+            };
+        };
+    };
+    listRoutines: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The authenticated owner's routines without historical backlog. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoutinesResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    createRoutine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRoutineRequest"];
+            };
+        };
+        responses: {
+            /** @description The created routine. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoutineResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The routine schedule is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateRoutine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                routine: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRoutineRequest"];
+            };
+        };
+        responses: {
+            /** @description The updated routine. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoutineResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The routine does not belong to this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The routine schedule is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    completeRoutine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                routine: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The completed routine. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoutineActionResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The routine does not belong to this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The routine is not scheduled today. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    snoozeRoutine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                routine: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {integer} */
+                    minutes: 15 | 60 | 180;
+                };
+            };
+        };
+        responses: {
+            /** @description The snoozed routine reminder. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RoutineActionResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The routine does not belong to this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The routine cannot be snoozed. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getOwnerPasskeys: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Safe metadata for the owner's passkeys. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PasskeyListResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteOwnerPasskey: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                passkey: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The passkey was removed. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The passkey does not belong to this owner. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    beginMobilePasskeyManagement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description A same-server browser URL with a fragment-only one-time token. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PasskeyManagementUrlResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getTwoFactorStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Authenticator status. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwoFactorStatusResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    disableTwoFactor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DisableTwoFactorRequest"];
+            };
+        };
+        responses: {
+            /** @description Authenticator disabled; mobile sessions revoked. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The password or authenticator code is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    confirmTwoFactorSetup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TwoFactorCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description Authenticator protection is enabled. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwoFactorStatusResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The authenticator code is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    beginTwoFactorSetup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BeginTwoFactorSetupRequest"];
+            };
+        };
+        responses: {
+            /** @description Short-lived setup material; clients must only retain it in volatile memory. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwoFactorSetupResponse"];
+                };
+            };
+            /** @description The request is not authenticated. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Authenticator protection is already enabled. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The current password is invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

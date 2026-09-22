@@ -1,0 +1,32 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Tests\TestCase;
+
+class PasskeyManagementApiTest extends TestCase
+{
+    use LazilyRefreshDatabase;
+
+    public function test_signed_in_mobile_owner_can_create_a_short_lived_one_time_passkey_management_handoff(): void
+    {
+        $owner = User::factory()->create();
+
+        $response = $this->actingAs($owner)->postJson('/api/v1/security/passkeys/management-sessions')
+            ->assertCreated();
+
+        $url = (string) $response->json('data.management_url');
+        $this->assertStringContainsString('/passkeys/manage?return=mobile#token=', $url);
+        $token = substr($url, (int) strrpos($url, '=') + 1);
+
+        $this->postJson('/api/v1/mobile/passkeys/management/redeem', ['token' => $token])
+            ->assertOk()
+            ->assertJsonPath('data.ready', true);
+        $this->assertAuthenticatedAs($owner, 'web');
+
+        $this->postJson('/api/v1/mobile/passkeys/management/redeem', ['token' => $token])
+            ->assertUnprocessable();
+    }
+}

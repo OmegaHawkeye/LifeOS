@@ -65,6 +65,199 @@ paths:
                 $ref: "#/components/schemas/Error"
         "429":
           description: Too many sign-in attempts.
+  /mobile/auth/login:
+    post:
+      operationId: loginMobileOwner
+      summary: Verify a mobile device's password before asking for an authenticator code
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MobileLoginRequest"
+      responses:
+        "202":
+          description: The password was verified and a short-lived authenticator challenge was created; unconfigured accounts receive enrollment material instead.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MobileLoginChallengeResponse"
+        "422":
+          description: The email or password are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Too many sign-in attempts.
+  /mobile/auth/two-factor/challenge:
+    post:
+      operationId: completeMobileTwoFactorChallenge
+      summary: Complete a mobile sign-in with its authenticator code
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MobileTwoFactorChallengeRequest"
+      responses:
+        "201":
+          description: The device's access and refresh credentials.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MobileCredentialsResponse"
+        "422":
+          description: The challenge is invalid or expired, or the authenticator code is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Too many verification attempts.
+  /mobile/auth/two-factor/cancel:
+    post:
+      operationId: cancelMobileTwoFactorChallenge
+      summary: Cancel a pending mobile authenticator challenge
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MobileTwoFactorCancelRequest"
+      responses:
+        "204":
+          description: The pending challenge was canceled.
+        "422":
+          description: The challenge token is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /mobile/auth/refresh:
+    post:
+      operationId: refreshMobileCredentials
+      summary: Rotate a one-time mobile refresh token
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MobileRefreshRequest"
+      responses:
+        "200":
+          description: The previous refresh token is consumed and replaced.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MobileCredentialsResponse"
+        "422":
+          description: The refresh token is invalid, expired, or has already been used.
+        "429":
+          description: Too many refresh attempts.
+  /mobile/auth/revoke:
+    post:
+      operationId: revokeMobileDevice
+      summary: Revoke a mobile device and its refresh-token family
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MobileRefreshRequest"
+      responses:
+        "204":
+          description: The device credentials have been revoked.
+        "422":
+          description: The refresh token request is invalid.
+        "429":
+          description: Too many revocation attempts.
+  /mobile/passkeys:
+    post:
+      operationId: beginMobilePasskeySignIn
+      summary: Start a short-lived browser passkey sign-in for a native app
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MobilePasskeyStartRequest" }
+      responses:
+        "201":
+          description: The self-hosted LifeOS web origin to open for WebAuthn.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MobilePasskeyLoginUrlResponse" }
+        "422": { description: State or PKCE challenge is invalid. }
+        "429": { description: Too many passkey attempts. }
+  /mobile/passkeys/prepare:
+    post:
+      operationId: prepareMobilePasskeySignIn
+      summary: Bind a one-time mobile passkey request to the browser session
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PasskeyStateRequest" }
+      responses:
+        "200": { description: The browser session is ready for the passkey ceremony. }
+        "422": { description: The state is unknown or expired. }
+  /mobile/passkeys/complete:
+    post:
+      operationId: completeMobilePasskeySignIn
+      summary: Create a one-time native callback code after Fortify verifies a passkey
+      tags: [Foundation]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PasskeyStateRequest" }
+      responses:
+        "200":
+          description: The app callback URL containing a one-time code and matching state.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MobilePasskeyCallbackResponse" }
+        "401": { description: The browser session is not authenticated. }
+        "422": { description: A verified passkey session is required, or the state is expired. }
+  /mobile/passkeys/exchange:
+    post:
+      operationId: exchangeMobilePasskeyCode
+      summary: Exchange a one-time PKCE-bound passkey code for Sanctum mobile credentials
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MobilePasskeyExchangeRequest" }
+      responses:
+        "200":
+          description: The native app's short-lived access token and rotating refresh token.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MobileCredentialsResponse" }
+        "422": { description: The code is invalid, expired, replayed, or has the wrong PKCE verifier. }
+        "429": { description: Too many passkey attempts. }
+  /mobile/passkeys/management/redeem:
+    post:
+      operationId: redeemMobilePasskeyManagementSession
+      summary: Redeem a short-lived one-time handoff to manage passkeys in the system browser
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PasskeyManagementRedeemRequest" }
+      responses:
+        "200": { description: The browser session is authenticated for passkey management. }
+        "422": { description: The handoff is invalid, expired, or already used. }
   /auth/two-factor/confirm:
     post:
       operationId: confirmOwnerTwoFactorSetup
@@ -133,6 +326,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /auth/password:
+    put:
+      operationId: changeOwnerPassword
+      summary: Change the authenticated owner's password
+      tags: [Foundation]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+      responses:
+        "204":
+          description: The password was changed.
+        "401":
+          description: The request is not authenticated.
+        "422":
+          description: The current or new password is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /settings:
     get:
       operationId: getOwnerSettings
@@ -172,6 +389,400 @@ paths:
           description: The request is not authenticated.
         "422":
           description: A setting is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /security/two-factor:
+    get:
+      operationId: getTwoFactorStatus
+      summary: Return the current owner's authenticator status
+      tags: [Foundation]
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      responses:
+        "200":
+          description: Authenticator status.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TwoFactorStatusResponse" }
+        "401": { description: The request is not authenticated. }
+    delete:
+      operationId: disableTwoFactor
+      summary: Disable authenticator protection after password and code confirmation
+      tags: [Foundation]
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DisableTwoFactorRequest" }
+      responses:
+        "204": { description: Authenticator disabled; mobile sessions revoked. }
+        "401": { description: The request is not authenticated. }
+        "422": { description: The password or authenticator code is invalid. }
+  /security/passkeys:
+    get:
+      operationId: getOwnerPasskeys
+      summary: List the current owner's passkeys without exposing credential material
+      tags: [Foundation]
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      responses:
+        "200":
+          description: Safe metadata for the owner's passkeys.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PasskeyListResponse" }
+        "401": { description: The request is not authenticated. }
+  /security/passkeys/management-sessions:
+    post:
+      operationId: beginMobilePasskeyManagement
+      summary: Create a three-minute one-time browser handoff for native passkey management
+      tags: [Foundation]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "201":
+          description: A same-server browser URL with a fragment-only one-time token.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PasskeyManagementUrlResponse" }
+        "401": { description: The request is not authenticated. }
+  /security/passkeys/{passkey}:
+    delete:
+      operationId: deleteOwnerPasskey
+      summary: Remove one of the current owner's passkeys
+      tags: [Foundation]
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      parameters:
+        - name: passkey
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        "204": { description: The passkey was removed. }
+        "401": { description: The request is not authenticated. }
+        "404": { description: The passkey does not belong to this owner. }
+  /security/two-factor/setup:
+    post:
+      operationId: beginTwoFactorSetup
+      summary: Begin authenticator setup after password confirmation
+      tags: [Foundation]
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BeginTwoFactorSetupRequest" }
+      responses:
+        "200":
+          description: Short-lived setup material; clients must only retain it in volatile memory.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TwoFactorSetupResponse" }
+        "401": { description: The request is not authenticated. }
+        "409": { description: Authenticator protection is already enabled. }
+        "422": { description: The current password is invalid. }
+  /security/two-factor/confirm:
+    post:
+      operationId: confirmTwoFactorSetup
+      summary: Confirm authenticator setup with a current code
+      tags: [Foundation]
+      security: [{ cookieAuth: [] }, { bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TwoFactorCodeRequest" }
+      responses:
+        "200":
+          description: Authenticator protection is enabled.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TwoFactorStatusResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: The authenticator code is invalid. }
+  /backup/status:
+    get:
+      operationId: getBackupStatus
+      summary: Return safe local backup status for the authenticated owner
+      tags: [Foundation]
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Backup status without local paths, credentials, or private data.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackupStatusResponse"
+        "401":
+          description: The request is not authenticated.
+  /account/export:
+    get:
+      operationId: downloadOwnerDataExport
+      summary: Download the authenticated owner's portable LifeOS data archive
+      tags: [Foundation]
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      responses:
+        "200":
+          description: A ZIP archive containing versioned structured data and private progress photos.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: Prevents the export from being stored by shared or browser caches.
+            Content-Disposition:
+              schema:
+                type: string
+              description: Suggested filename for the downloaded archive.
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        "401":
+          description: The request is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /account:
+    delete:
+      operationId: deleteOwnerAccount
+      summary: Permanently delete the authenticated owner's account and data
+      tags: [Foundation]
+      security:
+        - cookieAuth: []
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteOwnerAccountRequest"
+      responses:
+        "204":
+          description: The account, associated data, sessions, tokens, and private files were deleted.
+        "401":
+          description: The request is not authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: The current password or exact email confirmation is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /routines:
+    get:
+      operationId: listRoutines
+      summary: List today's active routines and recent completions
+      tags: [Routines]
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: The authenticated owner's routines without historical backlog.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoutinesResponse"
+        "401":
+          description: The request is not authenticated.
+    post:
+      operationId: createRoutine
+      summary: Create an owner routine
+      tags: [Routines]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoutineRequest"
+      responses:
+        "201":
+          description: The created routine.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoutineResponse"
+        "401":
+          description: The request is not authenticated.
+        "422":
+          description: The routine schedule is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /routines/{routine}:
+    patch:
+      operationId: updateRoutine
+      summary: Update an owner routine
+      tags: [Routines]
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: routine
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRoutineRequest"
+      responses:
+        "200":
+          description: The updated routine.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoutineResponse"
+        "401":
+          description: The request is not authenticated.
+        "404":
+          description: The routine does not belong to this owner.
+        "422":
+          description: The routine schedule is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /routines/{routine}/snooze:
+    post:
+      operationId: snoozeRoutine
+      summary: Snooze today's routine reminder
+      tags: [Routines]
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: routine
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [minutes]
+              properties:
+                minutes:
+                  type: integer
+                  enum: [15, 60, 180]
+      responses:
+        "200":
+          description: The snoozed routine reminder.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoutineActionResponse"
+        "401":
+          description: The request is not authenticated.
+        "404":
+          description: The routine does not belong to this owner.
+        "422":
+          description: The routine cannot be snoozed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /routines/{routine}/complete:
+    post:
+      operationId: completeRoutine
+      summary: Complete today's scheduled routine
+      tags: [Routines]
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: routine
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The completed routine.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoutineActionResponse"
+        "401":
+          description: The request is not authenticated.
+        "404":
+          description: The routine does not belong to this owner.
+        "422":
+          description: The routine is not scheduled today.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /dashboard/weekly-review:
+    get:
+      operationId: getWeeklyReview
+      summary: Summarize the previous full week across life domains
+      tags: [Dashboard]
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: week_start
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: The requested week's summary and saved review notes.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeeklyReviewSummaryResponse"
+        "401":
+          description: The request is not authenticated.
+        "422":
+          description: The selected week must start on a Monday.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      operationId: saveWeeklyReview
+      summary: Save review notes and next week's focus
+      tags: [Dashboard]
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveWeeklyReviewRequest"
+      responses:
+        "200":
+          description: The saved review entry. Fetch the summary endpoint for refreshed domain signals.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeeklyReviewEntryResponse"
+        "401":
+          description: The request is not authenticated.
+        "422":
+          description: The selected week must start on a Monday.
           content:
             application/json:
               schema:
@@ -219,6 +830,150 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /finance/accounts/{account}:
+    patch:
+      operationId: updateFinanceAccount
+      summary: Change whether an account contributes to net worth
+      tags: [Finance]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: account
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateFinanceAccountRequest" }
+      responses:
+        "200":
+          description: Updated account.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FinanceAccountResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Account not found for this owner. }
+        "422": { description: Invalid account selection. }
+  /finance/assets:
+    get:
+      operationId: listFinanceAssets
+      summary: List active owner assets with current manual values
+      tags: [Finance]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Active assets ordered by type and name.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FinanceAssetListResponse" }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: createFinanceAsset
+      summary: Create an asset and optionally record its first valuation
+      tags: [Finance]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateFinanceAssetRequest" }
+      responses:
+        "201":
+          description: Created asset.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FinanceAssetResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid asset or account ownership. }
+  /finance/assets/{asset}:
+    patch:
+      operationId: updateFinanceAsset
+      summary: Include or archive an asset
+      tags: [Finance]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: asset
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateFinanceAssetRequest" }
+      responses:
+        "200":
+          description: Updated asset.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FinanceAssetResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Asset not found for this owner. }
+        "422": { description: Invalid asset selection. }
+  /finance/assets/{asset}/valuations:
+    get:
+      operationId: listFinanceAssetValuations
+      summary: List an asset's valuation history
+      tags: [Finance]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: asset
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        "200":
+          description: Valuations newest first, with their manual or synced source.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/FinanceAssetValuationListResponse",
+                }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Asset not found for this owner. }
+    post:
+      operationId: createFinanceAssetValuation
+      summary: Record a manual asset valuation
+      tags: [Finance]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: asset
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              {
+                $ref: "#/components/schemas/CreateFinanceAssetValuationRequest",
+              }
+      responses:
+        "201":
+          description: Created valuation.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/FinanceAssetValuationResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Asset not found for this owner. }
+        "422": { description: Invalid valuation. }
+  /finance/net-worth:
+    get:
+      operationId: getFinanceNetWorth
+      summary: Summarize selected accounts and asset values without double-counting linked accounts
+      tags: [Finance]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Owner net worth grouped by currency and asset type.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FinanceNetWorthResponse" }
+        "401": { description: The request is not authenticated. }
   /finance/categories:
     get:
       operationId: listFinanceCategories
@@ -698,54 +1453,278 @@ paths:
       tags: [Health]
       security: [{ cookieAuth: [] }]
       responses:
-        "200": { description: Health sources., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSourceListResponse" } } } }
+        "200":
+          {
+            description: Health sources.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/HealthSourceListResponse" },
+                  },
+              },
+          }
         "401": { description: The request is not authenticated. }
     post:
       operationId: createHealthSource
       summary: Register a health data source
       tags: [Health]
       security: [{ cookieAuth: [] }]
-      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateHealthSourceRequest" } } } }
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    { $ref: "#/components/schemas/CreateHealthSourceRequest" },
+                },
+            },
+        }
       responses:
-        "201": { description: The health source., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSourceResponse" } } } }
+        "201":
+          {
+            description: The health source.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/HealthSourceResponse" },
+                  },
+              },
+          }
         "422": { description: Invalid source fields. }
+  /health/sources/{source}:
+    delete:
+      operationId: disconnectHealthKitSource
+      summary: Disconnect a HealthKit source and delete its imported LifeOS records
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: source
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "204":
+          {
+            description: The source was revoked and its imported records deleted; manual records are retained.,
+          }
+        "401": { description: The request is not authenticated. }
+        "404":
+          { description: The HealthKit source does not exist for this owner. }
+  /health/sources/{source}/samples/{externalId}:
+    delete:
+      operationId: deleteImportedHealthSample
+      summary: Delete one imported sample after HealthKit reports it was removed
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: source
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+        - name: externalId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          {
+            description: The imported sample was deleted,
+            or was already absent.,
+          }
+        "401": { description: The request is not authenticated. }
+        "404":
+          { description: The HealthKit source does not exist for this owner. }
   /health/sync-runs:
     post:
       operationId: startHealthSyncRun
       summary: Start a health import or sync run
       tags: [Health]
       security: [{ cookieAuth: [] }]
-      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [source_id], properties: { source_id: { type: integer, format: int64 } } } } } }
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    {
+                      type: object,
+                      required: [source_id],
+                      properties:
+                        { source_id: { type: integer, format: int64 } },
+                    },
+                },
+            },
+        }
       responses:
-        "201": { description: Running sync run., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSyncRunResponse" } } } }
+        "201":
+          {
+            description: Running sync run.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/HealthSyncRunResponse" },
+                  },
+              },
+          }
   /health/sync-runs/{run}:
     patch:
       operationId: finishHealthSyncRun
       summary: Finish a health sync run
       tags: [Health]
       security: [{ cookieAuth: [] }]
-      parameters: [{ name: run, in: path, required: true, schema: { type: integer, format: int64 } }]
-      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [status], properties: { status: { type: string, enum: [success, partial_success, failure] }, imported_count: { type: integer }, skipped_count: { type: integer }, failed_count: { type: integer } } } } } }
+      parameters:
+        [
+          {
+            name: run,
+            in: path,
+            required: true,
+            schema: { type: integer, format: int64 },
+          },
+        ]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    {
+                      type: object,
+                      required: [status],
+                      properties:
+                        {
+                          status:
+                            {
+                              type: string,
+                              enum: [success, partial_success, failure],
+                            },
+                          imported_count: { type: integer },
+                          skipped_count: { type: integer },
+                          failed_count: { type: integer },
+                        },
+                    },
+                },
+            },
+        }
       responses:
-        "200": { description: Finished sync run., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSyncRunResponse" } } } }
+        "200":
+          {
+            description: Finished sync run.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/HealthSyncRunResponse" },
+                  },
+              },
+          }
+  /health/trends:
+    get:
+      operationId: getHealthTrends
+      summary: Get the authenticated owner's health trends for a period
+      tags: [Health]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: range
+          in: query
+          schema:
+            type: string
+            enum: [7d, 30d, 90d, ytd]
+            default: 30d
+      responses:
+        "200":
+          description: Aggregated owner-scoped daily health trends.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/HealthTrendsSummaryResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: The requested range is invalid. }
   /health/samples:
     get:
       operationId: listHealthSamples
       summary: List normalized health samples
       tags: [Health]
       security: [{ cookieAuth: [] }]
-      parameters: [{ name: sample_type, in: query, schema: { type: string, enum: [steps, sleep, heart_rate, workouts, calories, weight] } }]
+      parameters:
+        [
+          {
+            name: sample_type,
+            in: query,
+            schema:
+              {
+                type: string,
+                enum: [steps, sleep, heart_rate, workouts, calories, weight],
+              },
+          },
+        ]
       responses:
-        "200": { description: Health samples., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSampleListResponse" } } } }
+        "200":
+          {
+            description: Health samples.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/HealthSampleListResponse" },
+                  },
+              },
+          }
     post:
       operationId: ingestHealthSample
       summary: Ingest one normalized health sample idempotently
       tags: [Health]
       security: [{ cookieAuth: [] }]
-      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateHealthSampleRequest" } } } }
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    { $ref: "#/components/schemas/CreateHealthSampleRequest" },
+                },
+            },
+        }
       responses:
-        "200": { description: Existing sample returned for an idempotent retry., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSampleResponse" } } } }
-        "201": { description: Created sample., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSampleResponse" } } } }
+        "200":
+          {
+            description: Existing sample returned for an idempotent retry.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/HealthSampleResponse" },
+                  },
+              },
+          }
+        "201":
+          {
+            description: Created sample.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/HealthSampleResponse" },
+                  },
+              },
+          }
   /health/imports:
     post:
       operationId: importAppleHealthXml
@@ -762,9 +1741,949 @@ paths:
               properties:
                 file: { type: string, format: binary }
       responses:
-        "201": { description: Import summary., content: { application/json: { schema: { $ref: "#/components/schemas/HealthSyncRunResponse" } } } }
+        "201":
+          {
+            description: Import summary.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/HealthSyncRunResponse" },
+                  },
+              },
+          }
         "401": { description: The request is not authenticated. }
         "422": { description: Invalid or malformed XML input. }
+  /fitness/dashboard:
+    get:
+      operationId: getFitnessDashboard
+      summary: Get the authenticated owner's fitness summary
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Fitness dashboard summary.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FitnessDashboardResponse"
+        "401": { description: The request is not authenticated. }
+  /fitness/goals:
+    get:
+      operationId: listFitnessGoals
+      summary: List the authenticated owner's fitness goals
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          {
+            description: Fitness goals.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/FitnessGoalListResponse" },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: createFitnessGoal
+      summary: Create a fitness goal
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    { $ref: "#/components/schemas/CreateFitnessGoalRequest" },
+                },
+            },
+        }
+      responses:
+        "201":
+          {
+            description: Created fitness goal.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/FitnessGoalResponse" },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid goal. }
+  /fitness/goals/{goal}:
+    patch:
+      operationId: updateFitnessGoal
+      summary: Update an owned fitness goal
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        [
+          {
+            name: goal,
+            in: path,
+            required: true,
+            schema: { type: integer, format: int64 },
+          },
+        ]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    { $ref: "#/components/schemas/UpdateFitnessGoalRequest" },
+                },
+            },
+        }
+      responses:
+        "200":
+          {
+            description: Updated fitness goal.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/FitnessGoalResponse" },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+        "404": { description: The goal does not belong to the owner. }
+        "422": { description: Invalid goal update. }
+  /fitness/body-metrics:
+    get:
+      operationId: listFitnessBodyMetrics
+      summary: List body metrics for the authenticated owner
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: metric_type
+          in: query
+          schema: { type: string }
+        - name: days
+          in: query
+          schema: { type: integer, minimum: 1 }
+      responses:
+        "200":
+          {
+            description: Body metrics.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      {
+                        $ref: "#/components/schemas/FitnessBodyMetricListResponse",
+                      },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: createFitnessBodyMetric
+      summary: Record a body metric
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    {
+                      $ref: "#/components/schemas/CreateFitnessBodyMetricRequest",
+                    },
+                },
+            },
+        }
+      responses:
+        "201":
+          {
+            description: Created body metric.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      {
+                        $ref: "#/components/schemas/FitnessBodyMetricResponse",
+                      },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid body metric. }
+  /fitness/progress-photos:
+    get:
+      operationId: listFitnessProgressPhotos
+      summary: List private progress photos for the authenticated owner
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: The latest one hundred private progress photos.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/FitnessProgressPhotoListResponse",
+                }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: createFitnessProgressPhoto
+      summary: Upload a private progress photo
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              { $ref: "#/components/schemas/CreateFitnessProgressPhotoRequest" }
+      responses:
+        "201":
+          description: Private photo metadata. Storage paths are never returned.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/FitnessProgressPhotoResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid metadata or image. }
+  /fitness/progress-photos/monthly-review:
+    get:
+      operationId: getFitnessMonthlyProgressReview
+      summary: Get the authenticated owner's monthly progress review prompt
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: month
+          in: query
+          schema: { type: string, pattern: "^[0-9]{4}-[0-9]{2}$" }
+      responses:
+        "200":
+          description: Monthly prompt status and photo summary.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/FitnessMonthlyReviewResponse" }
+        "401": { description: The request is not authenticated. }
+    put:
+      operationId: saveFitnessMonthlyProgressReview
+      summary: Save the authenticated owner's monthly progress reflection
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/SaveFitnessMonthlyReviewRequest" }
+      responses:
+        "200":
+          description: Saved monthly reflection.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/FitnessMonthlyReviewResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid review month or notes. }
+  /fitness/progress-photos/{photo}/content:
+    get:
+      operationId: getFitnessProgressPhotoContent
+      summary: Stream one private image after checking the authenticated owner
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: photo
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "200":
+          description: Private image with no-store and nosniff headers.
+          content:
+            image/jpeg: { schema: { type: string, format: binary } }
+            image/png: { schema: { type: string, format: binary } }
+            image/webp: { schema: { type: string, format: binary } }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Photo not found for this owner. }
+  /fitness/progress-photos/{photo}:
+    delete:
+      operationId: deleteFitnessProgressPhoto
+      summary: Permanently delete one of the authenticated owner's private photos
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: photo
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "204": { description: Photo file and metadata deleted. }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Photo not found for this owner. }
+  /fitness/exercises:
+    get:
+      operationId: listFitnessExercises
+      summary: List the owner's exercise library
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Exercise library.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/FitnessExerciseListResponse" }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: createFitnessExercise
+      summary: Add an exercise to the owner's library
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/CreateFitnessExerciseRequest" }
+      responses:
+        "201":
+          description: Created exercise.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FitnessExerciseResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid exercise. }
+  /fitness/exercises/{exercise}/recent-performance:
+    get:
+      operationId: getFitnessRecentPerformance
+      summary: Return the latest completed performance for one exercise
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: exercise
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "200":
+          description: The latest completed session and its sets, if any.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/FitnessRecentPerformanceResponse",
+                }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Exercise not found for this owner. }
+  /fitness/workout-templates:
+    get:
+      operationId: listFitnessWorkoutTemplates
+      summary: List reusable workout templates
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Workout templates with their exercises.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/FitnessWorkoutTemplateListResponse",
+                }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: createFitnessWorkoutTemplate
+      summary: Create a reusable workout template
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              {
+                $ref: "#/components/schemas/CreateFitnessWorkoutTemplateRequest",
+              }
+      responses:
+        "201":
+          description: Created workout template.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/FitnessWorkoutTemplateResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid template or exercise ownership. }
+  /fitness/workout-sessions:
+    get:
+      operationId: listFitnessWorkoutSessions
+      summary: List recent workout sessions and the active session
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: The owner's latest twenty workout sessions.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/FitnessWorkoutSessionListResponse",
+                }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: startFitnessWorkoutSession
+      summary: Start a template-based or ad-hoc workout
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/StartFitnessWorkoutSessionRequest" }
+      responses:
+        "201":
+          description: Started workout session.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/FitnessWorkoutSessionResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Template not found for this owner. }
+        "422": { description: Invalid session. }
+  /fitness/workout-sessions/{session}/exercises:
+    post:
+      operationId: addFitnessWorkoutSessionExercise
+      summary: Add an exercise to an active workout
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: session
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              {
+                $ref: "#/components/schemas/AddFitnessWorkoutSessionExerciseRequest",
+              }
+      responses:
+        "201":
+          description: Updated workout session.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/FitnessWorkoutSessionResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Session or exercise not found for this owner. }
+  /fitness/workout-sessions/{session}/exercises/{exercise}/sets:
+    post:
+      operationId: logFitnessWorkoutSet
+      summary: Log one set for an exercise in an active workout
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: session
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+        - name: exercise
+          in: path
+          required: true
+          schema:
+            { type: integer, format: int64, description: Session exercise ID. }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LogFitnessWorkoutSetRequest" }
+      responses:
+        "201":
+          description: Created workout set.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FitnessWorkoutSetResponse" }
+        "401": { description: The request is not authenticated. }
+        "404":
+          { description: Active session or exercise not found for this owner. }
+        "422": { description: Invalid set. }
+  /fitness/workout-sessions/{session}/complete:
+    post:
+      operationId: completeFitnessWorkoutSession
+      summary: Complete a workout after at least one set has been logged
+      tags: [Fitness]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: session
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "200":
+          description: Completed workout session with exercises and sets.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/FitnessWorkoutSessionResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Active session not found for this owner. }
+        "422": { description: A session needs at least one logged set. }
+  /nutrition/dashboard:
+    get:
+      operationId: getNutritionDashboard
+      summary: Build a weekly nutrition and adherence review for the owner
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: week_start
+          in: query
+          required: true
+          schema: { type: string, format: date, description: Must be a Monday. }
+      responses:
+        "200":
+          description: Weekly totals, today's meals, planning gaps, and reusable meals.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/NutritionDashboardResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid week start date. }
+  /nutrition/target:
+    get:
+      operationId: getNutritionTarget
+      summary: Return the owner's daily nutrition target
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          {
+            description: Daily nutrition target.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/NutritionTargetResponse" },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+    patch:
+      operationId: updateNutritionTarget
+      summary: Update the owner's daily nutrition target
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    {
+                      $ref: "#/components/schemas/UpdateNutritionTargetRequest",
+                    },
+                },
+            },
+        }
+      responses:
+        "200":
+          {
+            description: Saved daily nutrition target.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/NutritionTargetResponse" },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid nutrition target. }
+  /nutrition/recipes:
+    get:
+      operationId: listNutritionRecipes
+      summary: List the owner's recipes with ingredients
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          {
+            description: Owner's recipes.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      {
+                        $ref: "#/components/schemas/NutritionRecipeListResponse",
+                      },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: createNutritionRecipe
+      summary: Create a recipe with normalized ingredient quantities and units
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    {
+                      $ref: "#/components/schemas/StoreNutritionRecipeRequest",
+                    },
+                },
+            },
+        }
+      responses:
+        "201":
+          {
+            description: Created recipe.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/NutritionRecipeResponse" },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid recipe. }
+  /nutrition/recipes/{recipe}:
+    patch:
+      operationId: updateNutritionRecipe
+      summary: Update an owner's recipe
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        [
+          {
+            name: recipe,
+            in: path,
+            required: true,
+            schema: { type: integer, format: int64 },
+          },
+        ]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    {
+                      $ref: "#/components/schemas/UpdateNutritionRecipeRequest",
+                    },
+                },
+            },
+        }
+      responses:
+        "200":
+          {
+            description: Updated recipe.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/NutritionRecipeResponse" },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Recipe not found for this owner. }
+        "422": { description: Invalid recipe. }
+  /nutrition/meals:
+    get:
+      operationId: listNutritionMeals
+      summary: List meals, optionally filtered by date
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        [{ name: date, in: query, schema: { type: string, format: date } }]
+      responses:
+        "200":
+          {
+            description: Owner's meals,
+            newest first.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      {
+                        $ref: "#/components/schemas/NutritionMealListResponse",
+                      },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+    post:
+      operationId: logNutritionMeal
+      summary: Log a recipe or free-form meal
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        {
+          required: true,
+          content:
+            {
+              application/json:
+                {
+                  schema:
+                    { $ref: "#/components/schemas/StoreNutritionMealRequest" },
+                },
+            },
+        }
+      responses:
+        "201":
+          {
+            description: Logged meal with a nutrient snapshot.,
+            content:
+              {
+                application/json:
+                  {
+                    schema:
+                      { $ref: "#/components/schemas/NutritionMealResponse" },
+                  },
+              },
+          }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Recipe not found for this owner. }
+        "422": { description: Invalid meal. }
+  /nutrition/plans:
+    get:
+      operationId: listNutritionPlanItems
+      summary: List planned meals for a Monday-starting week
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: week_start
+          in: query
+          required: true
+          schema: { type: string, format: date, description: Must be a Monday. }
+      responses:
+        "200":
+          description: Planned meals for the requested week.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/NutritionPlanItemListResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid week start date. }
+    post:
+      operationId: createNutritionPlanItem
+      summary: Add a recipe to a meal slot on a date
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/StoreNutritionPlanItemRequest" }
+      responses:
+        "201":
+          description: The planned meal with nutrition for its serving count.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NutritionPlanItemResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Recipe not found for this owner. }
+        "422": { description: Invalid planned meal. }
+  /nutrition/plans/{item}:
+    patch:
+      operationId: updateNutritionPlanItem
+      summary: Update a planned meal or its meal-prep status
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: item
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/UpdateNutritionPlanItemRequest" }
+      responses:
+        "200":
+          description: The updated planned meal.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NutritionPlanItemResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Planned meal or recipe not found for this owner. }
+        "422": { description: Invalid planned meal. }
+  /nutrition/plans/copy:
+    post:
+      operationId: copyNutritionPlanWeek
+      summary: Copy a non-empty week into an empty week
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CopyNutritionWeekRequest" }
+      responses:
+        "201":
+          description: Copied items with statuses reset to planned.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/NutritionPlanItemListResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Source is empty or destination is not empty. }
+  /nutrition/shopping-lists:
+    get:
+      operationId: listNutritionShoppingLists
+      summary: List the owner's saved shopping lists
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      responses:
+        "200":
+          description: Shopping lists with items, newest date range first.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/NutritionShoppingListListResponse",
+                }
+        "401": { description: The request is not authenticated. }
+  /nutrition/shopping-lists/generate:
+    post:
+      operationId: generateNutritionShoppingList
+      summary: Generate a shopping list from planned meals in a date range
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              {
+                $ref: "#/components/schemas/GenerateNutritionShoppingListRequest",
+              }
+      responses:
+        "201":
+          description: Generated list; incompatible units and unavailable recipes are reported.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/NutritionShoppingListResponse" }
+        "401": { description: The request is not authenticated. }
+        "422": { description: Invalid date range. }
+  /nutrition/shopping-lists/{list}/items:
+    post:
+      operationId: addNutritionShoppingListItem
+      summary: Add a manual item to a shopping list
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: list
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/StoreNutritionShoppingItemRequest" }
+      responses:
+        "201":
+          description: The created manual item.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/NutritionShoppingItemResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: List not found for this owner. }
+        "422": { description: Invalid shopping item. }
+  /nutrition/shopping-lists/{list}/items/{item}:
+    patch:
+      operationId: updateNutritionShoppingListItem
+      summary: Edit, check off, or move a shopping item between store sections
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: list
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+        - name: item
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              {
+                $ref: "#/components/schemas/UpdateNutritionShoppingItemRequest",
+              }
+      responses:
+        "200":
+          description: The updated shopping item.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/NutritionShoppingItemResponse" }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Item or list not found for this owner. }
+        "422": { description: Invalid shopping item. }
+    delete:
+      operationId: deleteNutritionShoppingListItem
+      summary: Remove a shopping item
+      tags: [Nutrition]
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: list
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+        - name: item
+          in: path
+          required: true
+          schema: { type: integer, format: int64 }
+      responses:
+        "204": { description: Item removed. }
+        "401": { description: The request is not authenticated. }
+        "404": { description: Item or list not found for this owner. }
   /finance/transfers:
     get:
       operationId: listFinanceTransfers
@@ -862,6 +2781,223 @@ components:
         password:
           type: string
           format: password
+    MobileLoginRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password, device_name]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        device_name:
+          type: string
+          minLength: 1
+          maxLength: 80
+    MobileLoginChallengeResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [status, challenge_token, challenge_expires_at]
+          properties:
+            status:
+              type: string
+              enum: [challenge_required, setup_required]
+            secret:
+              type: string
+              description: Present only for initial enrollment and never persist this value on the client.
+            challenge_token:
+              type: string
+              minLength: 40
+              maxLength: 128
+            challenge_expires_at:
+              type: string
+              format: date-time
+    TwoFactorStatusResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [enabled]
+          properties:
+            enabled: { type: boolean }
+    BeginTwoFactorSetupRequest:
+      type: object
+      additionalProperties: false
+      required: [current_password]
+      properties:
+        current_password: { type: string, minLength: 1 }
+    TwoFactorSetupResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [secret, otpauth_uri]
+          properties:
+            secret: { type: string }
+            otpauth_uri: { type: string, format: uri }
+    DisableTwoFactorRequest:
+      type: object
+      additionalProperties: false
+      required: [current_password, code]
+      properties:
+        current_password: { type: string, minLength: 1 }
+        code: { type: string, pattern: '^\d{6}$' }
+    MobileTwoFactorChallengeRequest:
+      type: object
+      additionalProperties: false
+      required: [challenge_token, code]
+      properties:
+        challenge_token:
+          type: string
+          minLength: 40
+          maxLength: 128
+        code:
+          type: string
+          pattern: '^\d{6}$'
+    MobileTwoFactorCancelRequest:
+      type: object
+      additionalProperties: false
+      required: [challenge_token]
+      properties:
+        challenge_token:
+          type: string
+          minLength: 40
+          maxLength: 128
+    MobileRefreshRequest:
+      type: object
+      additionalProperties: false
+      required: [refresh_token]
+      properties:
+        refresh_token:
+          type: string
+          minLength: 40
+          maxLength: 120
+    MobilePasskeyStartRequest:
+      type: object
+      additionalProperties: false
+      required: [state, code_challenge]
+      properties:
+        state: { type: string, pattern: '^[A-Za-z0-9_-]{43}$' }
+        code_challenge: { type: string, pattern: '^[A-Za-z0-9_-]{43}$' }
+    PasskeyStateRequest:
+      type: object
+      additionalProperties: false
+      required: [state]
+      properties:
+        state: { type: string, pattern: '^[A-Za-z0-9_-]{43}$' }
+    MobilePasskeyExchangeRequest:
+      type: object
+      additionalProperties: false
+      required: [state, code, code_verifier]
+      properties:
+        state: { type: string, pattern: '^[A-Za-z0-9_-]{43}$' }
+        code: { type: string, minLength: 64, maxLength: 64 }
+        code_verifier: { type: string, minLength: 43, maxLength: 128, pattern: '^[A-Za-z0-9._~-]+$' }
+    PasskeyManagementRedeemRequest:
+      type: object
+      additionalProperties: false
+      required: [token]
+      properties:
+        token: { type: string, minLength: 64, maxLength: 64, pattern: '^[A-Za-z0-9]+$' }
+    MobilePasskeyLoginUrlResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [login_url]
+          properties:
+            login_url: { type: string, format: uri }
+    MobilePasskeyCallbackResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [callback_url]
+          properties:
+            callback_url: { type: string, format: uri }
+    PasskeyManagementUrlResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: object
+          required: [management_url]
+          properties:
+            management_url: { type: string, format: uri }
+    PasskeyListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required: [id, name, last_used_at, created_at]
+            properties:
+              id: { type: string }
+              name: { type: string }
+              last_used_at: { type: [string, "null"], format: date-time }
+              created_at: { type: [string, "null"], format: date-time }
+    MobileCredentialsResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required:
+            [
+              access_token,
+              access_token_expires_at,
+              refresh_token,
+              refresh_token_expires_at,
+              token_type,
+              device_name,
+            ]
+          properties:
+            access_token:
+              type: string
+            access_token_expires_at:
+              type: string
+              format: date-time
+            refresh_token:
+              type: string
+            refresh_token_expires_at:
+              type: string
+              format: date-time
+            token_type:
+              type: string
+              const: Bearer
+            device_name:
+              type: string
+    ChangePasswordRequest:
+      type: object
+      additionalProperties: false
+      required: [current_password, password, password_confirmation]
+      properties:
+        current_password:
+          type: string
+          format: password
+        password:
+          type: string
+          format: password
+          minLength: 12
+        password_confirmation:
+          type: string
+          format: password
     TwoFactorCodeRequest:
       type: object
       additionalProperties: false
@@ -901,6 +3037,41 @@ components:
       properties:
         data:
           $ref: "#/components/schemas/OwnerSettings"
+    BackupStatusResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/BackupStatus"
+    BackupStatus:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          status,
+          last_attempt_at,
+          last_successful_backup_at,
+          retention_days,
+          scheduled_time,
+        ]
+      properties:
+        status:
+          type: string
+          enum: [never, ok, failed]
+        last_attempt_at:
+          type: [string, "null"]
+          format: date-time
+        last_successful_backup_at:
+          type: [string, "null"]
+          format: date-time
+        retention_days:
+          type: integer
+          minimum: 1
+          maximum: 730
+        scheduled_time:
+          type: string
+          const: "02:00"
     OwnerSettings:
       type: object
       additionalProperties: false
@@ -911,6 +3082,7 @@ components:
           measurement_system,
           theme,
           mask_sensitive_data_by_default,
+          notifications_enabled,
         ]
       properties:
         timezone:
@@ -927,6 +3099,20 @@ components:
           enum: [system, light, dark]
         mask_sensitive_data_by_default:
           type: boolean
+        notifications_enabled:
+          type: boolean
+    DeleteOwnerAccountRequest:
+      type: object
+      additionalProperties: false
+      required: [current_password, email_confirmation]
+      properties:
+        current_password:
+          type: string
+          format: password
+        email_confirmation:
+          type: string
+          format: email
+          description: Must exactly match the authenticated owner's email address.
     UpdateOwnerSettingsRequest:
       type: object
       additionalProperties: false
@@ -945,10 +3131,329 @@ components:
           enum: [system, light, dark]
         mask_sensitive_data_by_default:
           type: boolean
+        notifications_enabled:
+          type: boolean
+    Routine:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          id,
+          title,
+          domain,
+          frequency,
+          days_of_week,
+          reminder_time,
+          is_scheduled_today,
+          status,
+          reminder_active,
+          snoozed_until,
+        ]
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        domain:
+          type: string
+          enum: [finance, fitness, nutrition, review, personal]
+        frequency:
+          type: string
+          enum: [daily, weekly]
+        days_of_week:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        reminder_time:
+          type: string
+          nullable: true
+          example: "09:00:00"
+        is_scheduled_today:
+          type: boolean
+        status:
+          type: string
+          enum: [due, not_scheduled, completed, snoozed]
+        reminder_active:
+          type: boolean
+        snoozed_until:
+          type: string
+          format: date-time
+          nullable: true
+    RoutineDefinition:
+      type: object
+      additionalProperties: false
+      required:
+        [id, title, domain, frequency, days_of_week, reminder_time, is_active]
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        domain:
+          type: string
+          enum: [finance, fitness, nutrition, review, personal]
+        frequency:
+          type: string
+          enum: [daily, weekly]
+        days_of_week:
+          type: array
+          nullable: true
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        reminder_time:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+    CreateRoutineRequest:
+      type: object
+      additionalProperties: false
+      required: [title, domain, frequency]
+      properties:
+        title:
+          type: string
+          maxLength: 120
+        domain:
+          type: string
+          enum: [finance, fitness, nutrition, review, personal]
+        frequency:
+          type: string
+          enum: [daily, weekly]
+        days_of_week:
+          type: array
+          minItems: 1
+          maxItems: 7
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        reminder_time:
+          type: string
+          nullable: true
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+    UpdateRoutineRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          maxLength: 120
+        domain:
+          type: string
+          enum: [finance, fitness, nutrition, review, personal]
+        frequency:
+          type: string
+          enum: [daily, weekly]
+        days_of_week:
+          type: array
+          minItems: 1
+          maxItems: 7
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        reminder_time:
+          type: string
+          nullable: true
+          pattern: "^([01]\\d|2[0-3]):[0-5]\\d$"
+        is_active:
+          type: boolean
+    RoutineResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/RoutineDefinition"
+    RoutineActionResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [status]
+          properties:
+            status:
+              type: string
+              enum: [snoozed, completed]
+            snoozed_until:
+              type: string
+              format: date-time
+            completed_at:
+              type: string
+              format: date-time
+    RoutinesResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [notifications_enabled, routines, recent_completions]
+          properties:
+            notifications_enabled:
+              type: boolean
+            routines:
+              type: array
+              items:
+                $ref: "#/components/schemas/Routine"
+            recent_completions:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: [routine_id, title, domain, completed_at]
+                properties:
+                  routine_id:
+                    type: integer
+                  title:
+                    type: string
+                    nullable: true
+                  domain:
+                    type: string
+                    nullable: true
+                  completed_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+    WeeklyReviewSummaryResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [week_start, week_end, finance, fitness, nutrition, review]
+          properties:
+            week_start:
+              type: string
+              format: date
+            week_end:
+              type: string
+              format: date
+            finance:
+              type: object
+              additionalProperties: false
+              required: [transaction_count, totals]
+              properties:
+                transaction_count:
+                  type: integer
+                totals:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    required: [currency, income, expenses]
+                    properties:
+                      currency:
+                        type: string
+                      income:
+                        type: string
+                      expenses:
+                        type: string
+            fitness:
+              type: object
+              additionalProperties: false
+              required: [completed_workouts, workout_minutes]
+              properties:
+                completed_workouts:
+                  type: integer
+                workout_minutes:
+                  type: [integer, "null"]
+            nutrition:
+              type: object
+              additionalProperties: false
+              required: [meals_logged, planned_meals, calories, protein_grams]
+              properties:
+                meals_logged:
+                  type: integer
+                planned_meals:
+                  type: integer
+                calories:
+                  type: string
+                  nullable: true
+                protein_grams:
+                  type: string
+                  nullable: true
+            review:
+              type: object
+              nullable: true
+              additionalProperties: false
+              required: [notes, next_week_focus, reviewed_at]
+              properties:
+                notes:
+                  type: string
+                  nullable: true
+                next_week_focus:
+                  type: string
+                  nullable: true
+                  reviewed_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+    WeeklyReviewEntryResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [week_start, notes, next_week_focus, reviewed_at]
+          properties:
+            week_start:
+              type: string
+              format: date
+            notes:
+              type: string
+              nullable: true
+            next_week_focus:
+              type: string
+              nullable: true
+            reviewed_at:
+              type: string
+              format: date-time
+              nullable: true
+    SaveWeeklyReviewRequest:
+      type: object
+      additionalProperties: false
+      required: [week_start]
+      properties:
+        week_start:
+          type: string
+          format: date
+        notes:
+          type: string
+          nullable: true
+          maxLength: 10000
+        next_week_focus:
+          type: string
+          nullable: true
+          maxLength: 2000
     FinanceAccount:
       type: object
       additionalProperties: false
-      required: [id, name, type, currency, opening_balance, balance]
+      required:
+        [
+          id,
+          name,
+          type,
+          currency,
+          opening_balance,
+          balance,
+          include_in_net_worth,
+        ]
       properties:
         id:
           type: integer
@@ -965,6 +3470,8 @@ components:
           $ref: "#/components/schemas/FinanceAmount"
         balance:
           $ref: "#/components/schemas/FinanceAmount"
+        include_in_net_worth:
+          type: boolean
     FinanceAccountResponse:
       type: object
       additionalProperties: false
@@ -998,6 +3505,199 @@ components:
           description: Defaults to the owner's primary currency.
         opening_balance:
           $ref: "#/components/schemas/FinanceAmount"
+    UpdateFinanceAccountRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        include_in_net_worth: { type: boolean }
+    FinanceAsset:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          id,
+          name,
+          asset_type,
+          account_id,
+          account_name,
+          currency,
+          cost_basis,
+          current_value,
+          valued_at,
+          source,
+          include_in_net_worth,
+          is_archived,
+        ]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        asset_type:
+          {
+            type: string,
+            enum:
+              [investment, collectible, game_item, property, vehicle, other],
+          }
+        account_id: { type: [integer, "null"], format: int64 }
+        account_name: { type: [string, "null"] }
+        currency: { type: string, pattern: "^[A-Z]{3}$" }
+        cost_basis: { type: [string, "null"] }
+        current_value: { type: [string, "null"] }
+        valued_at: { type: [string, "null"], format: date }
+        source: { type: [string, "null"], enum: [manual, synced, null] }
+        include_in_net_worth: { type: boolean }
+        is_archived: { type: boolean }
+    FinanceAssetResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/FinanceAsset" }
+    FinanceAssetListResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/FinanceAsset" }
+    CreateFinanceAssetRequest:
+      type: object
+      additionalProperties: false
+      required: [name, asset_type, currency]
+      properties:
+        name: { type: string, maxLength: 120 }
+        asset_type:
+          {
+            type: string,
+            enum:
+              [investment, collectible, game_item, property, vehicle, other],
+          }
+        account_id: { type: [integer, "null"], format: int64 }
+        currency: { type: string, pattern: "^[A-Z]{3}$" }
+        cost_basis: { type: [string, "null"], pattern: "^\\d+(\\.\\d{1,4})?$" }
+        initial_value:
+          { type: [string, "null"], pattern: "^\\d+(\\.\\d{1,4})?$" }
+        valued_at: { type: string, format: date }
+    UpdateFinanceAssetRequest:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        is_archived: { type: boolean }
+        include_in_net_worth: { type: boolean }
+    FinanceAssetValuation:
+      type: object
+      additionalProperties: false
+      required: [id, value, valued_at, source, notes]
+      properties:
+        id: { type: integer, format: int64 }
+        value: { type: string }
+        valued_at: { type: string, format: date }
+        source: { type: string, enum: [manual, synced] }
+        notes: { type: [string, "null"] }
+    FinanceAssetValuationResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/FinanceAssetValuation" }
+    FinanceAssetValuationListResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/FinanceAssetValuation" }
+    CreateFinanceAssetValuationRequest:
+      type: object
+      additionalProperties: false
+      required: [value, valued_at]
+      properties:
+        value: { type: string, pattern: "^\\d+(\\.\\d{1,4})?$" }
+        valued_at: { type: string, format: date }
+        notes: { type: [string, "null"], maxLength: 500 }
+    FinanceNetWorthAccount:
+      type: object
+      required:
+        [id, name, type, currency, balance, selected, included, excluded_reason]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        type: { type: string }
+        currency: { type: string }
+        balance: { type: string }
+        selected: { type: boolean }
+        included: { type: boolean }
+        excluded_reason:
+          { type: [string, "null"], enum: [linked_asset, not_selected, null] }
+    FinanceNetWorthAsset:
+      type: object
+      required:
+        [
+          id,
+          name,
+          asset_type,
+          account_id,
+          account_name,
+          currency,
+          cost_basis,
+          current_value,
+          valued_at,
+          source,
+          selected,
+          included,
+        ]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        asset_type: { type: string }
+        account_id: { type: [integer, "null"], format: int64 }
+        account_name: { type: [string, "null"] }
+        currency: { type: string }
+        cost_basis: { type: [string, "null"] }
+        current_value: { type: [string, "null"] }
+        valued_at: { type: [string, "null"], format: date }
+        source: { type: [string, "null"] }
+        selected: { type: boolean }
+        included: { type: boolean }
+    FinanceNetWorthTotal:
+      type: object
+      required: [currency, amount]
+      properties:
+        currency: { type: string }
+        amount: { type: string }
+    FinanceNetWorthAssetGroup:
+      type: object
+      required: [asset_type, currency, asset_count, amount]
+      properties:
+        asset_type: { type: string }
+        currency: { type: string }
+        asset_count: { type: integer }
+        amount: { type: string }
+    FinanceNetWorth:
+      type: object
+      required: [totals, accounts, assets, asset_groups]
+      properties:
+        totals:
+          type: array
+          items: { $ref: "#/components/schemas/FinanceNetWorthTotal" }
+        accounts:
+          type: array
+          items: { $ref: "#/components/schemas/FinanceNetWorthAccount" }
+        assets:
+          type: array
+          items: { $ref: "#/components/schemas/FinanceNetWorthAsset" }
+        asset_groups:
+          type: array
+          items: { $ref: "#/components/schemas/FinanceNetWorthAssetGroup" }
+    FinanceNetWorthResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/FinanceNetWorth" }
     FinanceCategory:
       type: object
       additionalProperties: false
@@ -1337,13 +4037,24 @@ components:
     FinanceBudget:
       type: object
       additionalProperties: false
-      required: [id, category_id, category_name, month, currency, target_amount, spent, remaining, is_over_budget]
+      required:
+        [
+          id,
+          category_id,
+          category_name,
+          month,
+          currency,
+          target_amount,
+          spent,
+          remaining,
+          is_over_budget,
+        ]
       properties:
         id: { type: integer, format: int64 }
         category_id: { type: integer, format: int64 }
         category_name: { type: string }
         month: { type: string, pattern: '^\\d{4}-\\d{2}$' }
-        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        currency: { type: string, pattern: "^[A-Z]{3}$" }
         target_amount: { $ref: "#/components/schemas/FinanceAmount" }
         spent: { $ref: "#/components/schemas/FinanceAmount" }
         remaining: { $ref: "#/components/schemas/FinanceAmount" }
@@ -1369,7 +4080,7 @@ components:
       properties:
         category_id: { type: integer, format: int64 }
         month: { type: string, pattern: '^\\d{4}-\\d{2}$' }
-        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        currency: { type: string, pattern: "^[A-Z]{3}$" }
         target_amount: { $ref: "#/components/schemas/FinanceAmount" }
     UpdateFinanceBudgetRequest:
       type: object
@@ -1378,12 +4089,25 @@ components:
       properties:
         category_id: { type: integer, format: int64 }
         month: { type: string, pattern: '^\\d{4}-\\d{2}$' }
-        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        currency: { type: string, pattern: "^[A-Z]{3}$" }
         target_amount: { $ref: "#/components/schemas/FinanceAmount" }
     FinanceSubscription:
       type: object
       additionalProperties: false
-      required: [id, name, account_id, account_name, category_id, category_name, amount, currency, billing_cycle, next_renewal_on, status]
+      required:
+        [
+          id,
+          name,
+          account_id,
+          account_name,
+          category_id,
+          category_name,
+          amount,
+          currency,
+          billing_cycle,
+          next_renewal_on,
+          status,
+        ]
       properties:
         id: { type: integer, format: int64 }
         name: { type: string }
@@ -1392,7 +4116,7 @@ components:
         category_id: { type: [integer, "null"], format: int64 }
         category_name: { type: [string, "null"] }
         amount: { $ref: "#/components/schemas/FinanceAmount" }
-        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        currency: { type: string, pattern: "^[A-Z]{3}$" }
         billing_cycle: { type: string, enum: [monthly, quarterly, yearly] }
         next_renewal_on: { type: string, format: date }
         status: { type: string, enum: [active, paused, canceled] }
@@ -1436,13 +4160,24 @@ components:
     FinanceSavingsGoal:
       type: object
       additionalProperties: false
-      required: [id, name, target_amount, current_amount, currency, target_date, progress_percent, remaining_amount, required_monthly_pace]
+      required:
+        [
+          id,
+          name,
+          target_amount,
+          current_amount,
+          currency,
+          target_date,
+          progress_percent,
+          remaining_amount,
+          required_monthly_pace,
+        ]
       properties:
         id: { type: integer, format: int64 }
         name: { type: string }
         target_amount: { $ref: "#/components/schemas/FinanceAmount" }
         current_amount: { $ref: "#/components/schemas/FinanceAmount" }
-        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        currency: { type: string, pattern: "^[A-Z]{3}$" }
         target_date: { type: string, format: date }
         progress_percent: { type: integer, minimum: 0, maximum: 100 }
         remaining_amount: { $ref: "#/components/schemas/FinanceAmount" }
@@ -1469,7 +4204,7 @@ components:
         name: { type: string, maxLength: 120 }
         target_amount: { $ref: "#/components/schemas/FinanceAmount" }
         current_amount: { $ref: "#/components/schemas/FinanceAmount" }
-        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        currency: { type: string, pattern: "^[A-Z]{3}$" }
         target_date: { type: string, format: date }
     UpdateFinanceSavingsGoalRequest:
       type: object
@@ -1479,8 +4214,980 @@ components:
         name: { type: string, maxLength: 120 }
         target_amount: { $ref: "#/components/schemas/FinanceAmount" }
         current_amount: { $ref: "#/components/schemas/FinanceAmount" }
-        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        currency: { type: string, pattern: "^[A-Z]{3}$" }
         target_date: { type: string, format: date }
+    NutritionIngredientLine:
+      type: object
+      required: [id, name, quantity, unit, position]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        quantity: { type: string }
+        unit: { type: string }
+        position: { type: integer }
+    NutritionRecipe:
+      type: object
+      required: [id, name, servings, ingredients]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        description: { type: [string, "null"] }
+        dietary_notes: { type: [string, "null"] }
+        servings: { type: integer }
+        instructions: { type: [string, "null"] }
+        calories: { type: [string, "null"] }
+        protein_grams: { type: [string, "null"] }
+        carbohydrate_grams: { type: [string, "null"] }
+        fat_grams: { type: [string, "null"] }
+        micronutrients: { type: [object, "null"] }
+        tags: { type: array, items: { type: string } }
+        ingredients:
+          {
+            type: array,
+            items: { $ref: "#/components/schemas/NutritionIngredientLine" },
+          }
+    NutritionRecipeResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/NutritionRecipe" } }
+    NutritionRecipeListResponse:
+      type: object
+      required: [data]
+      properties:
+        {
+          data:
+            {
+              type: array,
+              items: { $ref: "#/components/schemas/NutritionRecipe" },
+            },
+        }
+    NutritionRecipeIngredientInput:
+      type: object
+      required: [name, quantity, unit]
+      properties:
+        name: { type: string, maxLength: 160 }
+        quantity: { type: number, exclusiveMinimum: 0 }
+        unit: { type: string, maxLength: 32 }
+    StoreNutritionRecipeRequest:
+      type: object
+      required: [name, servings, ingredients]
+      properties:
+        name: { type: string, maxLength: 160 }
+        description: { type: [string, "null"] }
+        dietary_notes: { type: [string, "null"], maxLength: 2000 }
+        servings: { type: integer, minimum: 1 }
+        instructions: { type: [string, "null"] }
+        calories: { type: [number, "null"], minimum: 0 }
+        protein_grams: { type: [number, "null"], minimum: 0 }
+        carbohydrate_grams: { type: [number, "null"], minimum: 0 }
+        fat_grams: { type: [number, "null"], minimum: 0 }
+        micronutrients: { type: [object, "null"] }
+        tags: { type: array, items: { type: string, maxLength: 48 } }
+        ingredients:
+          {
+            type: array,
+            minItems: 1,
+            items:
+              { $ref: "#/components/schemas/NutritionRecipeIngredientInput" },
+          }
+    UpdateNutritionRecipeRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name: { type: string, maxLength: 160 }
+        description: { type: [string, "null"] }
+        dietary_notes: { type: [string, "null"], maxLength: 2000 }
+        servings: { type: integer, minimum: 1 }
+        instructions: { type: [string, "null"] }
+        calories: { type: [number, "null"], minimum: 0 }
+        protein_grams: { type: [number, "null"], minimum: 0 }
+        carbohydrate_grams: { type: [number, "null"], minimum: 0 }
+        fat_grams: { type: [number, "null"], minimum: 0 }
+        micronutrients: { type: [object, "null"] }
+        tags: { type: array, items: { type: string, maxLength: 48 } }
+        ingredients:
+          {
+            type: array,
+            minItems: 1,
+            items:
+              { $ref: "#/components/schemas/NutritionRecipeIngredientInput" },
+          }
+    NutritionMeal:
+      type: object
+      required: [id, name, meal_type, eaten_at, servings]
+      properties:
+        id: { type: integer, format: int64 }
+        recipe_id: { type: [integer, "null"], format: int64 }
+        name: { type: string }
+        meal_type:
+          { type: string, enum: [breakfast, lunch, dinner, snack, other] }
+        eaten_at: { type: string, format: date-time }
+        servings: { type: string }
+        calories: { type: [string, "null"] }
+        protein_grams: { type: [string, "null"] }
+        carbohydrate_grams: { type: [string, "null"] }
+        fat_grams: { type: [string, "null"] }
+        notes: { type: [string, "null"] }
+    NutritionMealResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/NutritionMeal" } }
+    NutritionMealListResponse:
+      type: object
+      required: [data]
+      properties:
+        {
+          data:
+            {
+              type: array,
+              items: { $ref: "#/components/schemas/NutritionMeal" },
+            },
+        }
+    NutritionPlanItem:
+      type: object
+      required:
+        [id, recipe_id, recipe_name, plan_date, meal_slot, servings, status]
+      properties:
+        id: { type: integer, format: int64 }
+        recipe_id: { type: [integer, "null"], format: int64 }
+        recipe_name: { type: string }
+        plan_date: { type: string, format: date }
+        meal_slot: { type: string, enum: [breakfast, lunch, dinner, snack] }
+        servings: { type: string }
+        status:
+          { type: string, enum: [planned, prepped, eaten, skipped, replaced] }
+        notes: { type: [string, "null"] }
+        calories: { type: [string, "null"] }
+        protein_grams: { type: [string, "null"] }
+        carbohydrate_grams: { type: [string, "null"] }
+        fat_grams: { type: [string, "null"] }
+    NutritionPlanItemResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/NutritionPlanItem" } }
+    NutritionPlanItemListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/NutritionPlanItem" }
+    StoreNutritionPlanItemRequest:
+      type: object
+      required: [recipe_id, plan_date, meal_slot]
+      properties:
+        recipe_id: { type: integer, format: int64 }
+        plan_date: { type: string, format: date }
+        meal_slot: { type: string, enum: [breakfast, lunch, dinner, snack] }
+        servings: { type: number, exclusiveMinimum: 0, maximum: 100 }
+        status:
+          { type: string, enum: [planned, prepped, eaten, skipped, replaced] }
+        notes: { type: [string, "null"], maxLength: 2000 }
+    UpdateNutritionPlanItemRequest:
+      type: object
+      minProperties: 1
+      properties:
+        recipe_id: { type: integer, format: int64 }
+        plan_date: { type: string, format: date }
+        meal_slot: { type: string, enum: [breakfast, lunch, dinner, snack] }
+        servings: { type: number, exclusiveMinimum: 0, maximum: 100 }
+        status:
+          { type: string, enum: [planned, prepped, eaten, skipped, replaced] }
+        notes: { type: [string, "null"], maxLength: 2000 }
+    CopyNutritionWeekRequest:
+      type: object
+      required: [source_week_start, target_week_start]
+      properties:
+        source_week_start:
+          { type: string, format: date, description: Must be a Monday. }
+        target_week_start:
+          {
+            type: string,
+            format: date,
+            description: Must be a different Monday with no planned items.,
+          }
+    NutritionShoppingItem:
+      type: object
+      required:
+        [id, name, store_section, is_checked, is_manual, quantity_warning]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        quantity: { type: [string, "null"] }
+        unit: { type: [string, "null"] }
+        store_section:
+          {
+            type: string,
+            enum: [produce, meat-seafood, dairy, bakery, frozen, pantry, other],
+          }
+        is_checked: { type: boolean }
+        is_manual: { type: boolean }
+        quantity_warning: { type: boolean }
+    NutritionShoppingItemResponse:
+      type: object
+      required: [data]
+      properties:
+        { data: { $ref: "#/components/schemas/NutritionShoppingItem" } }
+    NutritionShoppingList:
+      type: object
+      required:
+        [id, name, start_date, end_date, unavailable_recipe_count, items]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        start_date: { type: string, format: date }
+        end_date: { type: string, format: date }
+        unavailable_recipe_count: { type: integer }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/NutritionShoppingItem" }
+    NutritionShoppingListResponse:
+      type: object
+      required: [data]
+      properties:
+        { data: { $ref: "#/components/schemas/NutritionShoppingList" } }
+    NutritionShoppingListListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/NutritionShoppingList" }
+    GenerateNutritionShoppingListRequest:
+      type: object
+      required: [start_date, end_date]
+      properties:
+        start_date: { type: string, format: date }
+        end_date: { type: string, format: date }
+        name: { type: string, maxLength: 160 }
+    StoreNutritionShoppingItemRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, maxLength: 160 }
+        quantity: { type: [number, "null"], exclusiveMinimum: 0 }
+        unit: { type: [string, "null"], maxLength: 32 }
+        store_section:
+          {
+            type: string,
+            enum: [produce, meat-seafood, dairy, bakery, frozen, pantry, other],
+          }
+    UpdateNutritionShoppingItemRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name: { type: string, maxLength: 160 }
+        quantity: { type: [number, "null"], exclusiveMinimum: 0 }
+        unit: { type: [string, "null"], maxLength: 32 }
+        store_section:
+          {
+            type: string,
+            enum: [produce, meat-seafood, dairy, bakery, frozen, pantry, other],
+          }
+        is_checked: { type: boolean }
+    StoreNutritionMealRequest:
+      type: object
+      required: [meal_type, eaten_at]
+      properties:
+        recipe_id: { type: [integer, "null"], format: int64 }
+        name: { type: string, maxLength: 160 }
+        meal_type:
+          { type: string, enum: [breakfast, lunch, dinner, snack, other] }
+        eaten_at: { type: string, format: date-time }
+        servings: { type: number, exclusiveMinimum: 0 }
+        calories: { type: [number, "null"], minimum: 0 }
+        protein_grams: { type: [number, "null"], minimum: 0 }
+        carbohydrate_grams: { type: [number, "null"], minimum: 0 }
+        fat_grams: { type: [number, "null"], minimum: 0 }
+        notes: { type: [string, "null"] }
+    NutritionTarget:
+      type: object
+      required: [id]
+      properties:
+        id: { type: integer, format: int64 }
+        calories: { type: [string, "null"] }
+        protein_grams: { type: [string, "null"] }
+        carbohydrate_grams: { type: [string, "null"] }
+        fat_grams: { type: [string, "null"] }
+        notes: { type: [string, "null"] }
+    NutritionTargetResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/NutritionTarget" } }
+    NutritionDashboardNutrients:
+      type: object
+      required: [calories, protein_grams, carbohydrate_grams, fat_grams]
+      properties:
+        calories: { type: [string, "null"] }
+        protein_grams: { type: [string, "null"] }
+        carbohydrate_grams: { type: [string, "null"] }
+        fat_grams: { type: [string, "null"] }
+    NutritionDashboardTarget:
+      type: object
+      required: [calories, protein_grams, carbohydrate_grams, fat_grams]
+      properties:
+        calories: { type: [string, "null"] }
+        protein_grams: { type: [string, "null"] }
+        carbohydrate_grams: { type: [string, "null"] }
+        fat_grams: { type: [string, "null"] }
+    NutritionDashboardPlanMeal:
+      type: object
+      required:
+        [
+          id,
+          recipe_name,
+          meal_slot,
+          servings,
+          status,
+          calories,
+          protein_grams,
+          carbohydrate_grams,
+          fat_grams,
+        ]
+      properties:
+        id: { type: integer, format: int64 }
+        recipe_name: { type: string }
+        meal_slot: { type: string, enum: [breakfast, lunch, dinner, snack] }
+        servings: { type: string }
+        status:
+          { type: string, enum: [planned, prepped, eaten, skipped, replaced] }
+        calories: { type: [string, "null"] }
+        protein_grams: { type: [string, "null"] }
+        carbohydrate_grams: { type: [string, "null"] }
+        fat_grams: { type: [string, "null"] }
+    NutritionDashboardEatenMeal:
+      type: object
+      required:
+        [
+          id,
+          name,
+          meal_type,
+          calories,
+          protein_grams,
+          carbohydrate_grams,
+          fat_grams,
+        ]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        meal_type:
+          { type: string, enum: [breakfast, lunch, dinner, snack, other] }
+        calories: { type: [string, "null"] }
+        protein_grams: { type: [string, "null"] }
+        carbohydrate_grams: { type: [string, "null"] }
+        fat_grams: { type: [string, "null"] }
+    NutritionDashboardToday:
+      type: object
+      required:
+        [
+          date,
+          plan,
+          eaten_meals,
+          planned_meal_count,
+          eaten_meal_count,
+          planned,
+          eaten,
+        ]
+      properties:
+        date: { type: string, format: date }
+        plan:
+          type: array
+          items: { $ref: "#/components/schemas/NutritionDashboardPlanMeal" }
+        eaten_meals:
+          type: array
+          items: { $ref: "#/components/schemas/NutritionDashboardEatenMeal" }
+        planned_meal_count: { type: integer }
+        eaten_meal_count: { type: integer }
+        planned: { $ref: "#/components/schemas/NutritionDashboardNutrients" }
+        eaten: { $ref: "#/components/schemas/NutritionDashboardNutrients" }
+    NutritionDashboardDay:
+      type: object
+      required: [date, planned_meal_count, eaten_meal_count, planned, eaten]
+      properties:
+        date: { type: string, format: date }
+        planned_meal_count: { type: integer }
+        eaten_meal_count: { type: integer }
+        planned: { $ref: "#/components/schemas/NutritionDashboardNutrients" }
+        eaten: { $ref: "#/components/schemas/NutritionDashboardNutrients" }
+    NutritionDashboardWeek:
+      type: object
+      required:
+        [
+          planned_meal_count,
+          eaten_meal_count,
+          status_counts,
+          planned,
+          eaten,
+          daily,
+          prep_needed_count,
+          shopping_list_missing,
+        ]
+      properties:
+        planned_meal_count: { type: integer }
+        eaten_meal_count: { type: integer }
+        status_counts:
+          type: object
+          required: [skipped, replaced, marked_eaten]
+          properties:
+            skipped: { type: integer }
+            replaced: { type: integer }
+            marked_eaten: { type: integer }
+        planned: { $ref: "#/components/schemas/NutritionDashboardNutrients" }
+        eaten: { $ref: "#/components/schemas/NutritionDashboardNutrients" }
+        daily:
+          type: array
+          items: { $ref: "#/components/schemas/NutritionDashboardDay" }
+        prep_needed_count: { type: integer }
+        shopping_list_missing: { type: boolean }
+    NutritionDashboardReusableMeal:
+      type: object
+      required: [recipe_id, recipe_name, planned_count]
+      properties:
+        recipe_id: { type: integer, format: int64 }
+        recipe_name: { type: string }
+        planned_count: { type: integer }
+    NutritionDashboardReview:
+      type: object
+      required: [reusable_meals, planning_gaps, next_week]
+      properties:
+        reusable_meals:
+          type: array
+          items: { $ref: "#/components/schemas/NutritionDashboardReusableMeal" }
+        planning_gaps:
+          type: array
+          items: { type: string, format: date }
+        next_week:
+          type: object
+          required: [start_date, has_plan, can_copy]
+          properties:
+            start_date: { type: string, format: date }
+            has_plan: { type: boolean }
+            can_copy: { type: boolean }
+    NutritionDashboard:
+      type: object
+      required: [week_start, week_end, timezone, target, today, week, review]
+      properties:
+        week_start: { type: string, format: date }
+        week_end: { type: string, format: date }
+        timezone: { type: string }
+        target: { $ref: "#/components/schemas/NutritionDashboardTarget" }
+        today: { $ref: "#/components/schemas/NutritionDashboardToday" }
+        week: { $ref: "#/components/schemas/NutritionDashboardWeek" }
+        review: { $ref: "#/components/schemas/NutritionDashboardReview" }
+    NutritionDashboardResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/NutritionDashboard" }
+    UpdateNutritionTargetRequest:
+      type: object
+      minProperties: 1
+      properties:
+        calories: { type: [number, "null"], minimum: 0 }
+        protein_grams: { type: [number, "null"], minimum: 0 }
+        carbohydrate_grams: { type: [number, "null"], minimum: 0 }
+        fat_grams: { type: [number, "null"], minimum: 0 }
+        notes: { type: [string, "null"], maxLength: 500 }
+    FitnessDashboardResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/FitnessDashboardSummary" }
+    FitnessDashboardSummary:
+      type: object
+      required:
+        [
+          active_goals,
+          measurement_trends,
+          weekly_workouts,
+          personal_records,
+          next_workout,
+        ]
+      properties:
+        active_goals:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessDashboardGoal" }
+        measurement_trends:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessMeasurementTrend" }
+        weekly_workouts: { $ref: "#/components/schemas/FitnessWeeklyWorkouts" }
+        personal_records:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessPersonalRecord" }
+        next_workout:
+          oneOf:
+            - { $ref: "#/components/schemas/FitnessNextWorkout" }
+            - { type: "null" }
+    FitnessDashboardGoal:
+      type: object
+      required: [id, metric_type, target_value, unit, target_date]
+      properties:
+        id: { type: integer, format: int64 }
+        metric_type: { type: string }
+        target_value: { type: string }
+        unit: { type: string }
+        target_date: { type: [string, "null"], format: date }
+    FitnessMeasurementTrend:
+      type: object
+      required: [metric_type, unit, latest_value, change, direction, points]
+      properties:
+        metric_type: { type: string }
+        unit: { type: string }
+        latest_value: { type: string }
+        change: { type: string }
+        direction: { type: string, enum: [up, down, steady] }
+        points:
+          type: array
+          items:
+            type: object
+            required: [date, value]
+            properties:
+              date: { type: string, format: date }
+              value: { type: string }
+    FitnessWeeklyWorkouts:
+      type: object
+      required: [planned, completed, missed, streak_days]
+      properties:
+        planned: { type: integer, minimum: 0 }
+        completed: { type: integer, minimum: 0 }
+        missed: { type: integer, minimum: 0 }
+        streak_days: { type: integer, minimum: 0 }
+    FitnessPersonalRecord:
+      type: object
+      required:
+        [exercise_id, exercise_name, weight, weight_unit, reps, achieved_at]
+      properties:
+        exercise_id: { type: integer, format: int64 }
+        exercise_name: { type: string }
+        weight: { type: string }
+        weight_unit: { type: string, enum: [kg, lb] }
+        reps: { type: [integer, "null"] }
+        achieved_at: { type: [string, "null"], format: date }
+    FitnessNextWorkout:
+      type: object
+      required: [id, name, scheduled_for, scheduled_days]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        scheduled_for: { type: [string, "null"], format: date }
+        scheduled_days:
+          { type: array, items: { type: integer, minimum: 1, maximum: 7 } }
+    FitnessGoal:
+      type: object
+      required: [id, metric_type, target_value, unit, status]
+      properties:
+        id: { type: integer, format: int64 }
+        metric_type: { type: string }
+        target_value: { type: string }
+        unit: { type: string }
+        start_value: { type: [string, "null"] }
+        target_date: { type: [string, "null"], format: date }
+        status: { type: string, enum: [active, paused, completed, abandoned] }
+        notes: { type: [string, "null"] }
+    FitnessGoalResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/FitnessGoal" } }
+    FitnessGoalListResponse:
+      type: object
+      required: [data]
+      properties:
+        {
+          data:
+            {
+              type: array,
+              items: { $ref: "#/components/schemas/FitnessGoal" },
+            },
+        }
+    CreateFitnessGoalRequest:
+      type: object
+      required: [metric_type, target_value, unit]
+      properties:
+        metric_type: { type: string, maxLength: 40 }
+        target_value: { type: number }
+        unit: { type: string, maxLength: 24 }
+        start_value: { type: [number, "null"] }
+        target_date: { type: [string, "null"], format: date }
+        status: { type: string, enum: [active, paused, completed, abandoned] }
+        notes: { type: [string, "null"] }
+    UpdateFitnessGoalRequest:
+      type: object
+      minProperties: 1
+      properties:
+        target_value: { type: number }
+        target_date: { type: [string, "null"], format: date }
+        status: { type: string, enum: [active, paused, completed, abandoned] }
+        notes: { type: [string, "null"] }
+    FitnessBodyMetric:
+      type: object
+      required: [id, metric_type, value, unit, measured_at, source, external_id]
+      properties:
+        id: { type: integer, format: int64 }
+        metric_type: { type: string }
+        value: { type: string }
+        unit: { type: string }
+        measured_at: { type: string, format: date-time }
+        notes: { type: [string, "null"] }
+        source: { type: string }
+        external_id: { type: [string, "null"] }
+    FitnessBodyMetricResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/FitnessBodyMetric" } }
+    FitnessBodyMetricListResponse:
+      type: object
+      required: [data]
+      properties:
+        {
+          data:
+            {
+              type: array,
+              items: { $ref: "#/components/schemas/FitnessBodyMetric" },
+            },
+        }
+    CreateFitnessBodyMetricRequest:
+      type: object
+      required: [metric_type, value, unit, measured_at]
+      properties:
+        metric_type: { type: string, maxLength: 40 }
+        value: { type: number }
+        unit: { type: string, maxLength: 24 }
+        measured_at: { type: string, format: date-time }
+        notes: { type: [string, "null"] }
+    FitnessProgressPhoto:
+      type: object
+      required:
+        [
+          id,
+          photo_date,
+          angle,
+          tags,
+          notes,
+          mime_type,
+          file_size,
+          content_url,
+          body_metric,
+        ]
+      properties:
+        id: { type: integer, format: int64 }
+        photo_date: { type: string, format: date }
+        angle:
+          { type: [string, "null"], enum: [front, side, back, other, null] }
+        tags: { type: array, items: { type: string } }
+        notes: { type: [string, "null"] }
+        mime_type: { type: string, enum: [image/jpeg, image/png, image/webp] }
+        file_size: { type: integer, minimum: 1 }
+        content_url: { type: string, format: uri-reference }
+        body_metric:
+          oneOf:
+            - { $ref: "#/components/schemas/FitnessBodyMetric" }
+            - { type: "null" }
+    FitnessProgressPhotoResponse:
+      type: object
+      required: [data]
+      properties:
+        { data: { $ref: "#/components/schemas/FitnessProgressPhoto" } }
+    FitnessProgressPhotoListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessProgressPhoto" }
+    CreateFitnessProgressPhotoRequest:
+      type: object
+      required: [photo, photo_date]
+      properties:
+        photo: { type: string, format: binary }
+        photo_date: { type: string, format: date }
+        angle:
+          { type: [string, "null"], enum: [front, side, back, other, null] }
+        tags:
+          type: array
+          maxItems: 20
+          items: { type: string, maxLength: 30 }
+        notes: { type: [string, "null"], maxLength: 2000 }
+        body_metric_id: { type: [integer, "null"], format: int64 }
+    FitnessMonthlyReview:
+      type: object
+      required:
+        [month, is_due, reviewed_at, notes, photo_count, latest_photo_date]
+      properties:
+        month: { type: string, pattern: "^[0-9]{4}-[0-9]{2}$" }
+        is_due: { type: boolean }
+        reviewed_at: { type: [string, "null"], format: date-time }
+        notes: { type: [string, "null"] }
+        photo_count: { type: integer, minimum: 0 }
+        latest_photo_date: { type: [string, "null"], format: date }
+    FitnessMonthlyReviewResponse:
+      type: object
+      required: [data]
+      properties:
+        { data: { $ref: "#/components/schemas/FitnessMonthlyReview" } }
+    SaveFitnessMonthlyReviewRequest:
+      type: object
+      required: [month]
+      properties:
+        month: { type: string, pattern: "^[0-9]{4}-[0-9]{2}$" }
+        notes: { type: [string, "null"], maxLength: 5000 }
+    FitnessExercise:
+      type: object
+      required: [id, name, muscle_group, equipment, notes]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        muscle_group: { type: [string, "null"] }
+        equipment: { type: [string, "null"] }
+        notes: { type: [string, "null"] }
+    FitnessExerciseResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/FitnessExercise" } }
+    FitnessExerciseListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessExercise" }
+    CreateFitnessExerciseRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, maxLength: 100 }
+        muscle_group: { type: [string, "null"], maxLength: 60 }
+        equipment: { type: [string, "null"], maxLength: 60 }
+        notes: { type: [string, "null"] }
+    FitnessWorkoutTemplateExercise:
+      type: object
+      required:
+        [
+          id,
+          position,
+          target_sets,
+          target_reps,
+          target_weight,
+          target_weight_unit,
+          notes,
+          exercise,
+        ]
+      properties:
+        id: { type: integer, format: int64 }
+        position: { type: integer }
+        target_sets: { type: [integer, "null"] }
+        target_reps: { type: [string, "null"] }
+        target_weight: { type: [string, "null"] }
+        target_weight_unit: { type: [string, "null"], enum: [kg, lb, null] }
+        notes: { type: [string, "null"] }
+        exercise: { $ref: "#/components/schemas/FitnessExercise" }
+    FitnessWorkoutTemplate:
+      type: object
+      required: [id, name, scheduled_days, notes, exercises]
+      properties:
+        id: { type: integer, format: int64 }
+        name: { type: string }
+        scheduled_days:
+          type: array
+          items:
+            {
+              type: integer,
+              minimum: 1,
+              maximum: 7,
+              description: ISO weekday,
+              Monday is 1.,
+            }
+        notes: { type: [string, "null"] }
+        exercises:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessWorkoutTemplateExercise" }
+    FitnessWorkoutTemplateResponse:
+      type: object
+      required: [data]
+      properties:
+        { data: { $ref: "#/components/schemas/FitnessWorkoutTemplate" } }
+    FitnessWorkoutTemplateListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessWorkoutTemplate" }
+    CreateFitnessWorkoutTemplateRequest:
+      type: object
+      required: [name, exercises]
+      properties:
+        name: { type: string, maxLength: 100 }
+        scheduled_days:
+          type: [array, "null"]
+          maxItems: 7
+          items: { type: integer, minimum: 1, maximum: 7 }
+        notes: { type: [string, "null"] }
+        exercises:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [exercise_id]
+            properties:
+              exercise_id: { type: integer, format: int64 }
+              position: { type: integer, minimum: 0 }
+              target_sets: { type: [integer, "null"], minimum: 1, maximum: 50 }
+              target_reps: { type: [string, "null"], maxLength: 20 }
+              target_weight: { type: [number, "null"], minimum: 0 }
+              target_weight_unit:
+                { type: [string, "null"], enum: [kg, lb, null] }
+              notes: { type: [string, "null"] }
+    FitnessWorkoutSet:
+      type: object
+      required:
+        [
+          id,
+          set_number,
+          reps,
+          weight,
+          weight_unit,
+          rpe,
+          duration_seconds,
+          notes,
+        ]
+      properties:
+        id: { type: integer, format: int64 }
+        set_number: { type: integer }
+        reps: { type: [integer, "null"] }
+        weight: { type: [string, "null"] }
+        weight_unit: { type: [string, "null"], enum: [kg, lb, null] }
+        rpe: { type: [string, "null"] }
+        duration_seconds: { type: [integer, "null"] }
+        notes: { type: [string, "null"] }
+    FitnessWorkoutSetResponse:
+      type: object
+      required: [data]
+      properties: { data: { $ref: "#/components/schemas/FitnessWorkoutSet" } }
+    LogFitnessWorkoutSetRequest:
+      type: object
+      minProperties: 1
+      properties:
+        reps: { type: [integer, "null"], minimum: 1, maximum: 999 }
+        weight: { type: [number, "null"], minimum: 0, maximum: 10000 }
+        weight_unit: { type: [string, "null"], enum: [kg, lb, null] }
+        rpe: { type: [number, "null"], minimum: 1, maximum: 10 }
+        duration_seconds:
+          { type: [integer, "null"], minimum: 1, maximum: 86400 }
+        notes: { type: [string, "null"] }
+    FitnessWorkoutSessionExercise:
+      type: object
+      required:
+        [
+          id,
+          exercise_name,
+          position,
+          target_sets,
+          target_reps,
+          target_weight,
+          target_weight_unit,
+          notes,
+          exercise,
+          sets,
+        ]
+      properties:
+        id: { type: integer, format: int64 }
+        exercise_name: { type: string }
+        position: { type: integer }
+        target_sets: { type: [integer, "null"] }
+        target_reps: { type: [string, "null"] }
+        target_weight: { type: [string, "null"] }
+        target_weight_unit: { type: [string, "null"], enum: [kg, lb, null] }
+        notes: { type: [string, "null"] }
+        exercise: { $ref: "#/components/schemas/FitnessExercise" }
+        sets:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessWorkoutSet" }
+    FitnessWorkoutSession:
+      type: object
+      required:
+        [
+          id,
+          template_id,
+          name,
+          status,
+          started_at,
+          completed_at,
+          duration_minutes,
+          notes,
+          template,
+          exercises,
+        ]
+      properties:
+        id: { type: integer, format: int64 }
+        template_id: { type: [integer, "null"], format: int64 }
+        name: { type: string }
+        status: { type: string, enum: [in_progress, completed] }
+        started_at: { type: string, format: date-time }
+        completed_at: { type: [string, "null"], format: date-time }
+        duration_minutes: { type: [integer, "null"] }
+        notes: { type: [string, "null"] }
+        template:
+          {
+            oneOf:
+              [
+                { $ref: "#/components/schemas/FitnessWorkoutTemplate" },
+                { type: "null" },
+              ],
+          }
+        exercises:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessWorkoutSessionExercise" }
+    FitnessWorkoutSessionResponse:
+      type: object
+      required: [data]
+      properties:
+        { data: { $ref: "#/components/schemas/FitnessWorkoutSession" } }
+    FitnessWorkoutSessionListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessWorkoutSession" }
+    StartFitnessWorkoutSessionRequest:
+      type: object
+      properties:
+        template_id: { type: [integer, "null"], format: int64 }
+        name:
+          {
+            type: [string, "null"],
+            maxLength: 100,
+            description: Required when no template_id is supplied.,
+          }
+        notes: { type: [string, "null"] }
+    AddFitnessWorkoutSessionExerciseRequest:
+      type: object
+      required: [exercise_id]
+      properties:
+        exercise_id: { type: integer, format: int64 }
+        notes: { type: [string, "null"] }
+    FitnessRecentPerformance:
+      type: object
+      required: [session, exercise, sets]
+      properties:
+        session:
+          oneOf:
+            - type: object
+              required: [id, name, completed_at]
+              properties:
+                id: { type: integer, format: int64 }
+                name: { type: string }
+                completed_at: { type: string, format: date-time }
+            - type: "null"
+        exercise: { $ref: "#/components/schemas/FitnessExercise" }
+        sets:
+          type: array
+          items: { $ref: "#/components/schemas/FitnessWorkoutSet" }
+    FitnessRecentPerformanceResponse:
+      type: object
+      required: [data]
+      properties:
+        { data: { $ref: "#/components/schemas/FitnessRecentPerformance" } }
     HealthSource:
       type: object
       required: [id, key, name, kind]
@@ -1498,7 +5205,14 @@ components:
     HealthSourceListResponse:
       type: object
       required: [data]
-      properties: { data: { type: array, items: { $ref: "#/components/schemas/HealthSource" } } }
+      properties:
+        {
+          data:
+            {
+              type: array,
+              items: { $ref: "#/components/schemas/HealthSource" },
+            },
+        }
     CreateHealthSourceRequest:
       type: object
       required: [key, name, kind]
@@ -1509,11 +5223,13 @@ components:
         metadata: { type: object }
     HealthSyncRun:
       type: object
-      required: [id, source_id, status, imported_count, skipped_count, failed_count]
+      required:
+        [id, source_id, status, imported_count, skipped_count, failed_count]
       properties:
         id: { type: integer, format: int64 }
         source_id: { type: integer, format: int64 }
-        status: { type: string, enum: [running, success, partial_success, failure] }
+        status:
+          { type: string, enum: [running, success, partial_success, failure] }
         imported_count: { type: integer }
         skipped_count: { type: integer }
         failed_count: { type: integer }
@@ -1524,15 +5240,89 @@ components:
       type: object
       required: [data]
       properties: { data: { $ref: "#/components/schemas/HealthSyncRun" } }
+    HealthTrendsSummaryResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: "#/components/schemas/HealthTrendsSummary" }
+    HealthTrendsSummary:
+      type: object
+      required: [range, from, to, trends]
+      properties:
+        range: { type: string, enum: [7d, 30d, 90d, ytd] }
+        from: { type: string, format: date }
+        to: { type: string, format: date }
+        trends:
+          type: array
+          items: { $ref: "#/components/schemas/HealthTrend" }
+    HealthTrend:
+      type: object
+      required:
+        [
+          sample_type,
+          unit,
+          total,
+          latest_value,
+          change,
+          direction,
+          points,
+          source_counts,
+        ]
+      properties:
+        sample_type:
+          { type: string, enum: [steps, sleep, workouts, calories, weight] }
+        unit: { type: string }
+        total: { type: string }
+        latest_value: { type: string }
+        change: { type: string }
+        direction: { type: string, enum: [up, down, steady] }
+        points:
+          type: array
+          items:
+            type: object
+            required: [date, value]
+            properties:
+              date: { type: string, format: date }
+              value: { type: string }
+        source_counts:
+          type: object
+          required: [manual, imported, sources]
+          properties:
+            manual: { type: integer, minimum: 0 }
+            imported: { type: integer, minimum: 0 }
+            sources:
+              type: array
+              items:
+                type: object
+                required: [id, name, kind, count]
+                properties:
+                  id: { type: integer, format: int64 }
+                  name: { type: string }
+                  kind: { type: string }
+                  count: { type: integer, minimum: 0 }
     HealthSample:
       type: object
-      required: [id, source_id, sample_type, value, unit, recorded_at, is_manual, conflict_status]
+      required:
+        [
+          id,
+          source_id,
+          sample_type,
+          value,
+          unit,
+          recorded_at,
+          is_manual,
+          conflict_status,
+        ]
       properties:
         id: { type: integer, format: int64 }
         source_id: { type: integer, format: int64 }
         sync_run_id: { type: [integer, "null"], format: int64 }
         external_id: { type: [string, "null"] }
-        sample_type: { type: string, enum: [steps, sleep, heart_rate, workouts, calories, weight] }
+        sample_type:
+          {
+            type: string,
+            enum: [steps, sleep, heart_rate, workouts, calories, weight],
+          }
         value: { $ref: "#/components/schemas/FinanceAmount" }
         unit: { type: string }
         recorded_at: { type: string, format: date-time }
@@ -1548,7 +5338,14 @@ components:
     HealthSampleListResponse:
       type: object
       required: [data]
-      properties: { data: { type: array, items: { $ref: "#/components/schemas/HealthSample" } } }
+      properties:
+        {
+          data:
+            {
+              type: array,
+              items: { $ref: "#/components/schemas/HealthSample" },
+            },
+        }
     CreateHealthSampleRequest:
       type: object
       required: [source_id, sample_type, value, unit, recorded_at]
@@ -1556,7 +5353,11 @@ components:
         source_id: { type: integer, format: int64 }
         sync_run_id: { type: [integer, "null"], format: int64 }
         external_id: { type: [string, "null"] }
-        sample_type: { type: string, enum: [steps, sleep, heart_rate, workouts, calories, weight] }
+        sample_type:
+          {
+            type: string,
+            enum: [steps, sleep, heart_rate, workouts, calories, weight],
+          }
         value: { $ref: "#/components/schemas/FinanceAmount" }
         unit: { type: string, maxLength: 32 }
         recorded_at: { type: string, format: date-time }

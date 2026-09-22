@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'type', 'currency', 'opening_balance'])]
+/** @property string|null $balance */
+#[Fillable(['name', 'type', 'currency', 'opening_balance', 'include_in_net_worth'])]
 class FinanceAccount extends Model
 {
     /** @use HasFactory<FinanceAccountFactory> */
@@ -47,6 +48,7 @@ class FinanceAccount extends Model
             'balance' => 'decimal:4',
             'opening_balance' => 'decimal:4',
             'is_archived' => 'boolean',
+            'include_in_net_worth' => 'boolean',
         ];
     }
 }

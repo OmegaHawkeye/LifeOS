@@ -4,6 +4,7 @@ namespace App\Modules\Finance\Application;
 
 use App\Modules\Finance\Models\FinanceAccount;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ManageFinanceAccounts
 {
@@ -38,10 +39,28 @@ class ManageFinanceAccounts
             ...$attributes,
             'currency' => $attributes['currency'] ?? $primaryCurrency,
             'opening_balance' => $attributes['opening_balance'] ?? '0.0000',
+            'include_in_net_worth' => true,
         ]);
         $account->owner_id = $ownerId;
         $account->save();
 
         return $account;
+    }
+
+    /** @param array{include_in_net_worth?: bool} $attributes */
+    public function update(int|string $ownerId, int $accountId, array $attributes): FinanceAccount
+    {
+        $account = FinanceAccount::query()
+            ->where('owner_id', $ownerId)
+            ->where('is_archived', false)
+            ->findOrFail($accountId);
+        $account->update($attributes);
+
+        $updated = $this->forOwner($ownerId)->firstWhere('id', $accountId);
+        if ($updated === null) {
+            throw (new ModelNotFoundException)->setModel(FinanceAccount::class, [$accountId]);
+        }
+
+        return $updated;
     }
 }

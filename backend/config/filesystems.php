@@ -38,6 +38,14 @@ return [
             'report' => false,
         ],
 
+        'fitness-private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/fitness-private'),
+            'visibility' => 'private',
+            'throw' => true,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

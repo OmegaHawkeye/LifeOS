@@ -23,6 +23,7 @@ class FinanceAccountResource extends JsonResource
             'currency' => $account->currency,
             'opening_balance' => $account->opening_balance,
             'balance' => $account->getAttribute('balance') ?? $account->opening_balance,
+            'include_in_net_worth' => $account->include_in_net_worth,
         ];
     }
 }
