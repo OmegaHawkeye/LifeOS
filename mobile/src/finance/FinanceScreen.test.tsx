@@ -7,6 +7,7 @@ import type {
 
 const emptySnapshot: FinanceSnapshot = {
   accounts: [],
+  categories: [],
   transactions: [],
   overview: { month: "2026-09", totals: [] },
   currency: "EUR",
@@ -18,7 +19,7 @@ describe("FinanceScreen", () => {
     let snapshot = emptySnapshot;
     const service: Pick<
       MobileFinanceService,
-      "loadSnapshot" | "createAccount" | "createTransaction"
+      "loadSnapshot" | "createAccount" | "createCategory" | "createTransaction"
     > = {
       loadSnapshot: jest.fn(async () => snapshot),
       createAccount: jest.fn(async (name, currency) => {
@@ -30,6 +31,7 @@ describe("FinanceScreen", () => {
         };
         return snapshot.accounts[0]!;
       }),
+      createCategory: jest.fn(),
       createTransaction: jest.fn(async (transaction) => {
         snapshot = {
           ...snapshot,
@@ -120,7 +122,7 @@ describe("FinanceScreen", () => {
     };
     const service: Pick<
       MobileFinanceService,
-      "loadSnapshot" | "createAccount" | "createTransaction"
+      "loadSnapshot" | "createAccount" | "createCategory" | "createTransaction"
     > = {
       loadSnapshot: jest
         .fn()
@@ -128,6 +130,7 @@ describe("FinanceScreen", () => {
         .mockRejectedValueOnce(new Error("offline"))
         .mockResolvedValue(privateSnapshot),
       createAccount: jest.fn(),
+      createCategory: jest.fn(),
       createTransaction: jest.fn(),
     };
     await render(<FinanceScreen service={service} />);
@@ -142,5 +145,39 @@ describe("FinanceScreen", () => {
     expect(await screen.findByText("Finance data is unavailable")).toBeTruthy();
     await fireEvent.press(screen.getByRole("button", { name: "Try again" }));
     expect(await screen.findByText("Accounts")).toBeTruthy();
+  });
+
+  test("creates a category for the selected transaction type", async () => {
+    const service: Pick<
+      MobileFinanceService,
+      "loadSnapshot" | "createAccount" | "createCategory" | "createTransaction"
+    > = {
+      loadSnapshot: jest.fn().mockResolvedValue({
+        ...emptySnapshot,
+        accounts: [
+          { id: 1, name: "Checking", type: "checking", currency: "EUR", balance: "0.00" },
+        ],
+      }),
+      createAccount: jest.fn(),
+      createCategory: jest.fn().mockResolvedValue({
+        id: 8,
+        name: "Groceries",
+        type: "expense",
+        color: null,
+        is_archived: false,
+      }),
+      createTransaction: jest.fn(),
+    };
+
+    await render(<FinanceScreen service={service} />);
+    await fireEvent.changeText(
+      screen.getByLabelText("Category name"),
+      "Groceries",
+    );
+    await fireEvent.press(
+      screen.getByRole("button", { name: "Create category" }),
+    );
+
+    expect(service.createCategory).toHaveBeenCalledWith("Groceries", "expense");
   });
 });

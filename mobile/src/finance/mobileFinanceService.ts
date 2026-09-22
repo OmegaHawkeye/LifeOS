@@ -10,6 +10,14 @@ export type FinanceAccount = {
   balance: string;
 };
 
+export type FinanceCategory = {
+  id: number;
+  name: string;
+  type: "income" | "expense";
+  color: string | null;
+  is_archived: boolean;
+};
+
 export type FinanceTransaction = {
   id: number;
   account_id: number;
@@ -35,6 +43,7 @@ export type FinanceOverview = {
 
 export type FinanceSnapshot = {
   accounts: FinanceAccount[];
+  categories: FinanceCategory[];
   transactions: FinanceTransaction[];
   overview: FinanceOverview;
   currency: string;
@@ -43,6 +52,7 @@ export type FinanceSnapshot = {
 
 export type NewFinanceTransaction = {
   account_id: number;
+  category_id?: number | null;
   type: "income" | "expense";
   amount: string;
   occurred_at: string;
@@ -62,8 +72,9 @@ export class MobileFinanceService {
 
   async loadSnapshot(month: string): Promise<FinanceSnapshot> {
     const { from, to } = monthRange(month);
-    const [accounts, transactions, overview, settings] = await Promise.all([
+    const [accounts, categories, transactions, overview, settings] = await Promise.all([
       this.api.request<ApiEnvelope<FinanceAccount[]>>("/finance/accounts"),
+      this.api.request<ApiEnvelope<FinanceCategory[]>>("/finance/categories"),
       this.api.request<ApiEnvelope<FinanceTransaction[]>>(
         `/finance/transactions?date_from=${from}&date_to=${to}`,
       ),
@@ -80,6 +91,7 @@ export class MobileFinanceService {
 
     return {
       accounts: accounts.data,
+      categories: categories.data,
       transactions: transactions.data,
       overview: overview.data,
       currency: settings.data.currency,
@@ -99,6 +111,22 @@ export class MobileFinanceService {
           currency,
           opening_balance: "0",
         }),
+      },
+    );
+
+    return response.data;
+  }
+
+  async createCategory(
+    name: string,
+    type: "income" | "expense",
+  ): Promise<FinanceCategory> {
+    const response = await this.api.request<ApiEnvelope<FinanceCategory>>(
+      "/finance/categories",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, type }),
       },
     );
 

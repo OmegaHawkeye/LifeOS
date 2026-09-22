@@ -16,7 +16,7 @@ import type {
 type FinanceScreenProps = {
   service: Pick<
     MobileFinanceService,
-    "loadSnapshot" | "createAccount" | "createTransaction"
+    "loadSnapshot" | "createAccount" | "createCategory" | "createTransaction"
   >;
 };
 
@@ -32,6 +32,10 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(
     null,
   );
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
+    null,
+  );
+  const [categoryName, setCategoryName] = useState("");
   const [type, setType] = useState<"income" | "expense">("expense");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
@@ -49,10 +53,18 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
           ? selected
           : (snapshot.accounts[0]?.id ?? null),
       );
+      setSelectedCategoryId((selected) =>
+        snapshot.categories.some(
+          (category) => category.id === selected && category.type === type,
+        )
+          ? selected
+          : (snapshot.categories.find((category) => category.type === type)
+              ?.id ?? null),
+      );
     } catch {
       setState({ status: "error" });
     }
-  }, [month, service]);
+  }, [month, service, type]);
 
   useEffect(() => {
     void reload();
@@ -100,6 +112,7 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
     try {
       await service.createTransaction({
         account_id: selectedAccountId,
+        category_id: selectedCategoryId,
         type,
         amount: parsedAmount.toFixed(2),
         occurred_at: `${occurredOn}T12:00:00.000Z`,
@@ -111,6 +124,28 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
     } catch {
       setFormError(
         "The transaction could not be saved. Check your server and try again.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function addCategory() {
+    if (state.status !== "ready" || categoryName.trim().length === 0) {
+      setFormError("Enter a category name to continue.");
+      return;
+    }
+
+    setSaving(true);
+    setFormError(null);
+    try {
+      const category = await service.createCategory(categoryName.trim(), type);
+      setCategoryName("");
+      setSelectedCategoryId(category.id);
+      await reload();
+    } catch {
+      setFormError(
+        "The category could not be saved. Check your server and try again.",
       );
     } finally {
       setSaving(false);
@@ -266,6 +301,28 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                     />
                   ))}
                 </View>
+                <Text className="text-sm font-semibold text-lifeos-primary">
+                  Category
+                </Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {state.snapshot.categories
+                    .filter((category) => category.type === type && !category.is_archived)
+                    .map((category) => (
+                      <ActionButton
+                        key={category.id}
+                        label={category.name}
+                        selected={selectedCategoryId === category.id}
+                        onPress={() => setSelectedCategoryId(category.id)}
+                      />
+                    ))}
+                  {state.snapshot.categories.filter(
+                    (category) => category.type === type && !category.is_archived,
+                  ).length === 0 ? (
+                    <Text className="text-sm text-lifeos-muted">
+                      No {type} categories yet.
+                    </Text>
+                  ) : null}
+                </View>
                 <TextInput
                   accessibilityLabel="Transaction amount"
                   className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
@@ -386,6 +443,41 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
               disabled={saving || accountName.trim().length === 0}
               label="Add account"
               onPress={() => void addAccount()}
+            />
+          </View>
+
+          <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
+            <Text className="text-xl font-bold text-lifeos-primary">
+              Categories
+            </Text>
+            <Text className="text-sm leading-[21px] text-lifeos-muted">
+              Create reusable income and expense categories for your transactions.
+            </Text>
+            <View className="flex-row gap-2">
+              <ActionButton
+                label="Expense"
+                selected={type === "expense"}
+                onPress={() => setType("expense")}
+              />
+              <ActionButton
+                label="Income"
+                selected={type === "income"}
+                onPress={() => setType("income")}
+              />
+            </View>
+            <TextInput
+              accessibilityLabel="Category name"
+              className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+              maxLength={100}
+              onChangeText={setCategoryName}
+              placeholder="e.g. Groceries"
+              placeholderTextColor="#758078"
+              value={categoryName}
+            />
+            <ActionButton
+              disabled={saving || categoryName.trim().length === 0}
+              label={saving ? "Creating category…" : "Create category"}
+              onPress={() => void addCategory()}
             />
           </View>
         </>

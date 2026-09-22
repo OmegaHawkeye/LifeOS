@@ -29,6 +29,9 @@ function authService(
       if (path === "/finance/accounts") {
         return { data: [] };
       }
+      if (path === "/finance/categories") {
+        return { data: [] };
+      }
       if (path.startsWith("/finance/transactions")) {
         return { data: [] };
       }

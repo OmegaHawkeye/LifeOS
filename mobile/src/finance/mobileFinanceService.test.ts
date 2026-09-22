@@ -16,6 +16,7 @@ describe("MobileFinanceService", () => {
           ],
         };
       }
+      if (path === "/finance/categories") return { data: [] };
       if (path.startsWith("/finance/transactions")) return { data: [] };
       if (path === "/finance/overview?month=2024-02") {
         return { data: { month: "2024-02", totals: [] } };
@@ -32,6 +33,7 @@ describe("MobileFinanceService", () => {
       "/finance/transactions?date_from=2024-02-01&date_to=2024-02-29",
     );
     expect(snapshot.accounts[0]?.name).toBe("Checking");
+    expect(snapshot.categories).toEqual([]);
     expect(snapshot.currency).toBe("EUR");
     expect(snapshot.maskSensitiveData).toBe(true);
   });
@@ -93,6 +95,27 @@ describe("MobileFinanceService", () => {
         occurred_at: "2026-09-22T12:00:00Z",
         description: "Coffee",
       }),
+    });
+  });
+
+  test("posts a new category to the authenticated API", async () => {
+    const request = jest.fn().mockResolvedValue({
+      data: {
+        id: 9,
+        name: "Groceries",
+        type: "expense",
+        color: null,
+        is_archived: false,
+      },
+    });
+    const service = new MobileFinanceService({ api: { request } as never });
+
+    await service.createCategory("Groceries", "expense");
+
+    expect(request).toHaveBeenCalledWith("/finance/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Groceries", type: "expense" }),
     });
   });
 });
