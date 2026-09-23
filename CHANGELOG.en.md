@@ -1,3 +1,8 @@
+# 0.13.4
+
+- The native iOS development client now loads the mobile bundle reliably through Expo Metro.
+- Long blank startup screens on iOS were fixed.
+
 # 0.13.3
 
 - Mobile screens no longer collapse to an empty area on small displays.

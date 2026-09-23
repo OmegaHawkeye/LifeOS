@@ -1,3 +1,8 @@
+# 0.13.4
+
+- Der native iOS-Dev-Client lädt das Mobile-Bundle zuverlässig über Expo Metro.
+- Lange weiße Startansichten auf iOS wurden behoben.
+
 # 0.13.3
 
 - Mobile-Ansichten kollabieren auf kleinen Displays nicht mehr auf eine leere Fläche.
