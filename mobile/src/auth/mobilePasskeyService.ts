@@ -5,6 +5,12 @@ export type MobilePasskey = {
   created_at: string | null;
 };
 
+export type MobilePasskeySettings = {
+  passkeys_enabled: boolean;
+  passkey_origin: string;
+  passkey_origin_is_secure: boolean;
+};
+
 type MobilePasskeyApi = {
   request: <T>(path: string, init?: RequestInit) => Promise<T>;
 };
@@ -36,5 +42,24 @@ export class MobilePasskeyService {
         method: "DELETE",
       },
     );
+  }
+
+  async getSettings(): Promise<MobilePasskeySettings> {
+    const response = await this.api.request<DataEnvelope<MobilePasskeySettings>>(
+      "/settings",
+    );
+    return response.data;
+  }
+
+  async updateSettings(passkeysEnabled: boolean): Promise<MobilePasskeySettings> {
+    const response = await this.api.request<DataEnvelope<MobilePasskeySettings>>(
+      "/settings",
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passkeys_enabled: passkeysEnabled }),
+      },
+    );
+    return response.data;
   }
 }

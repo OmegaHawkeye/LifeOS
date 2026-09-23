@@ -31,4 +31,38 @@ describe("MobilePasskeyService", () => {
       method: "DELETE",
     });
   });
+
+  test("loads and persists the owner passkey setting and origin", async () => {
+    const request = jest
+      .fn()
+      .mockResolvedValueOnce({
+        data: {
+          passkeys_enabled: true,
+          passkey_origin: "https://lifeos.home.arpa",
+          passkey_origin_is_secure: true,
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          passkeys_enabled: false,
+          passkey_origin: "https://lifeos.home.arpa",
+          passkey_origin_is_secure: true,
+        },
+      });
+    const service = new MobilePasskeyService({ request });
+
+    await expect(service.getSettings()).resolves.toMatchObject({
+      passkeys_enabled: true,
+      passkey_origin_is_secure: true,
+    });
+    await expect(service.updateSettings(false)).resolves.toMatchObject({
+      passkeys_enabled: false,
+    });
+    expect(request).toHaveBeenNthCalledWith(1, "/settings");
+    expect(request).toHaveBeenNthCalledWith(2, "/settings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ passkeys_enabled: false }),
+    });
+  });
 });
