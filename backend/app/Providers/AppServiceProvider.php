@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
+use Laravel\Passkeys\Passkeys;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Passkeys::authorizeLoginUsing(function (Request $request, $user): bool {
+            return (bool) ($user->settings->passkeys_enabled ?? true);
+        });
+
         RateLimiter::for('login', function (Request $request): Limit {
             $email = Str::lower($request->string('email')->toString());
             $key = hash('sha256', Str::transliterate($email.'|'.$request->ip()));

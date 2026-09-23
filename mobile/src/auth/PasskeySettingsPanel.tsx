@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import * as WebBrowser from "expo-web-browser";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Switch, Text, View } from "react-native";
 import type { MobilePasskeyService } from "./mobilePasskeyService";
 import type { MobilePasskey } from "./mobilePasskeyService";
 
@@ -13,11 +13,21 @@ export function PasskeySettingsPanel({
   const [isLoading, setIsLoading] = useState(true);
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [settings, setSettings] = useState<{
+    passkeys_enabled: boolean;
+    passkey_origin: string;
+    passkey_origin_is_secure: boolean;
+  } | null>(null);
 
   const reload = useCallback(async () => {
     setIsLoading(true);
     try {
-      setPasskeys(await service.list());
+      const [passkeyList, passkeySettings] = await Promise.all([
+        service.list(),
+        service.getSettings(),
+      ]);
+      setPasskeys(passkeyList);
+      setSettings(passkeySettings);
       setError(null);
     } catch {
       setError("Passkeys could not be loaded from your LifeOS server.");
@@ -50,6 +60,19 @@ export function PasskeySettingsPanel({
     }
   }
 
+  async function togglePasskeys(enabled: boolean): Promise<void> {
+    if (!settings) return;
+    setIsBusy(true);
+    setError(null);
+    try {
+      setSettings(await service.updateSettings(enabled));
+    } catch {
+      setError("Passkey settings could not be saved.");
+    } finally {
+      setIsBusy(false);
+    }
+  }
+
   async function removePasskey(id: string): Promise<void> {
     setIsBusy(true);
     setError(null);
@@ -72,6 +95,27 @@ export function PasskeySettingsPanel({
           compatible credential manager.
         </Text>
       </View>
+
+      {settings ? (
+        <View className="gap-3 rounded-2xl border border-lifeos-border p-4">
+          <View className="flex-row items-center justify-between gap-3">
+            <Text className="flex-1 text-sm font-medium text-lifeos-primary">
+              Allow passkey sign-in
+            </Text>
+            <Switch
+              accessibilityLabel="Allow passkey sign-in"
+              disabled={isBusy}
+              onValueChange={(value) => void togglePasskeys(value)}
+              value={settings.passkeys_enabled}
+            />
+          </View>
+          <Text className="text-sm leading-[21px] text-lifeos-muted">
+            {settings.passkey_origin_is_secure
+              ? `Secure origin: ${settings.passkey_origin}`
+              : `Passkeys need trusted HTTPS. Current origin: ${settings.passkey_origin}`}
+          </Text>
+        </View>
+      ) : null}
 
       {isLoading ? (
         <ActivityIndicator accessibilityLabel="Loading passkeys" />
