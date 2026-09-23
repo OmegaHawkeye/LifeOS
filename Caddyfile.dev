@@ -13,6 +13,12 @@ https://lifeos.local:8443 {
 		reverse_proxy 127.0.0.1:8000
 	}
 
+	# The management page is a frontend SPA route; only the Laravel passkey
+	# endpoints below it belong on the backend.
+	handle /passkeys/manage* {
+		reverse_proxy 127.0.0.1:5173
+	}
+
 	handle /passkeys/* {
 		reverse_proxy 127.0.0.1:8000
 	}
