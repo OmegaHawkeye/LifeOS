@@ -1,3 +1,8 @@
+# 0.13.0
+
+- Lokales HTTPS-Setup für WebAuthn- und Passkey-Tests dokumentiert.
+- Caddy-Entwicklungsproxy für Mac und iPhone ergänzt.
+
 # 0.12.0
 
 - Passkey-Anmeldung kann pro Konto aktiviert oder deaktiviert werden.

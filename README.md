@@ -31,6 +31,32 @@ pnpm dev
 
 Stop both development servers with `Ctrl+C`. Stop PostgreSQL separately with `docker compose down`; its named volume keeps local data.
 
+### Local HTTPS for passkey testing
+
+Passkeys require a secure origin. For a Mac and iPhone on the same Wi-Fi,
+use the Mac's Bonjour hostname and a locally trusted certificate:
+
+```bash
+brew install mkcert caddy
+mkcert -install
+mkdir -p .local-https
+DEV_HOST="$(scutil --get LocalHostName).local"
+mkcert -cert-file ".local-https/${DEV_HOST}.pem" \
+  -key-file ".local-https/${DEV_HOST}-key.pem" "${DEV_HOST}"
+```
+
+Replace `lifeos.local` and the matching certificate filenames in
+`Caddyfile.dev` with `${DEV_HOST}`. Start `pnpm dev` in one
+terminal and `pnpm dev:https` in another. Set `APP_URL`, `FRONTEND_URL`,
+`LIFEOS_PASSKEY_WEB_URL`, and `LIFEOS_PASSKEY_WEB_ORIGIN` to the HTTPS URL,
+and include the hostname and port in `SANCTUM_STATEFUL_DOMAINS`. For the
+same-origin proxy, set `VITE_API_BASE_URL=` in `frontend/.env.local`.
+
+Install and trust the mkcert root CA on the iPhone. Find it with
+`mkcert -CAROOT`, transfer `rootCA.pem`, install the profile, then enable
+full trust under Settings → General → About → Certificate Trust Settings.
+Open `https://<mac-hostname>.local:8443` on the iPhone to verify access.
+
 ### iPhone and iPad app
 
 ```bash
