@@ -1,3 +1,7 @@
+# 0.13.7
+
+- The passkey management page is now served correctly as a React SPA by the local HTTPS proxy.
+
 # 0.13.6
 
 - Mobile passkey sign-in now starts the WebAuthn prompt automatically after secure preparation.

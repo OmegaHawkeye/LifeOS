@@ -1,3 +1,7 @@
+# 0.13.7
+
+- Die Passkey-Verwaltungsseite wird im lokalen HTTPS-Proxy korrekt als React-SPA ausgeliefert.
+
 # 0.13.6
 
 - Mobile-Passkey-Login startet die WebAuthn-Abfrage nach der sicheren Vorbereitung automatisch.
