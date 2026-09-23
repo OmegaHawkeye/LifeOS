@@ -1,0 +1,27 @@
+{
+	auto_https off
+}
+
+https://lifeos.local:8443 {
+	tls .local-https/lifeos.local.pem .local-https/lifeos.local-key.pem
+
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	handle /sanctum/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	handle /passkeys/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	handle /user/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:5173
+	}
+}

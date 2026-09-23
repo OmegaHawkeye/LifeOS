@@ -1,3 +1,8 @@
+# 0.13.0
+
+- Local HTTPS setup for WebAuthn and passkey testing is documented.
+- Added a Caddy development proxy for Mac and iPhone testing.
+
 # 0.12.0
 
 - Passkey sign-in can be enabled or disabled per account.

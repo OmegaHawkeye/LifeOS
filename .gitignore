@@ -4,3 +4,4 @@
 .vscode/
 .pnpm-store/
 node_modules/
+.local-https/
