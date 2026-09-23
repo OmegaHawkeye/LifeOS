@@ -1,3 +1,7 @@
+# 0.13.1
+
+- The local Vite server now accepts Bonjour hosts for HTTPS testing.
+
 # 0.13.0
 
 - Local HTTPS setup for WebAuthn and passkey testing is documented.

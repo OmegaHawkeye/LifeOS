@@ -1,3 +1,7 @@
+# 0.13.1
+
+- Der lokale Vite-Server akzeptiert jetzt Bonjour-Hosts für HTTPS-Tests.
+
 # 0.13.0
 
 - Lokales HTTPS-Setup für WebAuthn- und Passkey-Tests dokumentiert.
