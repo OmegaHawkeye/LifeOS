@@ -1,3 +1,7 @@
+# 0.13.8
+
+- Geschützte Passkey-API-Aufrufe liefern bei fehlender Sitzung korrekt JSON statt eines 500-Fehlers.
+
 # 0.13.7
 
 - Die Passkey-Verwaltungsseite wird im lokalen HTTPS-Proxy korrekt als React-SPA ausgeliefert.

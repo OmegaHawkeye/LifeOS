@@ -1,3 +1,7 @@
+# 0.13.8
+
+- Protected passkey API requests now return proper JSON instead of a 500 error when no session exists.
+
 # 0.13.7
 
 - The passkey management page is now served correctly as a React SPA by the local HTTPS proxy.
