@@ -132,6 +132,14 @@ export function PasskeySecurityPanel({
             ? "Trusted HTTPS is configured for passkeys."
             : "Passkeys require HTTPS on self-hosted installations. Configure a trusted certificate and stable local hostname before enrolling one."}
         </p>
+        <ol className="mt-2 list-decimal space-y-1 pl-5">
+          <li>Choose a stable hostname that resolves on every device.</li>
+          <li>Terminate HTTPS at your home server or reverse proxy.</li>
+          <li>Restart LifeOS after changing the server URL or certificate.</li>
+        </ol>
+        <p className="mt-2">
+          Changing this origin later may invalidate existing passkeys.
+        </p>
       </div>
       {passkeys.map((passkey) => (
         <div

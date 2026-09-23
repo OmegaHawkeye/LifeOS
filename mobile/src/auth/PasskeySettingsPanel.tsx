@@ -113,6 +113,11 @@ export function PasskeySettingsPanel({
               ? `Secure origin: ${settings.passkey_origin}`
               : `Passkeys need trusted HTTPS. Current origin: ${settings.passkey_origin}`}
           </Text>
+          <Text className="text-sm leading-[21px] text-lifeos-muted">
+            Use a stable hostname, trusted certificate, and restart the server
+            after changing its URL. Changing the origin later may invalidate
+            existing passkeys.
+          </Text>
         </View>
       ) : null}
 
