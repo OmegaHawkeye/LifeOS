@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     host: true,
-    allowedHosts: [".local"],
+    allowedHosts: [".local", ".ts.net"],
   },
   resolve: {
     alias: {
