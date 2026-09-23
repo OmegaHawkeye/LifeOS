@@ -28,8 +28,12 @@ export function PasskeySettingsPanel({
       setPasskeys(passkeyList);
       setSettings(passkeySettings);
       setError(null);
-    } catch {
-      setError("Passkeys could not be loaded from your LifeOS server.");
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Passkeys could not be loaded from your LifeOS server.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -49,8 +53,12 @@ export function PasskeySettingsPanel({
         "lifeos://passkey-management",
       );
       await reload();
-    } catch {
-      setError("Passkey setup could not be completed. Try again.");
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Passkey setup could not be completed. Try again.",
+      );
     } finally {
       setIsBusy(false);
     }
@@ -62,8 +70,12 @@ export function PasskeySettingsPanel({
     setError(null);
     try {
       setSettings(await service.updateSettings(enabled));
-    } catch {
-      setError("Passkey settings could not be saved.");
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Passkey settings could not be saved.",
+      );
     } finally {
       setIsBusy(false);
     }
@@ -75,8 +87,12 @@ export function PasskeySettingsPanel({
     try {
       await service.remove(id);
       await reload();
-    } catch {
-      setError("This passkey could not be removed.");
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "This passkey could not be removed.",
+      );
     } finally {
       setIsBusy(false);
     }
