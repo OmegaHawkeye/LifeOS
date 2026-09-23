@@ -26,6 +26,9 @@ class SettingsTest extends TestCase
                     'theme' => 'system',
                     'mask_sensitive_data_by_default' => true,
                     'notifications_enabled' => false,
+                    'passkeys_enabled' => true,
+                    'passkey_origin' => 'http://localhost:5173',
+                    'passkey_origin_is_secure' => false,
                 ],
             ]);
 
@@ -36,6 +39,7 @@ class SettingsTest extends TestCase
             'theme' => 'dark',
             'mask_sensitive_data_by_default' => false,
             'notifications_enabled' => true,
+            'passkeys_enabled' => false,
         ])->assertOk();
 
         $this->getJson('/api/v1/settings')
@@ -45,7 +49,8 @@ class SettingsTest extends TestCase
             ->assertJsonPath('data.measurement_system', 'imperial')
             ->assertJsonPath('data.theme', 'dark')
             ->assertJsonPath('data.mask_sensitive_data_by_default', false)
-            ->assertJsonPath('data.notifications_enabled', true);
+            ->assertJsonPath('data.notifications_enabled', true)
+            ->assertJsonPath('data.passkeys_enabled', false);
     }
 
     public function test_owner_settings_reject_invalid_values_without_overwriting_saved_values(): void

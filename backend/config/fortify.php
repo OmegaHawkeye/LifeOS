@@ -145,8 +145,8 @@ return [
     */
 
     'passkeys' => [
-        'relying_party_id' => parse_url(env('LIFEOS_PASSKEY_WEB_URL', env('FRONTEND_URL', config('app.url'))), PHP_URL_HOST),
-        'allowed_origins' => [env('LIFEOS_PASSKEY_WEB_ORIGIN', env('FRONTEND_URL', config('app.url')))],
+        'relying_party_id' => parse_url(env('LIFEOS_PASSKEY_WEB_URL', env('FRONTEND_URL', 'http://localhost:5173')), PHP_URL_HOST),
+        'allowed_origins' => [env('LIFEOS_PASSKEY_WEB_ORIGIN', env('FRONTEND_URL', 'http://localhost:5173'))],
         'user_handle_secret' => env('LIFEOS_PASSKEY_USER_HANDLE_SECRET', config('app.key')),
         'timeout' => 60000,
     ],

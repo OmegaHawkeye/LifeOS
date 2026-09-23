@@ -23,6 +23,9 @@ class OwnerSettingsResource extends JsonResource
             'theme' => $settings->theme,
             'mask_sensitive_data_by_default' => $settings->mask_sensitive_data_by_default,
             'notifications_enabled' => $settings->notifications_enabled,
+            'passkeys_enabled' => (bool) ($settings->passkeys_enabled ?? true),
+            'passkey_origin' => (string) config('fortify.passkeys.allowed_origins.0'),
+            'passkey_origin_is_secure' => str_starts_with((string) config('fortify.passkeys.allowed_origins.0'), 'https://'),
         ];
     }
 }

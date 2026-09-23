@@ -26,6 +26,7 @@ class UpdateOwnerSettingsRequest extends FormRequest
             'theme' => ['sometimes', 'required', Rule::in(['system', 'light', 'dark'])],
             'mask_sensitive_data_by_default' => ['sometimes', 'required', 'boolean'],
             'notifications_enabled' => ['sometimes', 'required', 'boolean'],
+            'passkeys_enabled' => ['sometimes', 'required', 'boolean'],
         ];
     }
 
@@ -42,6 +43,7 @@ class UpdateOwnerSettingsRequest extends FormRequest
                 'theme',
                 'mask_sensitive_data_by_default',
                 'notifications_enabled',
+                'passkeys_enabled',
             ];
             $inputKeys = array_keys($this->all());
 

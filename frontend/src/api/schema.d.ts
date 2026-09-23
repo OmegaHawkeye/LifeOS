@@ -2643,6 +2643,14 @@ export interface components {
             /** @enum {string} */
             measurement_system: "metric" | "imperial";
             notifications_enabled: boolean;
+            /**
+             * Format: uri
+             * @description The configured LifeOS origin used for WebAuthn.
+             */
+            passkey_origin: string;
+            /** @description Whether the configured origin uses HTTPS. */
+            passkey_origin_is_secure: boolean;
+            passkeys_enabled: boolean;
             /** @enum {string} */
             theme: "system" | "light" | "dark";
             /** @example Europe/Vienna */
@@ -2935,6 +2943,7 @@ export interface components {
             /** @enum {string} */
             measurement_system?: "metric" | "imperial";
             notifications_enabled?: boolean;
+            passkeys_enabled?: boolean;
             /** @enum {string} */
             theme?: "system" | "light" | "dark";
             timezone?: string;

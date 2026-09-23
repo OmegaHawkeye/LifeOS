@@ -1,3 +1,9 @@
+# 0.12.0
+
+- Passkey-Anmeldung kann pro Konto aktiviert oder deaktiviert werden.
+- LifeOS zeigt die konfigurierte WebAuthn-URL und warnt bei fehlendem HTTPS.
+- Self-hosted HTTPS- und Passkey-Anforderungen sind dokumentiert.
+
 # 0.11.0
 
 - Passkeys funktionieren in Web und iOS mit Apple, 1Password und kompatiblen Passwortmanagern.
