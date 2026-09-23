@@ -1,3 +1,8 @@
+# 0.13.5
+
+- Der native Splash Screen blockiert die iOS-App nicht mehr nach dem Bundle-Start.
+- Die Mobile-Root-Ansicht verwendet wieder eine stabile native Flex-Größe.
+
 # 0.13.4
 
 - Der native iOS-Dev-Client lädt das Mobile-Bundle zuverlässig über Expo Metro.
