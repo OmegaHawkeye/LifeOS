@@ -37,6 +37,8 @@ type MobileAuthProviderProps = PropsWithChildren<{
   service: MobileAuthService;
 }>;
 
+const sessionRestoreTimeoutMs = 8_000;
+
 export function MobileAuthProvider({
   children,
   service,
@@ -48,8 +50,22 @@ export function MobileAuthProvider({
   useEffect(() => {
     let mounted = true;
 
-    service
-      .restoreSession()
+    let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+    const restoreWithTimeout = Promise.race([
+      service.restoreSession(),
+      new Promise<null>((_, reject) => {
+        timeoutHandle = setTimeout(
+          () => reject(new Error("Session restore timed out.")),
+          sessionRestoreTimeoutMs,
+        );
+      }),
+    ]).finally(() => {
+      if (timeoutHandle !== undefined) {
+        clearTimeout(timeoutHandle);
+      }
+    });
+
+    restoreWithTimeout
       .then((restoredOwner) => {
         if (mounted) {
           setOwner(restoredOwner);

@@ -1,6 +1,6 @@
 import "./global.css";
 
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MobileAuthProvider, useMobileAuth } from "./src/auth/authContext";
 import { mobileAuthService } from "./src/auth/mobileAuth";
@@ -21,9 +21,23 @@ export function LifeOSApp() {
   const { isLoading, owner } = useMobileAuth();
 
   return (
-    <SafeAreaView edges={["top", "bottom"]} style={styles.safeArea}>
+    <SafeAreaView
+      className="flex-1 bg-lifeos-background"
+      edges={["top", "bottom"]}
+    >
       {isLoading ? (
-        <View style={styles.loading}>
+        <View className="flex-1 items-center justify-center">
+          <View className="h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-lifeos-accent">
+            <Text className="text-[38px] font-extrabold text-lifeos-accent-ink">
+              L
+            </Text>
+          </View>
+          <Text className="mt-3 text-[28px] font-extrabold text-lifeos-primary">
+            LifeOS
+          </Text>
+          <Text className="mb-5 mt-2 text-sm text-lifeos-muted">
+            Connecting to your home server…
+          </Text>
           <ActivityIndicator color="#39896c" size="large" />
         </View>
       ) : owner === null ? (
@@ -34,8 +48,3 @@ export function LifeOSApp() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { backgroundColor: "#f3f6f4", flex: 1 },
-  loading: { alignItems: "center", flex: 1, justifyContent: "center" },
-});
