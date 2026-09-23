@@ -1,3 +1,7 @@
+# 0.13.2
+
+- Tailscale-MagicDNS-Hosts werden jetzt für lokale HTTPS-Entwicklung akzeptiert.
+
 # 0.13.1
 
 - Der lokale Vite-Server akzeptiert jetzt Bonjour-Hosts für HTTPS-Tests.

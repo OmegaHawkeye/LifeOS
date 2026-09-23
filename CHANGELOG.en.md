@@ -1,3 +1,7 @@
+# 0.13.2
+
+- Tailscale MagicDNS hosts are now accepted for local HTTPS development.
+
 # 0.13.1
 
 - The local Vite server now accepts Bonjour hosts for HTTPS testing.
