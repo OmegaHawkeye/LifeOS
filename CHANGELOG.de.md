@@ -1,3 +1,8 @@
+# 0.13.3
+
+- Mobile-Ansichten kollabieren auf kleinen Displays nicht mehr auf eine leere Fläche.
+- Der native Splash Screen bleibt bis zum Abschluss der Session-Wiederherstellung sichtbar.
+
 # 0.13.2
 
 - Tailscale-MagicDNS-Hosts werden jetzt für lokale HTTPS-Entwicklung akzeptiert.

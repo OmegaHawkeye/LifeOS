@@ -1,11 +1,15 @@
 import "./global.css";
 
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MobileAuthProvider, useMobileAuth } from "./src/auth/authContext";
 import { mobileAuthService } from "./src/auth/mobileAuth";
 import { HomeShell } from "./src/screens/HomeShell";
 import { SignInScreen } from "./src/screens/SignInScreen";
+
+void SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 export default function App() {
   return (
@@ -19,6 +23,12 @@ export default function App() {
 
 export function LifeOSApp() {
   const { isLoading, owner } = useMobileAuth();
+
+  useEffect(() => {
+    if (!isLoading) {
+      void SplashScreen.hideAsync().catch(() => undefined);
+    }
+  }, [isLoading]);
 
   return (
     <SafeAreaView

@@ -128,7 +128,10 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
   }
 
   return (
-    <ScrollView contentContainerClassName="mx-auto w-full max-w-[1120px] gap-3 px-5 pb-12 pt-8 md:px-9 md:pt-10">
+    <ScrollView
+      className="flex-1"
+      contentContainerClassName="mx-auto w-full max-w-[1120px] gap-3 px-5 pb-12 pt-8 md:px-9 md:pt-10"
+    >
       <Text className="text-sm font-semibold text-lifeos-accent-dark">
         Eat with intention
       </Text>
