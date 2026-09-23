@@ -36,6 +36,10 @@ class PasskeyManagementApiTest extends TestCase
             ->assertJsonPath('data.ready', true);
         $this->assertAuthenticatedAs($owner, 'web');
         $this->getJson('/api/v1/security/passkeys')->assertOk();
+        $this->actingAs($owner, 'web')
+            ->getJson('/user/passkeys/options')
+            ->assertOk()
+            ->assertJsonStructure(['options']);
 
         $this->postJson('/api/v1/mobile/passkeys/management/redeem', ['token' => $token])
             ->assertUnprocessable();
