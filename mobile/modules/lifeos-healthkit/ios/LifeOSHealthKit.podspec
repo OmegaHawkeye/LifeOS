@@ -7,8 +7,10 @@ Pod::Spec.new do |s|
   s.version = package['version']
   s.summary = 'Read-only Apple HealthKit bridge for LifeOS'
   s.description = s.summary
+  s.homepage = 'https://github.com/OmegaHawkeye/LifeOS'
   s.license = { :type => 'MIT' }
   s.author = 'LifeOS'
+  s.source = { :git => 'https://github.com/OmegaHawkeye/LifeOS.git' }
   s.platforms = { :ios => '16.4' }
   s.swift_version = '5.9'
   s.static_framework = true
