@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Passkeys } from "@laravel/passkeys";
@@ -17,6 +17,7 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreparingPasskey, setIsPreparingPasskey] = useState(true);
+  const mobilePasskeyStarted = useRef(false);
   const mobilePasskeyState = new URLSearchParams(window.location.search).get(
     "mobile_passkey_state",
   );
@@ -116,6 +117,30 @@ export function LoginPage() {
       })();
     },
   });
+  const { isSupported: passkeySupported, verify: verifyPasskey } = passkeyLogin;
+
+  useEffect(() => {
+    if (
+      !mobilePasskeyState ||
+      isPreparingPasskey ||
+      !passkeySupported ||
+      mobilePasskeyStarted.current
+    ) {
+      return;
+    }
+
+    mobilePasskeyStarted.current = true;
+    void initializeCsrfProtection()
+      .then(() => verifyPasskey())
+      .catch(() => {
+        // The passkey hook exposes the actionable error to the page.
+      });
+  }, [
+    isPreparingPasskey,
+    mobilePasskeyState,
+    passkeySupported,
+    verifyPasskey,
+  ]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
