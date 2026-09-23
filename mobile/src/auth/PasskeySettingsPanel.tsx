@@ -47,9 +47,6 @@ export function PasskeySettingsPanel({
       await WebBrowser.openAuthSessionAsync(
         url,
         "lifeos://passkey-management",
-        {
-          preferEphemeralSession: true,
-        },
       );
       await reload();
     } catch {

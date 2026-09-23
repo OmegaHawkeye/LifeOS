@@ -33,7 +33,9 @@ export function PasskeyManagementPage() {
       `${environment.apiBaseUrl}/api/v1/security/passkeys`,
     );
     if (!response.ok) {
-      throw new Error("Passkeys could not be loaded.");
+      throw new Error(
+        `Passkeys could not be loaded (HTTP ${response.status}).`,
+      );
     }
     const payload = (await response.json()) as { data: Passkey[] };
     setPasskeys(payload.data);
@@ -75,7 +77,9 @@ export function PasskeyManagementPage() {
             },
           );
           if (!response.ok) {
-            throw new Error("This secure passkey setup link has expired.");
+            throw new Error(
+              `This secure passkey setup link could not be redeemed (HTTP ${response.status}).`,
+            );
           }
         }
         await reloadPasskeys();
