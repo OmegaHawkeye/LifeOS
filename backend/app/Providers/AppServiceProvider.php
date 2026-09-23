@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Passkeys\Contracts\PasskeyLoginResponse as PasskeyLoginResponseContract;
+use Laravel\Passkeys\Contracts\PasskeyUser;
+use Laravel\Passkeys\Passkey;
 use Laravel\Passkeys\Passkeys;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Passkeys::authorizeLoginUsing(function (Request $request, $user): bool {
+        Passkeys::authorizeLoginUsing(function (Request $request, PasskeyUser $user, Passkey $passkey): bool {
             return (bool) ($user->settings->passkeys_enabled ?? true);
         });
 

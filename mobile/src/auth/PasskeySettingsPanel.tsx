@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import * as WebBrowser from "expo-web-browser";
 import { ActivityIndicator, Pressable, Switch, Text, View } from "react-native";
-import type { MobilePasskeyService } from "./mobilePasskeyService";
-import type { MobilePasskey } from "./mobilePasskeyService";
+import type {
+  MobilePasskey,
+  MobilePasskeyService,
+  MobilePasskeySettings,
+} from "./mobilePasskeyService";
 
 export function PasskeySettingsPanel({
   service,
@@ -13,11 +16,7 @@ export function PasskeySettingsPanel({
   const [isLoading, setIsLoading] = useState(true);
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [settings, setSettings] = useState<{
-    passkeys_enabled: boolean;
-    passkey_origin: string;
-    passkey_origin_is_secure: boolean;
-  } | null>(null);
+  const [settings, setSettings] = useState<MobilePasskeySettings | null>(null);
 
   const reload = useCallback(async () => {
     setIsLoading(true);
