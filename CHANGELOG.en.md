@@ -1,3 +1,8 @@
+# 0.13.6
+
+- Mobile passkey sign-in now starts the WebAuthn prompt automatically after secure preparation.
+- The manual passkey button remains available as a fallback.
+
 # 0.13.5
 
 - The native splash screen no longer blocks the iOS app after the bundle starts.
