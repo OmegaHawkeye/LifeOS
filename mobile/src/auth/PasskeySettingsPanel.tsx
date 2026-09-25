@@ -48,10 +48,7 @@ export function PasskeySettingsPanel({
     setError(null);
     try {
       const url = await service.beginManagement();
-      await WebBrowser.openAuthSessionAsync(
-        url,
-        "lifeos://passkey-management",
-      );
+      await WebBrowser.openAuthSessionAsync(url, "lifeos://passkey-management");
       await reload();
     } catch (caughtError) {
       setError(
