@@ -155,7 +155,13 @@ describe("FinanceScreen", () => {
       loadSnapshot: jest.fn().mockResolvedValue({
         ...emptySnapshot,
         accounts: [
-          { id: 1, name: "Checking", type: "checking", currency: "EUR", balance: "0.00" },
+          {
+            id: 1,
+            name: "Checking",
+            type: "checking",
+            currency: "EUR",
+            balance: "0.00",
+          },
         ],
       }),
       createAccount: jest.fn(),

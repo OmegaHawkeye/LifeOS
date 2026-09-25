@@ -35,9 +35,7 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
   const [name, setName] = useState("");
   const [calories, setCalories] = useState("");
   const [protein, setProtein] = useState("");
-  const [targetDraft, setTargetDraft] = useState<
-    NutritionDashboard["target"]
-  >({
+  const [targetDraft, setTargetDraft] = useState<NutritionDashboard["target"]>({
     calories: null,
     protein_grams: null,
     carbohydrate_grams: null,
@@ -102,9 +100,7 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
   async function saveTarget() {
     const parsedTarget = {
       calories: optionalNonNegativeNumber(targetDraft.calories ?? ""),
-      protein_grams: optionalNonNegativeNumber(
-        targetDraft.protein_grams ?? "",
-      ),
+      protein_grams: optionalNonNegativeNumber(targetDraft.protein_grams ?? ""),
       carbohydrate_grams: optionalNonNegativeNumber(
         targetDraft.carbohydrate_grams ?? "",
       ),

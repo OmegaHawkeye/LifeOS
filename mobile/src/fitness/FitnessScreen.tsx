@@ -100,7 +100,11 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
 
   const saveGoal = async () => {
     const parsedTarget = Number(goalTarget.trim().replace(",", "."));
-    if (!Number.isFinite(parsedTarget) || parsedTarget <= 0 || (goalDate && !isCalendarDate(goalDate))) {
+    if (
+      !Number.isFinite(parsedTarget) ||
+      parsedTarget <= 0 ||
+      (goalDate && !isCalendarDate(goalDate))
+    ) {
       setSaveError(true);
       return;
     }
