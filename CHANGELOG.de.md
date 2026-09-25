@@ -1,3 +1,8 @@
+# 0.12.0
+
+- Passkey-Anmeldung lässt sich für selbst gehostete Instanzen mit vertrauenswürdigem HTTPS konfigurieren.
+- Mobile Ansichten bleiben beim Navigieren sichtbar und scrollbar.
+
 # 0.11.0
 
 - Passkeys funktionieren in Web und iOS mit Apple, 1Password und kompatiblen Passwortmanagern.
