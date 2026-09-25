@@ -10,8 +10,13 @@ class PasskeyLoginResponse implements PasskeyLoginResponseContract
 {
     public function toResponse($request): Response
     {
-        if ($request->session()->has('mobile_passkey_login.state_hash')) {
-            $request->session()->put('mobile_passkey_login.verified_at', now()->timestamp);
+        $owner = $request->user(config('fortify.guard'));
+
+        if ($owner !== null) {
+            $request->session()->put([
+                'mobile_passkey_login.verified_at' => now()->timestamp,
+                'mobile_passkey_login.verified_user_id' => $owner->getAuthIdentifier(),
+            ]);
         }
 
         if ($request->wantsJson()) {
