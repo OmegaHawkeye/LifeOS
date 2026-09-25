@@ -39,29 +39,41 @@ class ManageMobilePasskeyLogin
             ]);
         }
 
-        $request->session()->put('mobile_passkey_login.state_hash', $challenge->state_hash);
-        $request->session()->forget('mobile_passkey_login.verified_at');
+        $request->session()->forget([
+            'mobile_passkey_login.verified_at',
+            'mobile_passkey_login.verified_user_id',
+        ]);
     }
 
     public function complete(string $state, User $owner, Request $request): string
     {
         $session = $request->session();
-        $sessionStateHash = $session->pull('mobile_passkey_login.state_hash');
-        $verifiedAt = $session->pull('mobile_passkey_login.verified_at');
+        $verifiedAt = $session->get('mobile_passkey_login.verified_at');
+        $verifiedUserId = $session->get('mobile_passkey_login.verified_user_id');
 
-        if (! is_string($sessionStateHash)
-            || ! hash_equals($sessionStateHash, hash('sha256', $state))
-            || ! is_numeric($verifiedAt)
-            || (int) $verifiedAt < now()->subMinute()->timestamp
-        ) {
+        if (! is_numeric($verifiedAt) || (int) $verifiedAt < now()->subMinute()->timestamp) {
             throw ValidationException::withMessages([
-                'state' => 'Complete the passkey verification before continuing.',
+                'state' => 'Passkey verification was not found in this browser session. Start sign-in again from LifeOS.',
             ]);
         }
 
+        if ((! is_string($verifiedUserId) && ! is_int($verifiedUserId))
+            || (string) $verifiedUserId !== (string) $owner->getKey()
+        ) {
+            throw ValidationException::withMessages([
+                'state' => 'The verified passkey does not match the signed-in account. Start sign-in again from LifeOS.',
+            ]);
+        }
+
+        $session->forget([
+            'mobile_passkey_login.verified_at',
+            'mobile_passkey_login.verified_user_id',
+        ]);
+
         $code = Str::random(64);
+        $stateHash = hash('sha256', $state);
         $updated = DB::table('mobile_passkey_login_challenges')
-            ->where('state_hash', $sessionStateHash)
+            ->where('state_hash', $stateHash)
             ->whereNull('user_id')
             ->whereNull('consumed_at')
             ->where('expires_at', '>', now())
