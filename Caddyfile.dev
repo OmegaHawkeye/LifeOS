@@ -2,8 +2,8 @@
 	auto_https off
 }
 
-https://lifeos.local:8443 {
-	tls .local-https/lifeos.local.pem .local-https/lifeos.local-key.pem
+https://julians-macbook-pro.tail8a9611.ts.net:8443 {
+	tls .local-https/julians-macbook-pro.tail8a9611.ts.net.pem .local-https/julians-macbook-pro.tail8a9611.ts.net-key.pem
 
 	handle /api/* {
 		reverse_proxy 127.0.0.1:8000
