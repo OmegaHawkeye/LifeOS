@@ -65,10 +65,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('passkeys', function (Request $request): Limit {
-            $route = $request->route();
-            $action = is_object($route) && method_exists($route, 'getName')
-                ? (string) ($route->getName() ?? $request->path())
-                : $request->path();
+            $action = (string) ($request->route()->getName() ?? $request->path());
 
             return Limit::perMinute(5)->by(hash('sha256', $request->ip().'|'.$action));
         });
