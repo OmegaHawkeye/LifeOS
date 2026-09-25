@@ -50,7 +50,11 @@ export function TodayDashboardScreen({
   }, [loadSnapshot]);
 
   return (
-    <ScrollView contentContainerClassName="mx-auto w-full max-w-[1120px] gap-2 px-[30px] pb-11 pt-11">
+    <ScrollView
+      className="flex-1"
+      contentContainerClassName="mx-auto w-full max-w-[1120px] gap-2 px-[30px] pb-11 pt-11"
+      testID="today-dashboard-scroll"
+    >
       <Text className="mt-[18px] text-sm font-semibold text-lifeos-accent-dark">
         Your day, in context
       </Text>

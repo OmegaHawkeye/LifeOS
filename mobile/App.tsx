@@ -1,11 +1,14 @@
 import "./global.css";
 
-import { ActivityIndicator, Text, View } from "react-native";
+import * as SplashScreen from "expo-splash-screen";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MobileAuthProvider, useMobileAuth } from "./src/auth/authContext";
 import { mobileAuthService } from "./src/auth/mobileAuth";
 import { HomeShell } from "./src/screens/HomeShell";
 import { SignInScreen } from "./src/screens/SignInScreen";
+
+void SplashScreen.hideAsync().catch(() => undefined);
 
 export default function App() {
   return (
@@ -22,8 +25,8 @@ export function LifeOSApp() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-lifeos-background"
       edges={["top", "bottom"]}
+      style={styles.safeArea}
     >
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
@@ -48,3 +51,7 @@ export function LifeOSApp() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: { backgroundColor: "#f3f6f4", flex: 1 },
+});

@@ -177,7 +177,7 @@ export function HealthSyncScreen({
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
       <Text style={styles.eyebrow}>PRIVATE, ON YOUR DEVICE</Text>
       <Text style={styles.title}>Apple Health</Text>
       <Text style={styles.body}>
@@ -285,6 +285,7 @@ export function HealthSyncScreen({
 }
 
 const styles = StyleSheet.create({
+  scroll: { flex: 1 },
   centered: { flex: 1, justifyContent: "center", padding: 24 },
   content: { gap: 16, padding: 24, paddingBottom: 48 },
   eyebrow: {
