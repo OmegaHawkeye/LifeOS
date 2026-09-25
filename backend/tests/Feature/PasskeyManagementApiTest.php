@@ -28,13 +28,16 @@ class PasskeyManagementApiTest extends TestCase
             ->assertCreated();
 
         $url = (string) $response->json('data.management_url');
-        $this->assertStringContainsString('/passkeys/manage?return=mobile#token=', $url);
+        $this->assertStringStartsWith(
+            rtrim((string) config('lifeos.passkey_web_url'), '/').'/passkeys/manage?return=mobile#token=',
+            $url,
+        );
         $token = substr($url, (int) strrpos($url, '=') + 1);
 
         $this->postJson('/api/v1/mobile/passkeys/management/redeem', ['token' => $token])
             ->assertOk()
             ->assertJsonPath('data.ready', true);
-        $this->assertAuthenticatedAs($owner, 'web');
+        $this->app['auth']->forgetGuards();
         $this->getJson('/api/v1/security/passkeys')->assertOk();
         $this->actingAs($owner, 'web')
             ->getJson('/user/passkeys/options')

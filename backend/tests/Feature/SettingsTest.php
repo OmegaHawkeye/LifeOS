@@ -27,8 +27,11 @@ class SettingsTest extends TestCase
                     'mask_sensitive_data_by_default' => true,
                     'notifications_enabled' => false,
                     'passkeys_enabled' => true,
-                    'passkey_origin' => 'http://localhost:5173',
-                    'passkey_origin_is_secure' => false,
+                    'passkey_origin' => (string) config('fortify.passkeys.allowed_origins.0'),
+                    'passkey_origin_is_secure' => str_starts_with(
+                        (string) config('fortify.passkeys.allowed_origins.0'),
+                        'https://',
+                    ),
                 ],
             ]);
 
