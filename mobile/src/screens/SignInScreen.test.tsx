@@ -22,6 +22,7 @@ async function renderSignInScreen() {
     beginPasskeySignIn: jest
       .fn()
       .mockResolvedValue("https://lifeos.example.test/passkeys"),
+    completePasskeySignIn: jest.fn(),
   } as unknown as MobileAuthService;
 
   await render(
@@ -52,7 +53,53 @@ describe("SignInScreen", () => {
     );
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Passkey sign-in could not be completed. Try again or use your password.",
+      "ExpoWebBrowser is unavailable",
+    );
+  });
+
+  test("shows the reason when the browser returns an invalid callback", async () => {
+    jest.mocked(WebBrowser.openAuthSessionAsync).mockResolvedValueOnce({
+      type: "success",
+      url: "lifeos://passkey-auth?state=wrong-state&code=test-code",
+    });
+    await renderSignInScreen();
+
+    await fireEvent.press(
+      await screen.findByRole("button", { name: "Sign in with a passkey" }),
+    );
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "LifeOS returned an invalid passkey sign-in response.",
+    );
+  });
+
+  test("shows the server error when passkey exchange fails", async () => {
+    jest.mocked(WebBrowser.openAuthSessionAsync).mockResolvedValueOnce({
+      type: "success",
+      url: "lifeos://passkey-auth?state=test-state&code=test-code",
+    });
+    const completePasskeySignIn = jest.fn().mockRejectedValueOnce({
+      message: "The passkey sign-in code is invalid.",
+    });
+    const service = {
+      restoreSession: jest.fn().mockResolvedValue(null),
+      beginPasskeySignIn: jest
+        .fn()
+        .mockResolvedValue("https://lifeos.example.test/passkeys"),
+      completePasskeySignIn,
+    } as unknown as MobileAuthService;
+
+    await render(
+      <MobileAuthProvider service={service}>
+        <SignInScreen />
+      </MobileAuthProvider>,
+    );
+    await fireEvent.press(
+      await screen.findByRole("button", { name: "Sign in with a passkey" }),
+    );
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "The passkey sign-in code is invalid.",
     );
   });
 });
