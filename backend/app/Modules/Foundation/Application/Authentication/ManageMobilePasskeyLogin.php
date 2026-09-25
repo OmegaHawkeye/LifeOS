@@ -39,19 +39,30 @@ class ManageMobilePasskeyLogin
             ]);
         }
 
+        $request->session()->put('mobile_passkey_login.state_hash', $challenge->state_hash);
         $request->session()->forget([
             'mobile_passkey_login.verified_at',
             'mobile_passkey_login.verified_user_id',
+            'mobile_passkey_login.verified_state_hash',
         ]);
     }
 
     public function complete(string $state, User $owner, Request $request): string
     {
         $session = $request->session();
+        $sessionStateHash = $session->get('mobile_passkey_login.state_hash');
         $verifiedAt = $session->get('mobile_passkey_login.verified_at');
         $verifiedUserId = $session->get('mobile_passkey_login.verified_user_id');
+        $verifiedStateHash = $session->get('mobile_passkey_login.verified_state_hash');
+        $stateHash = hash('sha256', $state);
 
-        if (! is_numeric($verifiedAt) || (int) $verifiedAt < now()->subMinute()->timestamp) {
+        if (! is_string($sessionStateHash)
+            || ! hash_equals($sessionStateHash, $stateHash)
+            || ! is_string($verifiedStateHash)
+            || ! hash_equals($verifiedStateHash, $stateHash)
+            || ! is_numeric($verifiedAt)
+            || (int) $verifiedAt < now()->subMinute()->timestamp
+        ) {
             throw ValidationException::withMessages([
                 'state' => 'Passkey verification was not found in this browser session. Start sign-in again from LifeOS.',
             ]);
@@ -65,13 +76,7 @@ class ManageMobilePasskeyLogin
             ]);
         }
 
-        $session->forget([
-            'mobile_passkey_login.verified_at',
-            'mobile_passkey_login.verified_user_id',
-        ]);
-
         $code = Str::random(64);
-        $stateHash = hash('sha256', $state);
         $updated = DB::table('mobile_passkey_login_challenges')
             ->where('state_hash', $stateHash)
             ->whereNull('user_id')
@@ -88,6 +93,13 @@ class ManageMobilePasskeyLogin
                 'state' => 'The passkey sign-in request has expired or was already used.',
             ]);
         }
+
+        $session->forget([
+            'mobile_passkey_login.state_hash',
+            'mobile_passkey_login.verified_at',
+            'mobile_passkey_login.verified_user_id',
+            'mobile_passkey_login.verified_state_hash',
+        ]);
 
         return $code;
     }
