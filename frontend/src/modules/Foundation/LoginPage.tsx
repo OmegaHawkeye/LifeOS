@@ -5,6 +5,8 @@ import { Passkeys } from "@laravel/passkeys";
 import { usePasskeyVerify } from "@laravel/passkeys/react";
 import { apiFetch, initializeCsrfProtection } from "@/api/client";
 import { environment } from "@/config/environment";
+import { describePasskeyError } from "./passkeyErrors";
+import { mobilePasskeyResponseError } from "./mobilePasskeyErrors";
 import { useAuth } from "./auth-context";
 
 Passkeys.configure({ fetch: { credentials: "include" } });
@@ -17,7 +19,9 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreparingPasskey, setIsPreparingPasskey] = useState(true);
+  const [isMobilePasskeyPrepared, setIsMobilePasskeyPrepared] = useState(false);
   const mobilePasskeyStarted = useRef(false);
+  const mobilePasskeyPreparation = useRef<Promise<void> | null>(null);
   const mobilePasskeyState = new URLSearchParams(window.location.search).get(
     "mobile_passkey_state",
   );
@@ -28,16 +32,27 @@ export function LoginPage() {
       try {
         await initializeCsrfProtection();
         if (mobilePasskeyState) {
-          const response = await apiFetch(
-            `${environment.apiBaseUrl}/api/v1/mobile/passkeys/prepare`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ state: mobilePasskeyState }),
-            },
-          );
-          if (!response.ok) {
-            throw new Error("This passkey sign-in request has expired.");
+          const preparation = (mobilePasskeyPreparation.current ??=
+            (async () => {
+              const response = await apiFetch(
+                `${environment.apiBaseUrl}/api/v1/mobile/passkeys/prepare`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ state: mobilePasskeyState }),
+                },
+              );
+              if (!response.ok) {
+                throw await mobilePasskeyResponseError(
+                  response,
+                  "LifeOS could not prepare passkey sign-in.",
+                );
+              }
+            })());
+
+          await preparation;
+          if (mounted) {
+            setIsMobilePasskeyPrepared(true);
           }
         }
       } catch (caughtError) {
@@ -98,7 +113,10 @@ export function LoginPage() {
             },
           );
           if (!response.ok) {
-            throw new Error("LifeOS could not complete passkey sign-in.");
+            throw await mobilePasskeyResponseError(
+              response,
+              "LifeOS could not complete passkey sign-in.",
+            );
           }
           const payload = (await response.json()) as {
             data?: { callback_url?: string };
@@ -118,11 +136,17 @@ export function LoginPage() {
     },
   });
   const { isSupported: passkeySupported, verify: verifyPasskey } = passkeyLogin;
+  const passkeyLoginError = passkeyLogin.error
+    ? describePasskeyError(
+        passkeyLogin.errorInstance ?? new Error(passkeyLogin.error),
+      )
+    : null;
 
   useEffect(() => {
     if (
       !mobilePasskeyState ||
       isPreparingPasskey ||
+      !isMobilePasskeyPrepared ||
       !passkeySupported ||
       mobilePasskeyStarted.current
     ) {
@@ -137,6 +161,7 @@ export function LoginPage() {
       });
   }, [
     isPreparingPasskey,
+    isMobilePasskeyPrepared,
     mobilePasskeyState,
     passkeySupported,
     verifyPasskey,
@@ -291,7 +316,8 @@ export function LoginPage() {
               disabled={
                 !passkeyLogin.isSupported ||
                 passkeyLogin.isLoading ||
-                isPreparingPasskey
+                isPreparingPasskey ||
+                Boolean(mobilePasskeyState && !isMobilePasskeyPrepared)
               }
               onClick={() =>
                 void initializeCsrfProtection().then(() =>
@@ -306,12 +332,12 @@ export function LoginPage() {
                   ? "Waiting for passkey…"
                   : "Sign in with a passkey"}
             </button>
-            {passkeyLogin.error && (
+            {passkeyLoginError && (
               <p
                 className="text-sm text-red-700 dark:text-red-300"
                 role="alert"
               >
-                {passkeyLogin.error}
+                {passkeyLoginError}
               </p>
             )}
           </div>

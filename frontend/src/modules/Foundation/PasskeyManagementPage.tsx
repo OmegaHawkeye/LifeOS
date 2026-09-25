@@ -3,6 +3,7 @@ import { Passkeys } from "@laravel/passkeys";
 import { usePasskeyRegister } from "@laravel/passkeys/react";
 import { apiFetch, initializeCsrfProtection } from "@/api/client";
 import { environment } from "@/config/environment";
+import { describePasskeyError } from "./passkeyErrors";
 
 type Passkey = {
   id: string;
@@ -110,11 +111,7 @@ export function PasskeyManagementPage() {
       await initializeCsrfProtection();
       await registration.register(name.trim());
     } catch (caughtError) {
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Passkey registration failed.",
-      );
+      setError(describePasskeyError(caughtError));
     } finally {
       setIsLoading(false);
     }
@@ -139,6 +136,13 @@ export function PasskeyManagementPage() {
       );
     }
   }
+
+  const registrationError = registration.error
+    ? describePasskeyError(
+        registration.errorInstance ?? new Error(registration.error),
+      )
+    : null;
+  const visibleError = error ?? registrationError;
 
   return (
     <main className="grid min-h-svh place-items-center bg-stone-100 px-5 py-12 text-stone-950 dark:bg-stone-950 dark:text-stone-100">
@@ -215,9 +219,9 @@ export function PasskeyManagementPage() {
             {message}
           </p>
         ) : null}
-        {error || registration.error ? (
+        {visibleError ? (
           <p className="text-sm text-red-700 dark:text-red-300" role="alert">
-            {error ?? registration.error}
+            {visibleError}
           </p>
         ) : null}
       </section>
