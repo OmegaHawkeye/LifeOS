@@ -1,3 +1,8 @@
+# 0.12.0
+
+- Self-hosted instances can configure passkey sign-in with trusted HTTPS.
+- Native screens stay visible and scrollable during navigation.
+
 # 0.11.0
 
 - Passkeys now work on web and iOS with Apple, 1Password, and compatible password managers.
