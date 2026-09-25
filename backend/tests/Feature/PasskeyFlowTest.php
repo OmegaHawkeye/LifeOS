@@ -94,21 +94,25 @@ class PasskeyFlowTest extends TestCase
             ->assertUnprocessable();
     }
 
-    public function test_mobile_passkey_login_can_complete_without_mobile_state_in_the_browser_session(): void
+    public function test_mobile_passkey_login_is_bound_to_the_prepared_state_in_the_browser_session(): void
     {
         config()->set('session.driver', 'database');
 
         $owner = User::factory()->create();
         $state = str_repeat('s', 43);
+        $otherState = str_repeat('t', 43);
         $challenge = str_repeat('c', 43);
 
         $this->postJson('/api/v1/mobile/passkeys', [
             'state' => $state,
             'code_challenge' => $challenge,
         ])->assertCreated();
+        $this->postJson('/api/v1/mobile/passkeys', [
+            'state' => $otherState,
+            'code_challenge' => $challenge,
+        ])->assertCreated();
         $this->postJson('/api/v1/mobile/passkeys/prepare', ['state' => $state])->assertOk();
         $this->getJson('/passkeys/login/options')->assertOk();
-        app('session.store')->forget('mobile_passkey_login.state_hash');
 
         $passkey = new Passkey;
         $passkey->setRelation('user', $owner);
@@ -137,7 +141,33 @@ class PasskeyFlowTest extends TestCase
 
         $this->postJson('/passkeys/login', ['credential' => $credential])->assertOk();
 
+        $this->postJson('/api/v1/mobile/passkeys/complete', ['state' => $otherState])
+            ->assertUnprocessable();
         $this->postJson('/api/v1/mobile/passkeys/complete', ['state' => $state])->assertOk();
+        $this->postJson('/api/v1/mobile/passkeys/complete', ['state' => $state])
+            ->assertUnprocessable();
+    }
+
+    public function test_mobile_passkey_completion_rejects_a_different_signed_in_owner(): void
+    {
+        $owner = User::factory()->create();
+        $differentOwner = User::factory()->create();
+        $state = str_repeat('s', 43);
+        $stateHash = hash('sha256', $state);
+
+        $this->postJson('/api/v1/mobile/passkeys', [
+            'state' => $state,
+            'code_challenge' => str_repeat('c', 43),
+        ])->assertCreated();
+
+        $this->actingAs($differentOwner, 'web')->withSession([
+            'mobile_passkey_login.state_hash' => $stateHash,
+            'mobile_passkey_login.verified_at' => now()->timestamp,
+            'mobile_passkey_login.verified_user_id' => $owner->getKey(),
+            'mobile_passkey_login.verified_state_hash' => $stateHash,
+        ])->postJson('/api/v1/mobile/passkeys/complete', ['state' => $state])
+            ->assertUnprocessable()
+            ->assertJsonPath('errors.state.0', 'The verified passkey does not match the signed-in account. Start sign-in again from LifeOS.');
     }
 
     public function test_mobile_passkey_completion_reports_a_missing_verification_marker(): void
@@ -190,8 +220,10 @@ class PasskeyFlowTest extends TestCase
 
         $stateHash = hash('sha256', $state);
         $complete = $this->actingAs($owner, 'web')->withSession([
+            'mobile_passkey_login.state_hash' => $stateHash,
             'mobile_passkey_login.verified_at' => now()->timestamp,
             'mobile_passkey_login.verified_user_id' => $owner->getKey(),
+            'mobile_passkey_login.verified_state_hash' => $stateHash,
         ])->postJson('/api/v1/mobile/passkeys/complete', ['state' => $state])
             ->assertOk();
         $callbackUrl = (string) $complete->json('data.callback_url');
