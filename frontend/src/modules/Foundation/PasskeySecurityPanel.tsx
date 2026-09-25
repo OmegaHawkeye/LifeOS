@@ -3,6 +3,7 @@ import { Passkeys } from "@laravel/passkeys";
 import { usePasskeyRegister } from "@laravel/passkeys/react";
 import { apiFetch, initializeCsrfProtection } from "@/api/client";
 import { environment } from "@/config/environment";
+import { describePasskeyError } from "./passkeyErrors";
 
 type Passkey = {
   id: string;
@@ -64,11 +65,7 @@ export function PasskeySecurityPanel({
       await initializeCsrfProtection();
       await registration.register(name.trim());
     } catch (caughtError) {
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Passkey registration failed.",
-      );
+      setError(describePasskeyError(caughtError));
     } finally {
       setIsLoading(false);
     }
