@@ -24,10 +24,7 @@ export function LifeOSApp() {
   const { isLoading, owner } = useMobileAuth();
 
   return (
-    <SafeAreaView
-      edges={["top", "bottom"]}
-      style={styles.safeArea}
-    >
+    <SafeAreaView edges={["top", "bottom"]} style={styles.safeArea}>
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
           <View className="h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-lifeos-accent">

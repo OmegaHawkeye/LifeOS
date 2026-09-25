@@ -117,9 +117,9 @@ describe("LifeOS native shell", () => {
       "123456",
     );
     expect(await screen.findByText("Your day, in context")).toBeTruthy();
-    expect(screen.getByTestId("today-dashboard-scroll").props.className).toContain(
-      "flex-1",
-    );
+    expect(
+      screen.getByTestId("today-dashboard-scroll").props.className,
+    ).toContain("flex-1");
     for (const icon of [
       "today",
       "finance",
