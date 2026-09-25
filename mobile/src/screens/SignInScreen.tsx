@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { useMobileAuth } from "../auth/authContext";
+import { getErrorMessage } from "../auth/errorMessage";
 import type { MobileLoginChallenge } from "../auth/mobileAuthService";
 import { createPasskeyPkce } from "../auth/passkeyPkce";
 
@@ -56,9 +57,12 @@ export function SignInScreen() {
       }
 
       await completePasskeySignIn(state, code, pkce.verifier);
-    } catch {
+    } catch (passkeySignInError) {
       setPasskeyError(
-        "Passkey sign-in could not be completed. Try again or use your password.",
+        getErrorMessage(
+          passkeySignInError,
+          "Passkey sign-in could not be completed. Try again or use your password.",
+        ),
       );
     } finally {
       setIsSigningIn(false);

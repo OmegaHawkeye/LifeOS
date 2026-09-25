@@ -8,6 +8,7 @@ import {
   type PropsWithChildren,
 } from "react";
 import type { OwnerProfile } from "./credentials";
+import { getErrorMessage } from "./errorMessage";
 import {
   MobileApiError,
   MobileAuthService,
@@ -154,9 +155,10 @@ export function MobileAuthProvider({
         setOwner(await service.completePasskeySignIn(state, code, verifier));
       } catch (signInError) {
         setError(
-          signInError instanceof Error
-            ? signInError.message
-            : "LifeOS could not complete passkey sign-in.",
+          getErrorMessage(
+            signInError,
+            "LifeOS could not complete passkey sign-in.",
+          ),
         );
         throw signInError;
       }
