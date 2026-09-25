@@ -72,22 +72,23 @@ export class MobileFinanceService {
 
   async loadSnapshot(month: string): Promise<FinanceSnapshot> {
     const { from, to } = monthRange(month);
-    const [accounts, categories, transactions, overview, settings] = await Promise.all([
-      this.api.request<ApiEnvelope<FinanceAccount[]>>("/finance/accounts"),
-      this.api.request<ApiEnvelope<FinanceCategory[]>>("/finance/categories"),
-      this.api.request<ApiEnvelope<FinanceTransaction[]>>(
-        `/finance/transactions?date_from=${from}&date_to=${to}`,
-      ),
-      this.api.request<ApiEnvelope<FinanceOverview>>(
-        `/finance/overview?month=${month}`,
-      ),
-      this.api.request<
-        ApiEnvelope<{
-          currency: string;
-          mask_sensitive_data_by_default: boolean;
-        }>
-      >("/settings"),
-    ]);
+    const [accounts, categories, transactions, overview, settings] =
+      await Promise.all([
+        this.api.request<ApiEnvelope<FinanceAccount[]>>("/finance/accounts"),
+        this.api.request<ApiEnvelope<FinanceCategory[]>>("/finance/categories"),
+        this.api.request<ApiEnvelope<FinanceTransaction[]>>(
+          `/finance/transactions?date_from=${from}&date_to=${to}`,
+        ),
+        this.api.request<ApiEnvelope<FinanceOverview>>(
+          `/finance/overview?month=${month}`,
+        ),
+        this.api.request<
+          ApiEnvelope<{
+            currency: string;
+            mask_sensitive_data_by_default: boolean;
+          }>
+        >("/settings"),
+      ]);
 
     return {
       accounts: accounts.data,

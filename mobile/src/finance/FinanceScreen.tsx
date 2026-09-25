@@ -306,7 +306,10 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
                   {state.snapshot.categories
-                    .filter((category) => category.type === type && !category.is_archived)
+                    .filter(
+                      (category) =>
+                        category.type === type && !category.is_archived,
+                    )
                     .map((category) => (
                       <ActionButton
                         key={category.id}
@@ -316,7 +319,8 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                       />
                     ))}
                   {state.snapshot.categories.filter(
-                    (category) => category.type === type && !category.is_archived,
+                    (category) =>
+                      category.type === type && !category.is_archived,
                   ).length === 0 ? (
                     <Text className="text-sm text-lifeos-muted">
                       No {type} categories yet.
@@ -451,7 +455,8 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
               Categories
             </Text>
             <Text className="text-sm leading-[21px] text-lifeos-muted">
-              Create reusable income and expense categories for your transactions.
+              Create reusable income and expense categories for your
+              transactions.
             </Text>
             <View className="flex-row gap-2">
               <ActionButton
