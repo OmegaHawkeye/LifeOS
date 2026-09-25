@@ -45,21 +45,21 @@ export class MobilePasskeyService {
   }
 
   async getSettings(): Promise<MobilePasskeySettings> {
-    const response = await this.api.request<DataEnvelope<MobilePasskeySettings>>(
-      "/settings",
-    );
+    const response =
+      await this.api.request<DataEnvelope<MobilePasskeySettings>>("/settings");
     return response.data;
   }
 
-  async updateSettings(passkeysEnabled: boolean): Promise<MobilePasskeySettings> {
-    const response = await this.api.request<DataEnvelope<MobilePasskeySettings>>(
-      "/settings",
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ passkeys_enabled: passkeysEnabled }),
-      },
-    );
+  async updateSettings(
+    passkeysEnabled: boolean,
+  ): Promise<MobilePasskeySettings> {
+    const response = await this.api.request<
+      DataEnvelope<MobilePasskeySettings>
+    >("/settings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ passkeys_enabled: passkeysEnabled }),
+    });
     return response.data;
   }
 }
