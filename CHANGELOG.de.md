@@ -1,22 +1,3 @@
-# 0.13.2
-
-- Tailscale-MagicDNS-Hosts werden jetzt für lokale HTTPS-Entwicklung akzeptiert.
-
-# 0.13.1
-
-- Der lokale Vite-Server akzeptiert jetzt Bonjour-Hosts für HTTPS-Tests.
-
-# 0.13.0
-
-- Lokales HTTPS-Setup für WebAuthn- und Passkey-Tests dokumentiert.
-- Caddy-Entwicklungsproxy für Mac und iPhone ergänzt.
-
-# 0.12.0
-
-- Passkey-Anmeldung kann pro Konto aktiviert oder deaktiviert werden.
-- LifeOS zeigt die konfigurierte WebAuthn-URL und warnt bei fehlendem HTTPS.
-- Self-hosted HTTPS- und Passkey-Anforderungen sind dokumentiert.
-
 # 0.11.0
 
 - Passkeys funktionieren in Web und iOS mit Apple, 1Password und kompatiblen Passwortmanagern.

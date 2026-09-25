@@ -1,22 +1,3 @@
-# 0.13.2
-
-- Tailscale MagicDNS hosts are now accepted for local HTTPS development.
-
-# 0.13.1
-
-- The local Vite server now accepts Bonjour hosts for HTTPS testing.
-
-# 0.13.0
-
-- Local HTTPS setup for WebAuthn and passkey testing is documented.
-- Added a Caddy development proxy for Mac and iPhone testing.
-
-# 0.12.0
-
-- Passkey sign-in can be enabled or disabled per account.
-- LifeOS shows the configured WebAuthn origin and warns when HTTPS is missing.
-- Self-hosted HTTPS and passkey requirements are documented.
-
 # 0.11.0
 
 - Passkeys now work on web and iOS with Apple, 1Password, and compatible password managers.
