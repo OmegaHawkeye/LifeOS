@@ -460,7 +460,14 @@ export function SettingsPage() {
         </div>
       </form>
 
-      <PasskeySecurityPanel />
+      <PasskeySecurityPanel
+        enabled={settings.passkeys_enabled}
+        onToggle={(passkeysEnabled) =>
+          setSettings({ ...settings, passkeys_enabled: passkeysEnabled })
+        }
+        origin={settings.passkey_origin}
+        originIsSecure={settings.passkey_origin_is_secure}
+      />
 
       <section className="mt-8 space-y-4 rounded-3xl border border-red-300 bg-white p-5 dark:border-red-400/30 dark:bg-stone-900 sm:p-7">
         <div>

@@ -13,7 +13,17 @@ type Passkey = {
 
 Passkeys.configure({ fetch: { credentials: "include" } });
 
-export function PasskeySecurityPanel() {
+export function PasskeySecurityPanel({
+  enabled,
+  origin,
+  originIsSecure,
+  onToggle,
+}: {
+  enabled: boolean;
+  origin: string;
+  originIsSecure: boolean;
+  onToggle: (enabled: boolean) => void;
+}) {
   const [passkeys, setPasskeys] = useState<Passkey[]>([]);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +101,44 @@ export function PasskeySecurityPanel() {
         <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
           Use Apple Passwords, 1Password, or another WebAuthn-compatible
           manager. LifeOS stores only the public key.
+        </p>
+      </div>
+      <label
+        className="flex cursor-pointer items-start gap-3 rounded-2xl border border-stone-200 p-4 text-sm dark:border-white/10"
+        htmlFor="passkeys-enabled"
+      >
+        <input
+          checked={enabled}
+          className="mt-0.5 size-4 accent-emerald-500"
+          id="passkeys-enabled"
+          onChange={(event) => onToggle(event.currentTarget.checked)}
+          type="checkbox"
+        />
+        <span>
+          <span className="block font-medium">Allow passkey sign-in</span>
+          <span className="mt-1 block leading-5 text-stone-500 dark:text-stone-400">
+            Disable this to keep password and two-factor sign-in as the only
+            authentication method. Existing passkeys are not deleted.
+          </span>
+        </span>
+      </label>
+      <div
+        className={`rounded-2xl border p-4 text-sm ${originIsSecure ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-400/20 dark:bg-emerald-950/20 dark:text-emerald-200" : "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/20 dark:bg-amber-950/20 dark:text-amber-200"}`}
+      >
+        <p className="font-medium">WebAuthn origin</p>
+        <p className="mt-1 break-all">{origin}</p>
+        <p className="mt-1">
+          {originIsSecure
+            ? "Trusted HTTPS is configured for passkeys."
+            : "Passkeys require HTTPS on self-hosted installations. Configure a trusted certificate and stable local hostname before enrolling one."}
+        </p>
+        <ol className="mt-2 list-decimal space-y-1 pl-5">
+          <li>Choose a stable hostname that resolves on every device.</li>
+          <li>Terminate HTTPS at your home server or reverse proxy.</li>
+          <li>Restart LifeOS after changing the server URL or certificate.</li>
+        </ol>
+        <p className="mt-2">
+          Changing this origin later may invalidate existing passkeys.
         </p>
       </div>
       {passkeys.map((passkey) => (

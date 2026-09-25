@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'passkey_web_url' => env('LIFEOS_PASSKEY_WEB_URL', env('FRONTEND_URL', env('APP_URL', 'http://localhost:8080'))),
+    'passkey_web_url' => env('LIFEOS_PASSKEY_WEB_URL', env('FRONTEND_URL', 'http://localhost:5173')),
     'mobile_access_token_minutes' => (int) env('LIFEOS_MOBILE_ACCESS_TOKEN_MINUTES', 15),
     'mobile_refresh_token_days' => (int) env('LIFEOS_MOBILE_REFRESH_TOKEN_DAYS', 30),
     'backups' => [

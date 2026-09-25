@@ -3083,6 +3083,9 @@ components:
           theme,
           mask_sensitive_data_by_default,
           notifications_enabled,
+          passkeys_enabled,
+          passkey_origin,
+          passkey_origin_is_secure,
         ]
       properties:
         timezone:
@@ -3101,6 +3104,15 @@ components:
           type: boolean
         notifications_enabled:
           type: boolean
+        passkeys_enabled:
+          type: boolean
+        passkey_origin:
+          type: string
+          format: uri
+          description: The configured LifeOS origin used for WebAuthn.
+        passkey_origin_is_secure:
+          type: boolean
+          description: Whether the configured origin uses HTTPS.
     DeleteOwnerAccountRequest:
       type: object
       additionalProperties: false
@@ -3132,6 +3144,8 @@ components:
         mask_sensitive_data_by_default:
           type: boolean
         notifications_enabled:
+          type: boolean
+        passkeys_enabled:
           type: boolean
     Routine:
       type: object

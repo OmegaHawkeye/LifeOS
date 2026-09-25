@@ -67,6 +67,9 @@ const settings = {
   theme: "system" as const,
   mask_sensitive_data_by_default: true,
   notifications_enabled: false,
+  passkeys_enabled: true,
+  passkey_origin: "http://localhost:8000",
+  passkey_origin_is_secure: false,
 };
 
 describe("LifeOS authenticated app shell", () => {

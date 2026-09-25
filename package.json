@@ -33,6 +33,7 @@
     "contract:check": "pnpm --dir frontend contract:check",
     "contract:generate": "pnpm --dir frontend contract:generate",
     "dev": "node scripts/dev.mjs",
+    "dev:https": "caddy run --config Caddyfile.dev",
     "format": "composer --working-dir=backend pint && pnpm --dir frontend format:repo",
     "format:check": "composer --working-dir=backend pint:test && pnpm --dir frontend format:repo:check",
     "lint": "composer --working-dir=backend analyse && pnpm --dir frontend lint && pnpm --dir mobile typecheck && node scripts/check-module-boundaries.mjs",
