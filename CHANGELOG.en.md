@@ -1,3 +1,7 @@
+# 0.13.0
+
+- Local error reports help diagnose issues and are exported only on request.
+
 # 0.12.0
 
 - Self-hosted instances can configure passkey sign-in with trusted HTTPS.
