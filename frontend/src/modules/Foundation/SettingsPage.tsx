@@ -10,6 +10,7 @@ import {
 import { changePassword, deleteOwnerAccount } from "./auth";
 import { PasskeySecurityPanel } from "./PasskeySecurityPanel";
 import type { BackupStatus, OwnerSettings } from "./settings";
+import { DiagnosticReportPanel } from "@/diagnostics/DiagnosticReportPanel";
 
 export function SettingsPage() {
   const { owner, updateTheme } = useAuth();
@@ -468,6 +469,8 @@ export function SettingsPage() {
         origin={settings.passkey_origin}
         originIsSecure={settings.passkey_origin_is_secure}
       />
+
+      <DiagnosticReportPanel />
 
       <section className="mt-8 space-y-4 rounded-3xl border border-red-300 bg-white p-5 dark:border-red-400/30 dark:bg-stone-900 sm:p-7">
         <div>

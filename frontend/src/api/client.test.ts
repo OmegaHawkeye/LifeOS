@@ -1,6 +1,10 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it, vi } from "vitest";
+import {
+  clearLocalDiagnostics,
+  readLocalDiagnostics,
+} from "@/diagnostics/localDiagnostics";
 import { apiFetch, createApiClient } from "./client";
 
 describe("LifeOS API client", () => {
@@ -52,5 +56,36 @@ describe("LifeOS API client", () => {
       vi.unstubAllGlobals();
       document.cookie = "XSRF-TOKEN=; Max-Age=0; path=/";
     }
+  });
+
+  it("records failed API responses locally with their correlation id", async () => {
+    clearLocalDiagnostics();
+    const client = createApiClient({
+      baseUrl: "https://lifeos.test/api/v1",
+      fetch: async () =>
+        Response.json(
+          { message: "private server details" },
+          {
+            status: 500,
+            headers: { "X-Correlation-ID": "corr-failed-request" },
+          },
+        ),
+    });
+
+    await client.GET("/readiness");
+
+    expect(readLocalDiagnostics()).toMatchObject([
+      {
+        kind: "api_failure",
+        method: "GET",
+        route: "/api/v1/readiness",
+        status: 500,
+        correlationId: "corr-failed-request",
+      },
+    ]);
+    expect(JSON.stringify(readLocalDiagnostics())).not.toContain(
+      "private server details",
+    );
+    clearLocalDiagnostics();
   });
 });

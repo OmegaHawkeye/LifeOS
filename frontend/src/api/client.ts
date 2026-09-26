@@ -1,5 +1,9 @@
 import createClient from "openapi-fetch";
 import { environment } from "@/config/environment";
+import {
+  captureApiFailure,
+  captureNetworkFailure,
+} from "@/diagnostics/localDiagnostics";
 import type { paths } from "./schema";
 
 type ApiClientOptions = {
@@ -11,22 +15,37 @@ export function createApiClient(options: ApiClientOptions = {}) {
   return createClient<paths>({
     baseUrl: options.baseUrl ?? `${environment.apiBaseUrl}/api/v1`,
     credentials: "include",
-    fetch: options.fetch ?? fetchWithCsrfToken,
+    fetch: options.fetch ? withDiagnostics(options.fetch) : fetchWithCsrfToken,
   });
 }
 
 export async function initializeCsrfProtection(): Promise<void> {
-  const response = await fetch(
-    `${environment.apiBaseUrl}/sanctum/csrf-cookie`,
-    {
-      credentials: "include",
-      headers: { Accept: "application/json" },
-    },
-  );
+  const request = new Request(`${environment.apiBaseUrl}/sanctum/csrf-cookie`, {
+    method: "GET",
+    credentials: "include",
+    headers: { Accept: "application/json" },
+  });
+  const response = await fetchWithCsrfToken(request);
 
   if (!response.ok) {
     throw new Error("LifeOS could not initialize secure sign-in.");
   }
+}
+
+function withDiagnostics(
+  fetcher: (request: Request) => Promise<Response>,
+): (request: Request) => Promise<Response> {
+  return async (request: Request) => {
+    try {
+      const response = await fetcher(request);
+      captureApiFailure(request, response);
+
+      return response;
+    } catch (error) {
+      captureNetworkFailure(request, error);
+      throw error;
+    }
+  };
 }
 
 async function fetchWithCsrfToken(request: Request): Promise<Response> {

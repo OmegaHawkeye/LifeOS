@@ -15,6 +15,7 @@ import { useMobileAuth } from "../auth/authContext";
 import { getErrorMessage } from "../auth/errorMessage";
 import type { MobileLoginChallenge } from "../auth/mobileAuthService";
 import { createPasskeyPkce } from "../auth/passkeyPkce";
+import { DiagnosticReportPanel } from "../diagnostics/DiagnosticReportPanel";
 
 export function SignInScreen() {
   const {
@@ -258,6 +259,7 @@ export function SignInScreen() {
             Your credentials stay on this device and are sent only to your
             LifeOS server.
           </Text>
+          <DiagnosticReportPanel />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
