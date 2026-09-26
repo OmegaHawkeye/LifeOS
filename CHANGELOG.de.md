@@ -1,3 +1,7 @@
+# 0.13.0
+
+- Lokale Fehlerberichte helfen bei der Diagnose und werden nur auf Wunsch exportiert.
+
 # 0.12.0
 
 - Passkey-Anmeldung lässt sich für selbst gehostete Instanzen mit vertrauenswürdigem HTTPS konfigurieren.
