@@ -4,6 +4,10 @@ import {
   type MobileCredentials,
   type OwnerProfile,
 } from "./credentials";
+import {
+  captureApiFailure,
+  captureNetworkFailure,
+} from "../diagnostics/localDiagnostics";
 
 export class MobileApiError extends Error {
   constructor(
@@ -45,7 +49,32 @@ export class MobileAuthService {
       "http://localhost:8000/api/v1"
     ).replace(/\/$/, "");
     this.credentialStore = options.credentialStore;
-    this.fetcher = options.fetcher ?? fetch;
+    const fetcher = options.fetcher ?? fetch;
+    this.fetcher = async (input, init) => {
+      const url =
+        typeof input === "string"
+          ? input
+          : input instanceof Request
+            ? input.url
+            : input.toString();
+      const method =
+        init?.method ?? (input instanceof Request ? input.method : "GET");
+
+      try {
+        const response = await fetcher(input, init);
+        captureApiFailure(
+          url,
+          method,
+          response.status,
+          response.headers?.get("X-Correlation-ID"),
+        );
+
+        return response;
+      } catch (error) {
+        captureNetworkFailure(url, method, error);
+        throw error;
+      }
+    };
     this.now = options.now ?? Date.now;
   }
 

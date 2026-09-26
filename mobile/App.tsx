@@ -7,16 +7,21 @@ import { MobileAuthProvider, useMobileAuth } from "./src/auth/authContext";
 import { mobileAuthService } from "./src/auth/mobileAuth";
 import { HomeShell } from "./src/screens/HomeShell";
 import { SignInScreen } from "./src/screens/SignInScreen";
+import { DiagnosticErrorBoundary } from "./src/diagnostics/DiagnosticErrorBoundary";
+import { registerNativeDiagnostics } from "./src/diagnostics/registerNativeDiagnostics";
 
+registerNativeDiagnostics();
 void SplashScreen.hideAsync().catch(() => undefined);
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <MobileAuthProvider service={mobileAuthService}>
-        <LifeOSApp />
-      </MobileAuthProvider>
-    </SafeAreaProvider>
+    <DiagnosticErrorBoundary>
+      <SafeAreaProvider>
+        <MobileAuthProvider service={mobileAuthService}>
+          <LifeOSApp />
+        </MobileAuthProvider>
+      </SafeAreaProvider>
+    </DiagnosticErrorBoundary>
   );
 }
 
