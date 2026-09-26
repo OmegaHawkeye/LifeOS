@@ -12,7 +12,7 @@ describe("shared native Button", () => {
 
     const button = screen.getByRole("button", { name: "Save changes" });
     expect(button).toBeDisabled();
-    expect(button.props.className).toContain("bg-stone-200");
+    expect(button.props.className).toContain("bg-stone-300");
     fireEvent.press(button);
     expect(onPress).not.toHaveBeenCalled();
   });

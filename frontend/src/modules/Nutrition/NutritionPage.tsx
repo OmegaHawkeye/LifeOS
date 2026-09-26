@@ -410,8 +410,12 @@ export function NutritionPage() {
                 onChange={(event) => {
                   const nextRecipeId = event.currentTarget.value;
                   setMealRecipeId(nextRecipeId);
-                  if (nextRecipeId) setMealFormValid(true);
-                  else setMealFormValid(false);
+                  const eatenAt = event.currentTarget.form?.elements.namedItem(
+                    "eaten_at",
+                  ) as HTMLInputElement | null;
+                  setMealFormValid(
+                    Boolean(nextRecipeId && eatenAt?.checkValidity()),
+                  );
                 }}
               >
                 <option value="">Free-form meal</option>

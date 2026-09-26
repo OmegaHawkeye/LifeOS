@@ -188,6 +188,20 @@ describe("Nutrition recipe and meal flows", () => {
       name: "Log meal",
     });
     expect(logMeal).toBeEnabled();
+    const mealDate = screen.getByLabelText("Meal date and time");
+    await user.clear(mealDate);
+    expect(logMeal).toBeDisabled();
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Recipe" }),
+      "",
+    );
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Recipe" }),
+      "12",
+    );
+    expect(logMeal).toBeDisabled();
+    await user.type(mealDate, "2026-09-26T12:00");
+    expect(logMeal).toBeEnabled();
     await user.click(logMeal);
     await waitFor(() => expect(createNutritionMeal).toHaveBeenCalled());
     expect(createNutritionMeal).toHaveBeenCalledWith(

@@ -18,6 +18,15 @@ const labelVariants: Record<NonNullable<ButtonProps["variant"]>, string> = {
   icon: "text-lifeos-primary",
 };
 
+const disabledVariants: Record<NonNullable<ButtonProps["variant"]>, string> = {
+  primary: "bg-stone-300",
+  secondary:
+    "border border-lifeos-border bg-stone-200 dark:border-white/15 dark:bg-stone-700",
+  tertiary: "bg-stone-100 dark:bg-stone-800",
+  danger: "bg-stone-300",
+  icon: "border border-lifeos-border bg-stone-200 dark:border-white/15 dark:bg-stone-700",
+};
+
 export function Button({
   accessibilityLabel,
   children,
@@ -39,7 +48,7 @@ export function Button({
         disabled: isDisabled,
         ...(selected === undefined ? {} : { selected }),
       }}
-      className={`${variant === "icon" ? "items-center justify-center" : "min-h-11 flex-row items-center justify-center gap-2 rounded-xl px-4 py-2"} ${variants[variant]} ${isDisabled ? "bg-stone-200" : "active:opacity-80"} ${className}`.trim()}
+      className={`${variant === "icon" ? "items-center justify-center" : "min-h-11 flex-row items-center justify-center gap-2 rounded-xl px-4 py-2"} ${isDisabled ? disabledVariants[variant] : variants[variant]} ${isDisabled ? "" : "active:opacity-80"} ${className}`.trim()}
       disabled={isDisabled}
       onPress={onPress}
     >

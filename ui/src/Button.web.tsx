@@ -9,13 +9,13 @@ type WebButtonProps = ButtonProps &
 
 const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary:
-    "bg-lifeos-accent text-lifeos-accent-ink hover:bg-lifeos-accent-dark disabled:bg-stone-300 disabled:text-stone-600",
+    "bg-lifeos-accent text-lifeos-accent-ink hover:bg-lifeos-accent-dark active:bg-lifeos-accent-dark disabled:bg-stone-300 disabled:text-stone-600",
   secondary:
-    "border border-lifeos-border bg-lifeos-surface text-lifeos-primary hover:bg-lifeos-background disabled:bg-stone-200 disabled:text-stone-500 dark:border-white/15 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800 dark:disabled:bg-stone-700 dark:disabled:text-stone-400",
+    "border border-lifeos-border bg-lifeos-surface text-lifeos-primary hover:bg-lifeos-background active:bg-stone-100 disabled:bg-stone-200 disabled:text-stone-500 dark:border-white/15 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800 dark:active:bg-stone-800 dark:disabled:bg-stone-700 dark:disabled:text-stone-400",
   tertiary:
-    "bg-transparent text-lifeos-primary hover:bg-lifeos-background disabled:bg-stone-100 disabled:text-stone-500 dark:text-stone-100 dark:hover:bg-white/10 dark:disabled:bg-stone-800 dark:disabled:text-stone-400",
+    "bg-transparent text-lifeos-primary hover:bg-lifeos-background active:bg-stone-100 disabled:bg-stone-100 disabled:text-stone-500 dark:text-stone-100 dark:hover:bg-white/10 dark:active:bg-white/10 dark:disabled:bg-stone-800 dark:disabled:text-stone-400",
   danger:
-    "bg-red-700 text-white hover:bg-red-800 disabled:bg-stone-300 disabled:text-stone-600",
+    "bg-red-700 text-white hover:bg-red-800 active:bg-red-900 disabled:bg-stone-300 disabled:text-stone-600",
   icon: "size-11 rounded-lg border border-lifeos-border bg-lifeos-surface p-0 text-lifeos-primary hover:bg-lifeos-background disabled:bg-stone-200 disabled:text-stone-500 dark:border-white/15 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800 dark:disabled:bg-stone-700 dark:disabled:text-stone-400",
 };
 
