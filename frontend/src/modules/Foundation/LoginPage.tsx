@@ -8,6 +8,7 @@ import { environment } from "@/config/environment";
 import { describePasskeyError } from "./passkeyErrors";
 import { mobilePasskeyResponseError } from "./mobilePasskeyErrors";
 import { useAuth } from "./auth-context";
+import { DiagnosticReportPanel } from "@/diagnostics/DiagnosticReportPanel";
 
 Passkeys.configure({ fetch: { credentials: "include" } });
 
@@ -342,6 +343,7 @@ export function LoginPage() {
             )}
           </div>
         )}
+        <DiagnosticReportPanel />
       </section>
     </main>
   );

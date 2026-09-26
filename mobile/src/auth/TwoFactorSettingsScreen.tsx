@@ -11,6 +11,7 @@ import {
 import type { MobileTwoFactorService } from "./mobileTwoFactorService";
 import type { MobilePasskeyService } from "./mobilePasskeyService";
 import { PasskeySettingsPanel } from "./PasskeySettingsPanel";
+import { DiagnosticReportPanel } from "../diagnostics/DiagnosticReportPanel";
 
 type TwoFactorSettingsScreenProps = {
   onDisabled?: () => void | Promise<void>;
@@ -255,6 +256,7 @@ export function TwoFactorSettingsScreen({
       {passkeyService ? (
         <PasskeySettingsPanel service={passkeyService} />
       ) : null}
+      <DiagnosticReportPanel />
     </ScrollView>
   );
 }

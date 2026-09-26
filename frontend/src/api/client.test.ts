@@ -1,7 +1,11 @@
 // @vitest-environment jsdom
 
 import { describe, expect, it, vi } from "vitest";
-import { apiFetch, createApiClient } from "./client";
+import {
+  clearLocalDiagnostics,
+  readLocalDiagnostics,
+} from "@/diagnostics/localDiagnostics";
+import { apiFetch, createApiClient, initializeCsrfProtection } from "./client";
 
 describe("LifeOS API client", () => {
   it("uses the versioned contract and includes authentication cookies", async () => {
@@ -52,5 +56,50 @@ describe("LifeOS API client", () => {
       vi.unstubAllGlobals();
       document.cookie = "XSRF-TOKEN=; Max-Age=0; path=/";
     }
+  });
+
+  it("records failed API responses locally with their correlation id", async () => {
+    clearLocalDiagnostics();
+    const client = createApiClient({
+      baseUrl: "https://lifeos.test/api/v1",
+      fetch: async () =>
+        Response.json(
+          { message: "private server details" },
+          {
+            status: 500,
+            headers: { "X-Correlation-ID": "corr-failed-request" },
+          },
+        ),
+    });
+
+    await client.GET("/readiness");
+
+    expect(readLocalDiagnostics()).toMatchObject([
+      {
+        kind: "api_failure",
+        method: "GET",
+        route: "/api/v1/readiness",
+        status: 500,
+        correlationId: "corr-failed-request",
+      },
+    ]);
+    expect(JSON.stringify(readLocalDiagnostics())).not.toContain(
+      "private server details",
+    );
+    clearLocalDiagnostics();
+  });
+
+  it("initializes CSRF protection when the API uses the current origin", async () => {
+    const fetcher = vi
+      .fn()
+      .mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", fetcher);
+
+    await initializeCsrfProtection();
+
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect(fetcher.mock.calls[0]?.[0]).toBeInstanceOf(Request);
+    expect(fetcher.mock.calls[0]?.[0].url).toMatch(/\/sanctum\/csrf-cookie$/);
+    vi.unstubAllGlobals();
   });
 });

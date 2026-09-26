@@ -1,4 +1,25 @@
+const mockDiagnosticStorage = new Map<string, string>();
+
+jest.mock("expo-secure-store", () => ({
+  WHEN_UNLOCKED_THIS_DEVICE_ONLY: "when-unlocked",
+  getItemAsync: jest.fn((key: string) =>
+    Promise.resolve(mockDiagnosticStorage.get(key) ?? null),
+  ),
+  setItemAsync: jest.fn((key: string, value: string) => {
+    mockDiagnosticStorage.set(key, value);
+    return Promise.resolve();
+  }),
+  deleteItemAsync: jest.fn((key: string) => {
+    mockDiagnosticStorage.delete(key);
+    return Promise.resolve();
+  }),
+}));
+
 import { MobileApiError, MobileAuthService } from "./mobileAuthService";
+import {
+  clearLocalDiagnostics,
+  readLocalDiagnostics,
+} from "../diagnostics/localDiagnostics";
 import type {
   CredentialStore,
   MobileCredentials,
@@ -43,11 +64,16 @@ function credentials(
   };
 }
 
-function jsonResponse(payload: unknown, status = 200): Response {
+function jsonResponse(
+  payload: unknown,
+  status = 200,
+  headers: Record<string, string> = {},
+): Response {
   return {
     ok: status >= 200 && status < 300,
     status,
     json: async () => payload,
+    headers: new Headers(headers),
   } as Response;
 }
 
@@ -57,6 +83,7 @@ describe("MobileAuthService", () => {
   let service: MobileAuthService;
 
   beforeEach(() => {
+    mockDiagnosticStorage.clear();
     store = new MemoryCredentialStore();
     fetcher = jest.fn();
     service = new MobileAuthService({
@@ -64,6 +91,33 @@ describe("MobileAuthService", () => {
       credentialStore: store,
       fetcher,
     });
+  });
+
+  test("records a failed API request with its correlation id but without its response body", async () => {
+    fetcher.mockResolvedValueOnce(
+      jsonResponse({ message: "private error details" }, 500, {
+        "X-Correlation-ID": "corr-native-987",
+      }),
+    );
+
+    await expect(
+      service.signIn("julian@example.test", "private password", "iPhone"),
+    ).rejects.toBeInstanceOf(MobileApiError);
+
+    const report = await readLocalDiagnostics();
+
+    expect(report).toMatchObject([
+      {
+        kind: "api_failure",
+        method: "POST",
+        route: "/api/v1/mobile/auth/login",
+        status: 500,
+        correlationId: "corr-native-987",
+      },
+    ]);
+    expect(JSON.stringify(report)).not.toContain("private error details");
+    expect(JSON.stringify(report)).not.toContain("julian@example.test");
+    await clearLocalDiagnostics();
   });
 
   test("defaults to the local development API port", async () => {
