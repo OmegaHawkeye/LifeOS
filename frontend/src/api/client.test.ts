@@ -5,7 +5,7 @@ import {
   clearLocalDiagnostics,
   readLocalDiagnostics,
 } from "@/diagnostics/localDiagnostics";
-import { apiFetch, createApiClient } from "./client";
+import { apiFetch, createApiClient, initializeCsrfProtection } from "./client";
 
 describe("LifeOS API client", () => {
   it("uses the versioned contract and includes authentication cookies", async () => {
@@ -87,5 +87,19 @@ describe("LifeOS API client", () => {
       "private server details",
     );
     clearLocalDiagnostics();
+  });
+
+  it("initializes CSRF protection when the API uses the current origin", async () => {
+    const fetcher = vi
+      .fn()
+      .mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", fetcher);
+
+    await initializeCsrfProtection();
+
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect(fetcher.mock.calls[0]?.[0]).toBeInstanceOf(Request);
+    expect(fetcher.mock.calls[0]?.[0].url).toMatch(/\/sanctum\/csrf-cookie$/);
+    vi.unstubAllGlobals();
   });
 });

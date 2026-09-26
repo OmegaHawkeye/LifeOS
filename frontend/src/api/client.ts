@@ -20,7 +20,11 @@ export function createApiClient(options: ApiClientOptions = {}) {
 }
 
 export async function initializeCsrfProtection(): Promise<void> {
-  const request = new Request(`${environment.apiBaseUrl}/sanctum/csrf-cookie`, {
+  const csrfCookieUrl = new URL(
+    "/sanctum/csrf-cookie",
+    environment.apiBaseUrl || window.location.origin,
+  );
+  const request = new Request(csrfCookieUrl, {
     method: "GET",
     credentials: "include",
     headers: { Accept: "application/json" },
