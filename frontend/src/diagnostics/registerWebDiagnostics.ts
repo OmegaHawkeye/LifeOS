@@ -32,10 +32,13 @@ export function registerWebDiagnostics(): void {
   const originalFetch = window.fetch.bind(window);
   windowWithDiagnosticFetch.__lifeosDiagnosticsFetchInstalled = true;
   window.fetch = async (input, init) => {
-    const request =
-      input instanceof Request
-        ? new Request(input, init)
-        : new Request(new URL(input.toString(), window.location.href), init);
+    const request = {
+      url:
+        input instanceof Request
+          ? input.url
+          : new URL(input.toString(), window.location.href).href,
+      method: init?.method ?? (input instanceof Request ? input.method : "GET"),
+    };
 
     if (!isLifeOSRequest(request.url)) {
       return originalFetch(input, init);

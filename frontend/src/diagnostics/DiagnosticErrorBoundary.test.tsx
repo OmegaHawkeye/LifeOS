@@ -57,6 +57,15 @@ describe("web diagnostics capture", () => {
         environment.apiBaseUrl || window.location.origin,
       ),
     );
+    const consumedRequest = new Request(
+      new URL(
+        "/api/v1/auth/login",
+        environment.apiBaseUrl || window.location.origin,
+      ),
+      { method: "POST", body: "credentials" },
+    );
+    await consumedRequest.text();
+    await window.fetch(consumedRequest);
     window.dispatchEvent(
       new ErrorEvent("error", {
         error: new TypeError("private token details"),
@@ -72,6 +81,6 @@ describe("web diagnostics capture", () => {
     expect(report).not.toContain("private response details");
     expect(report).toContain("unhandled_error");
     expect(report).not.toContain("private token details");
-    expect(fetcher).toHaveBeenCalledOnce();
+    expect(fetcher).toHaveBeenCalledTimes(2);
   });
 });

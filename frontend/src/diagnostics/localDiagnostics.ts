@@ -107,7 +107,10 @@ export function readLocalDiagnostics(): LocalDiagnostic[] {
   }
 }
 
-export function captureApiFailure(request: Request, response: Response): void {
+export function captureApiFailure(
+  request: Pick<Request, "url" | "method">,
+  response: Response,
+): void {
   if (response.ok) {
     return;
   }
@@ -121,7 +124,10 @@ export function captureApiFailure(request: Request, response: Response): void {
   });
 }
 
-export function captureNetworkFailure(request: Request, error: unknown): void {
+export function captureNetworkFailure(
+  request: Pick<Request, "url" | "method">,
+  error: unknown,
+): void {
   addDiagnostic({
     kind: "api_failure",
     method: safeMethod(request.method),
