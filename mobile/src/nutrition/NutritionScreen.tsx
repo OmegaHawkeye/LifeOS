@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { Button } from "@lifeos/ui/button";
 import type {
   LogNutritionMeal,
   MobileNutritionService,
@@ -222,6 +222,7 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
             </View>
             <NutritionButton
               disabled={savingTarget}
+              loading={savingTarget}
               label={savingTarget ? "Saving…" : "Save daily target"}
               onPress={() => void saveTarget()}
             />
@@ -332,7 +333,13 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
               />
             </View>
             <NutritionButton
-              disabled={saving || name.trim().length === 0}
+              disabled={
+                saving ||
+                name.trim().length === 0 ||
+                optionalNonNegativeNumber(calories) === false ||
+                optionalNonNegativeNumber(protein) === false
+              }
+              loading={saving}
               label={saving ? "Saving…" : "Save meal"}
               onPress={() => void saveMeal()}
             />
@@ -406,27 +413,26 @@ function NutritionButton({
   disabled = false,
   label,
   onPress,
+  loading = false,
   selected = false,
 }: {
   disabled?: boolean;
   label: string;
+  loading?: boolean;
   onPress: () => void;
   selected?: boolean;
 }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ disabled, selected }}
-      className={`min-h-11 justify-center rounded-xl px-4 ${selected ? "bg-lifeos-accent" : "border border-lifeos-border bg-lifeos-surface"} ${disabled ? "opacity-50" : "active:opacity-70"}`}
+    <Button
+      className="flex-1"
       disabled={disabled}
+      loading={loading}
       onPress={onPress}
+      selected={selected}
+      variant={selected ? "primary" : "secondary"}
     >
-      <Text
-        className={`text-sm font-semibold ${selected ? "text-lifeos-accent-ink" : "text-lifeos-primary"}`}
-      >
-        {label}
-      </Text>
-    </Pressable>
+      {label}
+    </Button>
   );
 }
 

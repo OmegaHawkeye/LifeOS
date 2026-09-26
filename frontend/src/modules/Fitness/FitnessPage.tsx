@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import { apiFetch } from "@/api/client";
 import { getOwnerSettings } from "@/modules/Foundation";
 import { FitnessWorkoutTracker } from "./FitnessWorkoutTracker";
@@ -268,9 +269,13 @@ export function FitnessPage() {
               />
             </label>
           </div>
-          <button className={primaryButtonClass} type="submit">
+          <Button
+            className="mt-5"
+            disabled={!isValidPositiveValue(value) || !measuredAt}
+            type="submit"
+          >
             Save measurement
-          </button>
+          </Button>
         </form>
         <form
           className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900"
@@ -308,9 +313,13 @@ export function FitnessPage() {
               />
             </label>
           </div>
-          <button className={primaryButtonClass} type="submit">
+          <Button
+            className="mt-5"
+            disabled={!isValidPositiveValue(goalValue)}
+            type="submit"
+          >
             Save goal
-          </button>
+          </Button>
         </form>
       </div>
       <div className="mt-8 grid gap-5 lg:grid-cols-2">
@@ -362,29 +371,29 @@ export function FitnessPage() {
                       <span className="font-semibold">
                         {goal.target_value} {goal.unit}
                       </span>
-                      <button
-                        className="rounded-full border border-stone-200 px-2.5 py-1 text-xs transition hover:border-stone-400 dark:border-white/15 dark:hover:border-white/30"
-                        onClick={() => beginGoalEdit(goal)}
-                        type="button"
+                      <Button
+                        className="min-h-8 rounded-full px-3 py-1 text-xs"
+                        onPress={() => beginGoalEdit(goal)}
+                        variant="secondary"
                       >
                         Edit
-                      </button>
-                      <button
-                        className="rounded-full border border-stone-200 px-2.5 py-1 text-xs transition hover:border-stone-400 dark:border-white/15 dark:hover:border-white/30"
-                        onClick={() => void updateGoalStatus(goal.id, "paused")}
-                        type="button"
+                      </Button>
+                      <Button
+                        className="min-h-8 rounded-full px-3 py-1 text-xs"
+                        onPress={() => void updateGoalStatus(goal.id, "paused")}
+                        variant="secondary"
                       >
                         Pause
-                      </button>
-                      <button
-                        className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-200 dark:hover:bg-emerald-950/80"
-                        onClick={() =>
+                      </Button>
+                      <Button
+                        className="min-h-8 rounded-full px-3 py-1 text-xs"
+                        onPress={() =>
                           void updateGoalStatus(goal.id, "completed")
                         }
-                        type="button"
+                        variant="primary"
                       >
                         Complete
-                      </button>
+                      </Button>
                     </div>
                     {editingGoalId === goal.id && (
                       <form
@@ -424,16 +433,18 @@ export function FitnessPage() {
                           />
                         </div>
                         <div className="mt-3 flex gap-2">
-                          <button className={primaryButtonClass} type="submit">
+                          <Button
+                            disabled={!isValidPositiveValue(editGoalValue)}
+                            type="submit"
+                          >
                             Save changes
-                          </button>
-                          <button
-                            className="mt-5 rounded-xl border border-stone-200 px-4 py-3 text-sm font-semibold dark:border-white/15"
-                            onClick={() => setEditingGoalId(null)}
-                            type="button"
+                          </Button>
+                          <Button
+                            onPress={() => setEditingGoalId(null)}
+                            variant="secondary"
                           >
                             Cancel
-                          </button>
+                          </Button>
                         </div>
                       </form>
                     )}
@@ -457,14 +468,15 @@ export function FitnessPage() {
           </div>
           <div className="flex gap-2 text-xs">
             {([7, 30, 90] as const).map((days) => (
-              <button
-                className={`rounded-full px-3 py-1 transition ${range === days ? "bg-emerald-400 text-stone-950" : "bg-stone-100 hover:bg-stone-200 dark:bg-white/10 dark:hover:bg-white/15"}`}
+              <Button
+                className="min-h-8 rounded-full px-3 py-1 text-xs"
                 key={days}
-                onClick={() => setRange(days)}
-                type="button"
+                onPress={() => setRange(days)}
+                selected={range === days}
+                variant={range === days ? "primary" : "secondary"}
               >
                 {days} days
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -515,8 +527,11 @@ export function FitnessPage() {
 
 const fieldClass =
   "mt-2 w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-stone-950";
-const primaryButtonClass =
-  "mt-5 rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 dark:bg-white dark:text-stone-900";
+
+function isValidPositiveValue(value: string): boolean {
+  const number = Number(value.trim().replace(",", "."));
+  return value.trim().length > 0 && Number.isFinite(number) && number > 0;
+}
 
 function metricUnit(
   metricType: string,

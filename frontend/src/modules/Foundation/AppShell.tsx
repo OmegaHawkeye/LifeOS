@@ -1,4 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
+import { Button } from "@lifeos/ui/button";
 import { AppIcon } from "@lifeos/ui/icons";
 import type { ReactNode } from "react";
 import { useAuth } from "./auth-context";
@@ -48,13 +49,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="hidden max-w-40 truncate text-sm text-stone-500 dark:text-stone-400 sm:block">
               {owner?.name}
             </span>
-            <button
-              className="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/10"
-              onClick={() => void signOut().catch(() => undefined)}
-              type="button"
+            <Button
+              className="min-h-10 px-3 text-sm"
+              onPress={() => void signOut().catch(() => undefined)}
+              variant="tertiary"
             >
               Sign out
-            </button>
+            </Button>
           </div>
         </div>
       </header>

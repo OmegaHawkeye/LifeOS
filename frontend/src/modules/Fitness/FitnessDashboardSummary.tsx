@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button } from "@lifeos/ui/button";
 import {
   getFitnessDashboard,
   startRecommendedWorkout,
@@ -170,14 +171,14 @@ export function FitnessDashboardSummary({
                   ? `Planned for ${formatDate(nextWorkout.scheduled_for)}`
                   : "From your workout plans"}
               </p>
-              <button
-                className="mt-4 rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+              <Button
+                className="mt-4 rounded-full"
                 disabled={starting}
-                onClick={() => void startWorkout(nextWorkout.id)}
-                type="button"
+                loading={starting}
+                onPress={() => void startWorkout(nextWorkout.id)}
               >
                 {starting ? "Starting…" : "Start this workout"}
-              </button>
+              </Button>
             </>
           ) : (
             <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">

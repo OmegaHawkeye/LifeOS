@@ -1,10 +1,8 @@
 import { useState } from "react";
 import * as WebBrowser from "expo-web-browser";
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useMobileAuth } from "../auth/authContext";
+import { Button } from "@lifeos/ui/button";
 import { getErrorMessage } from "../auth/errorMessage";
 import type { MobileLoginChallenge } from "../auth/mobileAuthService";
 import { createPasskeyPkce } from "../auth/passkeyPkce";
@@ -190,16 +189,13 @@ export function SignInScreen() {
                 })}
                 value={code}
               />
-              <Pressable
-                accessibilityRole="button"
+              <Button
                 disabled={isSigningIn}
                 onPress={() => void useDifferentAccount()}
-                style={styles.backButton}
+                variant="secondary"
               >
-                <Text style={styles.backButtonText}>
-                  Use a different account
-                </Text>
-              </Pressable>
+                Use a different account
+              </Button>
             </>
           )}
 
@@ -209,51 +205,33 @@ export function SignInScreen() {
             </Text>
           )}
 
-          <Pressable
-            accessibilityRole="button"
+          <Button
+            className="mt-3 w-full"
             disabled={
               isSigningIn ||
               (challenge === null &&
-                (email.trim() === "" || password === "")) ||
+                (!isValidEmail(email) || password === "")) ||
               (challenge !== null && code.length !== 6)
             }
+            loading={isSigningIn}
             onPress={() => void submit()}
-            style={({ pressed }) => [
-              styles.submitButton,
-              (pressed || isSigningIn) && styles.submitButtonPressed,
-              ((challenge === null &&
-                (email.trim() === "" || password === "")) ||
-                (challenge !== null && code.length !== 6)) &&
-                styles.submitButtonDisabled,
-            ]}
           >
-            {isSigningIn ? (
-              <ActivityIndicator color="#102c20" />
-            ) : (
-              <Text style={styles.submitText}>
-                {challenge === null
-                  ? "Continue"
-                  : challenge.status === "setup_required"
-                    ? "Confirm authenticator"
-                    : "Verify code"}
-              </Text>
-            )}
-          </Pressable>
+            {challenge === null
+              ? "Continue"
+              : challenge.status === "setup_required"
+                ? "Confirm authenticator"
+                : "Verify code"}
+          </Button>
           {challenge === null ? (
-            <Pressable
-              accessibilityRole="button"
+            <Button
+              className="mt-2 w-full"
               disabled={isSigningIn}
               onPress={() => void signInWithPasskey()}
-              style={styles.passkeyButton}
+              variant="secondary"
+              loading={isSigningIn}
             >
-              {isSigningIn ? (
-                <ActivityIndicator color="#17251e" />
-              ) : (
-                <Text style={styles.passkeyButtonText}>
-                  Sign in with a passkey
-                </Text>
-              )}
-            </Pressable>
+              Sign in with a passkey
+            </Button>
           ) : null}
           <Text style={styles.privacyNote}>
             Your credentials stay on this device and are sent only to your
@@ -264,6 +242,10 @@ export function SignInScreen() {
       </ScrollView>
     </KeyboardAvoidingView>
   );
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
 const styles = StyleSheet.create({
@@ -364,29 +346,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     padding: 12,
   },
-  submitButton: {
-    alignItems: "center",
-    backgroundColor: "#4dc995",
-    borderRadius: 14,
-    justifyContent: "center",
-    marginTop: 24,
-    minHeight: 52,
-  },
-  submitButtonPressed: { opacity: 0.8 },
-  submitButtonDisabled: { opacity: 0.45 },
-  submitText: { color: "#102c20", fontSize: 16, fontWeight: "700" },
-  backButton: { alignSelf: "flex-start", marginTop: 6, paddingVertical: 8 },
-  backButtonText: { color: "#287b5a", fontSize: 14, fontWeight: "600" },
-  passkeyButton: {
-    alignItems: "center",
-    borderColor: "#dce4de",
-    borderRadius: 14,
-    borderWidth: 1,
-    justifyContent: "center",
-    marginTop: 12,
-    minHeight: 52,
-  },
-  passkeyButtonText: { color: "#17251e", fontSize: 16, fontWeight: "600" },
   privacyNote: {
     color: "#7b8580",
     fontSize: 12,

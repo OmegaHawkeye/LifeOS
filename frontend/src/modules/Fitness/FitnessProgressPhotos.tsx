@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import { apiFetch } from "@/api/client";
 
 type FitnessMetric = {
@@ -278,13 +279,9 @@ export function FitnessProgressPhotos({
               onChange={(event) => setReviewNotes(event.currentTarget.value)}
             />
           </label>
-          <button
-            className={primaryButtonClass}
-            disabled={saving}
-            type="submit"
-          >
+          <Button disabled={saving} loading={saving} type="submit">
             Save monthly review
-          </button>
+          </Button>
         </form>
       )}
       {review && !review.is_due && review.reviewed_at && (
@@ -379,13 +376,14 @@ export function FitnessProgressPhotos({
               value={notes}
             />
           </label>
-          <button
-            className={`${primaryButtonClass} w-full`}
-            disabled={saving}
+          <Button
+            className="w-full"
+            disabled={saving || !photoFile || !photoDate}
+            loading={saving}
             type="submit"
           >
             Save photo privately
-          </button>
+          </Button>
         </form>
 
         <div className="rounded-2xl bg-stone-50 p-4 dark:bg-white/5 sm:p-5">
@@ -513,14 +511,14 @@ export function FitnessProgressPhotos({
                       </span>
                     )}
                   </p>
-                  <button
-                    className={secondaryButtonClass}
+                  <Button
+                    className="min-h-9 px-3 text-sm"
                     disabled={saving}
-                    onClick={() => void deletePhoto(photo)}
-                    type="button"
+                    onPress={() => void deletePhoto(photo)}
+                    variant="danger"
                   >
                     Delete
-                  </button>
+                  </Button>
                 </div>
                 {photo.notes && (
                   <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
@@ -543,7 +541,3 @@ function currentMonth() {
 
 const fieldClass =
   "mt-1 min-h-12 w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-base outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-stone-950";
-const primaryButtonClass =
-  "mt-3 min-h-12 rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900";
-const secondaryButtonClass =
-  "min-h-12 rounded-xl border border-stone-300 px-4 py-3 text-sm font-semibold transition hover:border-stone-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/20 dark:hover:border-white/40";

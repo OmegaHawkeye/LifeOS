@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@lifeos/ui/button";
 import { Passkeys } from "@laravel/passkeys";
 import { usePasskeyVerify } from "@laravel/passkeys/react";
 import { apiFetch, initializeCsrfProtection } from "@/api/client";
@@ -296,9 +297,15 @@ export function LoginPage() {
               {error}
             </p>
           )}
-          <button
-            className="w-full rounded-xl bg-emerald-400 px-4 py-3 font-semibold text-stone-950 transition hover:bg-emerald-300 disabled:cursor-wait disabled:opacity-60"
-            disabled={isSubmitting}
+          <Button
+            className="w-full"
+            disabled={
+              isSubmitting ||
+              (pendingTwoFactor
+                ? authenticatorCode.length !== 6
+                : email.trim().length === 0 || password.length === 0)
+            }
+            loading={isSubmitting}
             type="submit"
           >
             {isSubmitting
@@ -308,31 +315,31 @@ export function LoginPage() {
                   ? "Confirm authenticator"
                   : "Verify and sign in"
                 : "Sign in"}
-          </button>
+          </Button>
         </form>
         {!pendingTwoFactor && (
           <div className="mt-4 space-y-2">
-            <button
-              className="w-full rounded-xl border border-stone-300 px-4 py-3 font-semibold transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/15 dark:hover:bg-white/5"
+            <Button
+              className="w-full"
               disabled={
                 !passkeyLogin.isSupported ||
                 passkeyLogin.isLoading ||
                 isPreparingPasskey ||
                 Boolean(mobilePasskeyState && !isMobilePasskeyPrepared)
               }
-              onClick={() =>
+              onPress={() =>
                 void initializeCsrfProtection().then(() =>
                   passkeyLogin.verify(),
                 )
               }
-              type="button"
+              variant="secondary"
             >
               {isPreparingPasskey
                 ? "Preparing secure sign-in…"
                 : passkeyLogin.isLoading
                   ? "Waiting for passkey…"
                   : "Sign in with a passkey"}
-            </button>
+            </Button>
             {passkeyLoginError && (
               <p
                 className="text-sm text-red-700 dark:text-red-300"

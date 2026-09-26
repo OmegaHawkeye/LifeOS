@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import {
   copyNutritionWeek,
   createNutritionPlanItem,
@@ -130,35 +131,32 @@ export function WeeklyMealPlanner({ recipes, target }: Props) {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            aria-label="Previous week"
-            className={secondaryButtonClass}
-            onClick={() => setWeekStart(addDays(weekStart, -7))}
-            type="button"
+          <Button
+            accessibilityLabel="Previous week"
+            onPress={() => setWeekStart(addDays(weekStart, -7))}
+            variant="icon"
           >
             ←
-          </button>
+          </Button>
           <p className="min-w-40 text-center text-sm font-semibold">
             {weekLabel(weekStart)}
           </p>
-          <button
-            aria-label="Next week"
-            className={secondaryButtonClass}
-            onClick={() => setWeekStart(addDays(weekStart, 7))}
-            type="button"
+          <Button
+            accessibilityLabel="Next week"
+            onPress={() => setWeekStart(addDays(weekStart, 7))}
+            variant="icon"
           >
             →
-          </button>
-          <button
-            className={secondaryButtonClass}
+          </Button>
+          <Button
             disabled={
               itemsForWeek.length > 0 || loadedWeek !== weekStart || error
             }
-            onClick={copyPreviousWeek}
-            type="button"
+            onPress={copyPreviousWeek}
+            variant="secondary"
           >
             Copy previous week
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -339,9 +337,13 @@ export function WeeklyMealPlanner({ recipes, target }: Props) {
                         type="number"
                       />
                     </div>
-                    <button className={buttonClass} type="submit">
+                    <Button
+                      className="w-full"
+                      type="submit"
+                      variant="secondary"
+                    >
                       Add to day
-                    </button>
+                    </Button>
                   </form>
                 ) : (
                   <p className="mt-4 border-t border-stone-100 pt-3 text-xs text-stone-500 dark:border-white/10">
@@ -445,7 +447,3 @@ function dayLabel(date: string) {
 
 const fieldClass =
   "mt-1 w-full rounded-lg border border-stone-200 bg-white px-2 py-2 text-sm dark:border-white/10 dark:bg-stone-950";
-const buttonClass =
-  "w-full rounded-lg bg-stone-900 px-3 py-2 text-xs font-semibold text-white hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900";
-const secondaryButtonClass =
-  "rounded-lg border border-stone-200 px-3 py-2 text-sm font-medium hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/15 dark:hover:bg-white/5";

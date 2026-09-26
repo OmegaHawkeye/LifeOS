@@ -14,6 +14,11 @@
       "react-native": "./src/AppIcon.native.tsx",
       "default": "./src/AppIcon.web.tsx"
     },
+    "./button": {
+      "types": "./src/Button.types.ts",
+      "react-native": "./src/Button.native.tsx",
+      "default": "./src/Button.web.tsx"
+    },
     "./theme.css": "./theme.css"
   },
   "peerDependencies": {

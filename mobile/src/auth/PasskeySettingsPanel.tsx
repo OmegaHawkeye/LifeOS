@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import * as WebBrowser from "expo-web-browser";
-import { ActivityIndicator, Pressable, Switch, Text, View } from "react-native";
+import { ActivityIndicator, Switch, Text, View } from "react-native";
+import { Button } from "@lifeos/ui/button";
 import type {
   MobilePasskey,
   MobilePasskeyService,
@@ -146,14 +147,14 @@ export function PasskeySettingsPanel({
             <Text className="flex-1 text-sm font-medium text-lifeos-primary">
               {passkey.name}
             </Text>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityState={{ disabled: isBusy }}
+            <Button
+              className="min-h-10 px-3"
               disabled={isBusy}
               onPress={() => void removePasskey(passkey.id)}
+              variant="danger"
             >
-              <Text className="text-sm font-semibold text-red-700">Remove</Text>
-            </Pressable>
+              Remove
+            </Button>
           </View>
         ))
       )}
@@ -164,17 +165,14 @@ export function PasskeySettingsPanel({
         </Text>
       ) : null}
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ disabled: isBusy }}
-        className={`min-h-11 justify-center rounded-xl bg-lifeos-accent px-4 ${isBusy ? "opacity-50" : "active:opacity-70"}`}
+      <Button
         disabled={isBusy}
+        loading={isBusy}
         onPress={() => void addPasskey()}
+        variant="primary"
       >
-        <Text className="text-center text-sm font-semibold text-lifeos-accent-ink">
-          {isBusy ? "Opening secure setup…" : "Add passkey"}
-        </Text>
-      </Pressable>
+        {isBusy ? "Opening secure setup…" : "Add passkey"}
+      </Button>
     </View>
   );
 }

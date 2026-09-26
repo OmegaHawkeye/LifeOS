@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button } from "@lifeos/ui/button";
 import { copyNutritionWeek, getNutritionDashboard } from "./nutrition";
 import type { NutritionDashboard } from "./nutrition";
 
@@ -232,16 +233,15 @@ export function NutritionDashboardSummary() {
               : "shopping list ready or no planned groceries needed"}
           </p>
           {dashboard.review.next_week.can_copy ? (
-            <button
-              className={buttonClass}
+            <Button
               disabled={copying}
-              onClick={() => void prepareNextWeek()}
-              type="button"
+              loading={copying}
+              onPress={() => void prepareNextWeek()}
             >
               {copying
                 ? "Preparing next week…"
                 : "Use this week to plan next week"}
-            </button>
+            </Button>
           ) : dashboard.review.next_week.has_plan ? (
             <p className="text-xs text-stone-500">
               Next week already has a plan. Add or adjust it in the meal
@@ -337,7 +337,5 @@ function compactTotals(totals: NutritionDashboard["week"]["planned"]) {
 
 const panelClass =
   "mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7";
-const buttonClass =
-  "rounded-xl bg-stone-900 px-3 py-2 text-sm font-semibold text-white hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900";
 const linkClass =
   "text-sm font-semibold text-emerald-700 underline underline-offset-4 dark:text-emerald-300";
