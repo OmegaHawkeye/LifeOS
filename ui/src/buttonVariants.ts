@@ -34,6 +34,36 @@ export const buttonVariants = cva(
     compoundVariants: [
       { variant: "icon", size: "sm", className: "size-9 p-0" },
       { variant: "icon", size: "lg", className: "size-12 p-0" },
+      {
+        variant: "primary",
+        disabled: true,
+        className:
+          "bg-stone-300 text-stone-600 dark:bg-stone-700 dark:text-stone-300",
+      },
+      {
+        variant: "secondary",
+        disabled: true,
+        className:
+          "bg-stone-200 text-stone-500 dark:bg-stone-700 dark:text-stone-400",
+      },
+      {
+        variant: "tertiary",
+        disabled: true,
+        className:
+          "bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400",
+      },
+      {
+        variant: "danger",
+        disabled: true,
+        className:
+          "bg-stone-300 text-stone-600 dark:bg-stone-700 dark:text-stone-300",
+      },
+      {
+        variant: "icon",
+        disabled: true,
+        className:
+          "bg-stone-200 text-stone-500 dark:bg-stone-700 dark:text-stone-400",
+      },
     ],
   },
 );

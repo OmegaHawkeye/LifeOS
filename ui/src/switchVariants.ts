@@ -30,7 +30,7 @@ export const switchThumbVariants = cva(
   {
     variants: {
       checked: {
-        true: "translate-x-4",
+        true: "",
         false: "translate-x-0",
       },
       size: {
@@ -43,6 +43,7 @@ export const switchThumbVariants = cva(
       size: "md",
     },
     compoundVariants: [
+      { checked: true, size: "sm", className: "translate-x-4" },
       { checked: true, size: "md", className: "translate-x-5" },
     ],
   },

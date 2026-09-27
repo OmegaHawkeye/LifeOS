@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
 import type { ButtonProps } from "./Button.types";
 import { buttonVariants } from "./buttonVariants";
+import { cn } from "./cn";
 
 type WebButtonProps = ButtonProps &
   Omit<
@@ -29,12 +30,14 @@ export function Button({
       aria-label={accessibilityLabel ?? props["aria-label"]}
       aria-busy={loading || undefined}
       aria-pressed={selected}
-      className={buttonVariants({
-        className,
-        disabled: isDisabled,
-        size: size ?? (variant === "icon" ? "icon" : "md"),
-        variant,
-      })}
+      className={cn(
+        buttonVariants({
+          className,
+          disabled: isDisabled,
+          size: size ?? (variant === "icon" ? "icon" : "md"),
+          variant,
+        }),
+      )}
       disabled={isDisabled}
       onClick={onPress}
       type={type}

@@ -19,7 +19,15 @@
       "react-native": "./src/Button.native.tsx",
       "default": "./src/Button.web.tsx"
     },
-    "./button-variants": "./src/buttonVariants.ts",
+    "./button-variants": {
+      "types": "./src/buttonVariants.ts",
+      "default": "./src/buttonVariants.ts"
+    },
+    "./switch-variants": {
+      "types": "./src/switchVariants.ts",
+      "default": "./src/switchVariants.ts"
+    },
+    "./classnames": "./src/cn.ts",
     "./switch": {
       "types": "./src/Switch.types.ts",
       "react-native": "./src/Switch.native.tsx",
@@ -42,6 +50,7 @@
     }
   },
   "dependencies": {
-    "class-variance-authority": "^0.7.1"
+    "class-variance-authority": "^0.7.1",
+    "tailwind-merge": "^3.7.0"
   }
 }

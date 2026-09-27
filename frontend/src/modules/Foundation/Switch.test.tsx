@@ -4,6 +4,8 @@ import "@testing-library/jest-dom/vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Switch } from "@lifeos/ui/switch";
 import { buttonVariants } from "@lifeos/ui/button-variants";
+import { switchTrackVariants } from "@lifeos/ui/switch-variants";
+import { cn } from "@lifeos/ui/classnames";
 import { describe, expect, it, vi } from "vitest";
 
 describe("shared web switch and CVA recipes", () => {
@@ -13,9 +15,20 @@ describe("shared web switch and CVA recipes", () => {
       variant: "danger",
       disabled: true,
     });
+    const disabledPrimary = cn(
+      buttonVariants({ variant: "primary", disabled: true }),
+    );
+    const disabledCheckedSmallSwitch = switchTrackVariants({
+      checked: true,
+      disabled: true,
+      size: "sm",
+    });
 
     expect(primary).toContain("bg-lifeos-accent");
     expect(disabledDanger).toContain("disabled:bg-stone-300");
+    expect(disabledPrimary).toContain("bg-stone-300");
+    expect(disabledCheckedSmallSwitch).toContain("bg-lifeos-accent");
+    expect(disabledCheckedSmallSwitch).toContain("h-5");
   });
 
   it("announces checked state and reports toggles accessibly", () => {

@@ -1,6 +1,7 @@
 import { Pressable, View } from "react-native";
 import type { SwitchProps } from "./Switch.types";
 import { switchThumbVariants, switchTrackVariants } from "./switchVariants";
+import { cn } from "./cn";
 
 export function Switch({
   accessibilityLabel,
@@ -15,16 +16,18 @@ export function Switch({
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="switch"
       accessibilityState={{ checked, disabled }}
-      className={switchTrackVariants({
-        checked,
-        className,
-        disabled,
-        size,
-      })}
+      className={cn(
+        switchTrackVariants({
+          checked,
+          className,
+          disabled,
+          size,
+        }),
+      )}
       disabled={disabled}
       onPress={() => onCheckedChange(!checked)}
     >
-      <View className={switchThumbVariants({ checked, size })} />
+      <View className={cn(switchThumbVariants({ checked, size }))} />
     </Pressable>
   );
 }

@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
 import type { SwitchProps } from "./Switch.types";
 import { switchThumbVariants, switchTrackVariants } from "./switchVariants";
+import { cn } from "./cn";
 
 type WebSwitchProps = SwitchProps &
   Omit<
@@ -22,18 +23,20 @@ export function Switch({
       {...props}
       aria-checked={checked}
       aria-label={accessibilityLabel}
-      className={switchTrackVariants({
-        checked,
-        className,
-        disabled,
-        size,
-      })}
+      className={cn(
+        switchTrackVariants({
+          checked,
+          className,
+          disabled,
+          size,
+        }),
+      )}
       disabled={disabled}
       onClick={() => onCheckedChange(!checked)}
       role="switch"
       type="button"
     >
-      <span className={switchThumbVariants({ checked, size })} />
+      <span className={cn(switchThumbVariants({ checked, size }))} />
     </button>
   );
 }

@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, Text } from "react-native";
 import type { ButtonProps } from "./Button.types";
 import { buttonLabelVariants, buttonVariants } from "./buttonVariants";
+import { cn } from "./cn";
 
 export function Button({
   accessibilityLabel,
@@ -24,19 +25,21 @@ export function Button({
         disabled: isDisabled,
         ...(selected === undefined ? {} : { selected }),
       }}
-      className={`${buttonVariants({
-        className,
-        disabled: isDisabled,
-        size: size ?? (variant === "icon" ? "icon" : "md"),
-        variant,
-      })} ${isDisabled ? "" : "active:opacity-80"}`.trim()}
+      className={`${cn(
+        buttonVariants({
+          className,
+          disabled: isDisabled,
+          size: size ?? (variant === "icon" ? "icon" : "md"),
+          variant,
+        }),
+      )} ${isDisabled ? "" : "active:opacity-80"}`.trim()}
       disabled={isDisabled}
       onPress={onPress}
     >
       {loading ? <ActivityIndicator size="small" /> : null}
       {typeof children === "string" || typeof children === "number" ? (
         <Text
-          className={buttonLabelVariants({ disabled: isDisabled, variant })}
+          className={cn(buttonLabelVariants({ disabled: isDisabled, variant }))}
         >
           {children}
         </Text>

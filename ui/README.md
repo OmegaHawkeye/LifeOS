@@ -11,7 +11,9 @@ components here instead of duplicating their visual contract in an app.
 Shared component variants live beside their component in a `*Variants.ts`
 file and use `class-variance-authority` (`cva` and `VariantProps`). Both the
 web and React Native renderers consume the same recipe; add variant axes there
-instead of creating platform-specific class maps.
+instead of creating platform-specific class maps. Recipes are exposed through
+`@lifeos/ui/button-variants` and `@lifeos/ui/switch-variants`. Use `cn()` from
+`@lifeos/ui/classnames` to merge recipe output with explicit utility overrides.
 
 ## Button contract
 
