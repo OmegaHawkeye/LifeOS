@@ -20,6 +20,11 @@ test("records a finance transaction and shows it in the refreshed overview", asy
     const { pathname } = new URL(request.url());
     const method = request.method();
 
+    if (pathname.endsWith("/setup/status") && method === "GET") {
+      await route.fulfill({ status: 200, json: { data: { required: false } } });
+      return;
+    }
+
     if (pathname.endsWith("/me") && method === "GET") {
       await route.fulfill({
         status: 200,

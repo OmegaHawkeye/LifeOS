@@ -28,6 +28,11 @@ test("records a fitness measurement and goal from the Fitness workspace", async 
     const { pathname } = new URL(request.url());
     const method = request.method();
 
+    if (pathname.endsWith("/setup/status") && method === "GET") {
+      await route.fulfill({ status: 200, json: { data: { required: false } } });
+      return;
+    }
+
     if (pathname.endsWith("/me") && method === "GET") {
       await route.fulfill({ status: 200, json: { data: owner } });
     } else if (pathname.endsWith("/settings") && method === "GET") {
@@ -149,6 +154,11 @@ test("creates a recipe and adds it to a day in the weekly meal plan", async ({
     const request = route.request();
     const { pathname } = new URL(request.url());
     const method = request.method();
+
+    if (pathname.endsWith("/setup/status") && method === "GET") {
+      await route.fulfill({ status: 200, json: { data: { required: false } } });
+      return;
+    }
 
     if (pathname.endsWith("/me") && method === "GET") {
       await route.fulfill({ status: 200, json: { data: owner } });
@@ -312,6 +322,11 @@ test("saves a weekly review and shows the confirmation", async ({ page }) => {
     const request = route.request();
     const { pathname } = new URL(request.url());
     const method = request.method();
+
+    if (pathname.endsWith("/setup/status") && method === "GET") {
+      await route.fulfill({ status: 200, json: { data: { required: false } } });
+      return;
+    }
 
     if (pathname.endsWith("/me") && method === "GET") {
       await route.fulfill({ status: 200, json: { data: owner } });

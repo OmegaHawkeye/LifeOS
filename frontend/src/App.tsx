@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import {
   AppShell,
   AuthProvider,
+  InitialSetupPage,
   LoginPage,
   SettingsPage,
   useAuth,
@@ -39,7 +40,7 @@ const modules = [
 ];
 
 function ProtectedRoutes() {
-  const { isLoading, owner, loadError } = useAuth();
+  const { isLoading, owner, loadError, setupRequired } = useAuth();
 
   if (isLoading) {
     return (
@@ -71,7 +72,7 @@ function ProtectedRoutes() {
   }
 
   if (!owner) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={setupRequired ? "/setup" : "/login"} replace />;
   }
 
   return (
@@ -147,14 +148,44 @@ function ModulePage({
 }
 
 function AppRoutes() {
-  const { owner } = useAuth();
+  const { isLoading, loadError, owner, setupRequired } = useAuth();
 
   return (
     <Routes>
       <Route path="/passkeys/manage" element={<PasskeyManagementPage />} />
       <Route
+        path="/setup"
+        element={
+          isLoading ? (
+            <main className="grid min-h-svh place-items-center">
+              Loading LifeOS…
+            </main>
+          ) : loadError ? (
+            <AuthUnavailable />
+          ) : setupRequired && !owner ? (
+            <InitialSetupPage />
+          ) : (
+            <Navigate to={owner ? "/dashboard" : "/login"} replace />
+          )
+        }
+      />
+      <Route
         path="/login"
-        element={owner ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+        element={
+          isLoading ? (
+            <main className="grid min-h-svh place-items-center">
+              Loading LifeOS…
+            </main>
+          ) : loadError ? (
+            <AuthUnavailable />
+          ) : owner ? (
+            <Navigate to="/dashboard" replace />
+          ) : setupRequired ? (
+            <Navigate to="/setup" replace />
+          ) : (
+            <LoginPage />
+          )
+        }
       />
       <Route path="/wall" element={<WallDashboardRoute />} />
       <Route path="/*" element={<ProtectedRoutes />} />
@@ -162,8 +193,29 @@ function AppRoutes() {
   );
 }
 
+function AuthUnavailable() {
+  return (
+    <main className="grid min-h-svh place-items-center px-6 text-center">
+      <section className="max-w-md">
+        <h1 className="text-xl font-semibold">
+          LifeOS is temporarily unavailable
+        </h1>
+        <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
+          Check your connection and reload this page.
+        </p>
+        <button
+          className="mt-6 rounded-xl bg-emerald-400 px-4 py-2 font-semibold text-stone-950"
+          onClick={() => window.location.reload()}
+        >
+          Reload
+        </button>
+      </section>
+    </main>
+  );
+}
+
 function WallDashboardRoute() {
-  const { isLoading, loadError, owner } = useAuth();
+  const { isLoading, loadError, owner, setupRequired } = useAuth();
 
   if (isLoading) {
     return (
@@ -179,7 +231,11 @@ function WallDashboardRoute() {
     );
   }
 
-  return owner ? <WallDashboardPage /> : <Navigate to="/login" replace />;
+  return owner ? (
+    <WallDashboardPage />
+  ) : (
+    <Navigate to={setupRequired ? "/setup" : "/login"} replace />
+  );
 }
 
 export default function App() {

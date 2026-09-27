@@ -51,6 +51,11 @@ test("loads the LifeOS application shell", async ({ page }) => {
     const { pathname } = new URL(route.request().url());
     const method = route.request().method();
 
+    if (pathname.endsWith("/setup/status") && method === "GET") {
+      await route.fulfill({ status: 200, json: { data: { required: false } } });
+      return;
+    }
+
     if (pathname.endsWith("/me") && method === "GET") {
       await route.fulfill({
         status: signedIn ? 200 : 401,
@@ -467,6 +472,14 @@ test("requires confirmation before permanently deleting the account", async ({
   await page.route("**/api/v1/**", async (route) => {
     const { pathname } = new URL(route.request().url());
     const method = route.request().method();
+
+    if (pathname.endsWith("/setup/status") && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        json: { data: { required: !accountExists } },
+      });
+      return;
+    }
 
     if (pathname.endsWith("/me") && method === "GET") {
       await route.fulfill({

@@ -5,7 +5,9 @@ import type { OwnerSettings } from "./settings";
 import {
   completeTwoFactorChallenge,
   confirmTwoFactorSetup,
+  createInitialOwner as provisionInitialOwner,
   getCurrentOwner,
+  isInitialOwnerSetupRequired,
   signIn as submitSignIn,
   signOut,
 } from "./auth";
@@ -17,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [owner, setOwner] = useState<OwnerProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [setupRequired, setSetupRequired] = useState(false);
   const [theme, setTheme] = useState<OwnerSettings["theme"]>("system");
   const [pendingTwoFactor, setPendingTwoFactor] =
     useState<AuthContextValue["pendingTwoFactor"]>(null);
@@ -24,8 +27,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let isCurrent = true;
 
-    getCurrentOwner()
-      .then(async (currentOwner) => {
+    Promise.all([getCurrentOwner(), isInitialOwnerSetupRequired()])
+      .then(async ([currentOwner, requiresSetup]) => {
         if (currentOwner) {
           try {
             const settings = await getOwnerSettings();
@@ -37,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (isCurrent) {
           setOwner(currentOwner);
+          setSetupRequired(!currentOwner && requiresSetup);
           setIsLoading(false);
         }
       })
@@ -86,9 +90,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       isLoading,
       loadError,
+      setupRequired,
       owner,
       pendingTwoFactor,
       updateTheme: setTheme,
+      createInitialOwner: async (name, email, password) => {
+        setPendingTwoFactor(await provisionInitialOwner(name, email, password));
+        setSetupRequired(false);
+      },
       signIn: async (email, password) => {
         setPendingTwoFactor(await submitSignIn(email, password));
       },
@@ -103,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             : await completeTwoFactorChallenge(code);
 
         setOwner(signedInOwner);
+        setSetupRequired(false);
         setPendingTwoFactor(null);
 
         try {
@@ -117,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           throw new Error("Passkey sign-in did not create an owner session.");
         }
         setOwner(currentOwner);
+        setSetupRequired(false);
         setLoadError(false);
         try {
           setTheme((await getOwnerSettings()).theme);
@@ -130,7 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setPendingTwoFactor(null);
       },
     }),
-    [isLoading, loadError, owner, pendingTwoFactor, setTheme],
+    [isLoading, loadError, setupRequired, owner, pendingTwoFactor, setTheme],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
