@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
+import type { ButtonVariantProps } from "./buttonVariants";
 
-export type ButtonVariant =
-  "primary" | "secondary" | "tertiary" | "danger" | "icon";
-
-export type ButtonProps = {
+export type ButtonProps = ButtonVariantProps & {
   accessibilityLabel?: string;
   children: ReactNode;
   className?: string;
@@ -12,7 +10,6 @@ export type ButtonProps = {
   onPress?: () => void;
   selected?: boolean;
   type?: "button" | "submit" | "reset";
-  variant?: ButtonVariant;
 };
 
 export declare function Button(props: ButtonProps): ReactNode;

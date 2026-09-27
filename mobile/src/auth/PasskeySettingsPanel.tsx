@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import * as WebBrowser from "expo-web-browser";
-import { ActivityIndicator, Switch, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { Button } from "@lifeos/ui/button";
+import { Switch } from "@lifeos/ui/switch";
 import type {
   MobilePasskey,
   MobilePasskeyService,
@@ -114,9 +115,9 @@ export function PasskeySettingsPanel({
             </Text>
             <Switch
               accessibilityLabel="Allow passkey sign-in"
+              checked={settings.passkeys_enabled}
               disabled={isBusy}
-              onValueChange={(value) => void togglePasskeys(value)}
-              value={settings.passkeys_enabled}
+              onCheckedChange={(value) => void togglePasskeys(value)}
             />
           </View>
           <Text className="text-sm leading-[21px] text-lifeos-muted">

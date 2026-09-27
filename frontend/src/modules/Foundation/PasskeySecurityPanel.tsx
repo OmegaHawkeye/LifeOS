@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@lifeos/ui/button";
+import { Switch } from "@lifeos/ui/switch";
 import { Passkeys } from "@laravel/passkeys";
 import { usePasskeyRegister } from "@laravel/passkeys/react";
 import { apiFetch, initializeCsrfProtection } from "@/api/client";
@@ -101,25 +102,20 @@ export function PasskeySecurityPanel({
           manager. LifeOS stores only the public key.
         </p>
       </div>
-      <label
-        className="flex cursor-pointer items-start gap-3 rounded-2xl border border-stone-200 p-4 text-sm dark:border-white/10"
-        htmlFor="passkeys-enabled"
-      >
-        <input
-          checked={enabled}
-          className="mt-0.5 size-4 accent-emerald-500"
-          id="passkeys-enabled"
-          onChange={(event) => onToggle(event.currentTarget.checked)}
-          type="checkbox"
-        />
-        <span>
-          <span className="block font-medium">Allow passkey sign-in</span>
-          <span className="mt-1 block leading-5 text-stone-500 dark:text-stone-400">
+      <div className="flex items-start justify-between gap-4 rounded-2xl border border-stone-200 p-4 text-sm dark:border-white/10">
+        <div>
+          <p className="font-medium">Allow passkey sign-in</p>
+          <p className="mt-1 leading-5 text-stone-500 dark:text-stone-400">
             Disable this to keep password and two-factor sign-in as the only
             authentication method. Existing passkeys are not deleted.
-          </span>
-        </span>
-      </label>
+          </p>
+        </div>
+        <Switch
+          accessibilityLabel="Allow passkey sign-in"
+          checked={enabled}
+          onCheckedChange={onToggle}
+        />
+      </div>
       <div
         className={`rounded-2xl border p-4 text-sm ${originIsSecure ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-400/20 dark:bg-emerald-950/20 dark:text-emerald-200" : "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/20 dark:bg-amber-950/20 dark:text-amber-200"}`}
       >

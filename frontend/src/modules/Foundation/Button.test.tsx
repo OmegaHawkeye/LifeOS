@@ -16,6 +16,8 @@ describe("shared web Button", () => {
     expect(button).toBeDisabled();
     expect(button.className).toContain("disabled:cursor-not-allowed");
     expect(button.className).toContain("disabled:bg-stone-300");
+    expect(button.className).toContain("bg-stone-300");
+    expect(button.className).not.toMatch(/(?:^|\s)bg-lifeos-accent(?:\s|$)/);
     fireEvent.click(button);
     expect(onPress).not.toHaveBeenCalled();
   });

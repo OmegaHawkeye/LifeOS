@@ -19,13 +19,27 @@
       "react-native": "./src/Button.native.tsx",
       "default": "./src/Button.web.tsx"
     },
+    "./button-variants": {
+      "types": "./src/buttonVariants.ts",
+      "default": "./src/buttonVariants.ts"
+    },
+    "./switch-variants": {
+      "types": "./src/switchVariants.ts",
+      "default": "./src/switchVariants.ts"
+    },
+    "./classnames": "./src/cn.ts",
+    "./switch": {
+      "types": "./src/Switch.types.ts",
+      "react-native": "./src/Switch.native.tsx",
+      "default": "./src/Switch.web.tsx"
+    },
     "./theme.css": "./theme.css"
   },
   "peerDependencies": {
     "@types/react": ">=19",
     "react": ">=19",
-    "react-native-svg": ">=15",
-    "react-native": ">=0.86"
+    "react-native": ">=0.86",
+    "react-native-svg": ">=15"
   },
   "peerDependenciesMeta": {
     "react-native": {
@@ -34,5 +48,9 @@
     "react-native-svg": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "tailwind-merge": "^3.7.0"
   }
 }

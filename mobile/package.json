@@ -44,6 +44,7 @@
     ],
     "moduleNameMapper": {
       "^@lifeos/ui/button$": "<rootDir>/../ui/src/Button.native.tsx",
+      "^@lifeos/ui/switch$": "<rootDir>/../ui/src/Switch.native.tsx",
       "^@lifeos/ui$": "<rootDir>/../ui/src/SummaryCard.native.tsx",
       "\\.css$": "<rootDir>/src/test/styleMock.js"
     }
