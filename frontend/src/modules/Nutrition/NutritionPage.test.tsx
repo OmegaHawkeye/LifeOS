@@ -141,10 +141,13 @@ describe("Nutrition recipe and meal flows", () => {
     render(<NutritionPage />);
 
     await screen.findByRole("heading", { name: "Recipe library" });
+    const saveRecipe = screen.getByRole("button", { name: "Save recipe" });
+    expect(saveRecipe).toBeDisabled();
     await user.type(
       screen.getByRole("textbox", { name: "Recipe name" }),
       "Oat bowl",
     );
+    expect(saveRecipe).toBeEnabled();
     await user.clear(screen.getByRole("spinbutton", { name: "Servings" }));
     await user.type(screen.getByRole("spinbutton", { name: "Servings" }), "1");
     await user.type(
@@ -181,11 +184,25 @@ describe("Nutrition recipe and meal flows", () => {
       .getByRole("heading", { name: "Log a meal" })
       .closest("form");
     expect(mealForm).not.toBeNull();
-    await user.click(
-      within(mealForm as HTMLFormElement).getByRole("button", {
-        name: "Log meal",
-      }),
+    const logMeal = within(mealForm as HTMLFormElement).getByRole("button", {
+      name: "Log meal",
+    });
+    expect(logMeal).toBeEnabled();
+    const mealDate = screen.getByLabelText("Meal date and time");
+    await user.clear(mealDate);
+    expect(logMeal).toBeDisabled();
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Recipe" }),
+      "",
     );
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Recipe" }),
+      "12",
+    );
+    expect(logMeal).toBeDisabled();
+    await user.type(mealDate, "2026-09-26T12:00");
+    expect(logMeal).toBeEnabled();
+    await user.click(logMeal);
     await waitFor(() => expect(createNutritionMeal).toHaveBeenCalled());
     expect(createNutritionMeal).toHaveBeenCalledWith(
       expect.objectContaining({

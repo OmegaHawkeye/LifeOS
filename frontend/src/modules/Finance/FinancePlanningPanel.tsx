@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import {
   createFinanceBudget,
   createFinanceCategory,
@@ -215,14 +216,14 @@ export function FinancePlanningPanel({
                   placeholder="e.g. Groceries"
                   value={categoryName}
                 />
-                <button
-                  className={secondaryButtonClass}
+                <Button
                   disabled={saving || !categoryName.trim()}
-                  onClick={() => void addExpenseCategory()}
-                  type="button"
+                  loading={saving}
+                  onPress={() => void addExpenseCategory()}
+                  variant="secondary"
                 >
                   Add
-                </button>
+                </Button>
               </div>
             </div>
           ) : accounts.length === 0 ? (
@@ -278,13 +279,9 @@ export function FinancePlanningPanel({
                   type="number"
                 />
               </div>
-              <button
-                className={primaryButtonClass}
-                disabled={saving}
-                type="submit"
-              >
+              <Button disabled={saving} loading={saving} type="submit">
                 Add budget for {month}
-              </button>
+              </Button>
             </form>
           )}
           <ul className="mt-4 space-y-3">
@@ -306,17 +303,17 @@ export function FinancePlanningPanel({
                     ? `Over by ${formatMoney(Math.abs(Number(budget.remaining)), budget.currency)}`
                     : `${formatMoney(Number(budget.remaining), budget.currency)} remaining`}
                 </p>
-                <button
-                  className={textButtonClass}
-                  onClick={() =>
+                <Button
+                  className="mt-2 min-h-9 px-3 text-xs"
+                  onPress={() =>
                     void deleteFinanceBudget(budget.id)
                       .then(reload)
                       .catch(() => setError(true))
                   }
-                  type="button"
+                  variant="tertiary"
                 >
                   Remove budget
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
@@ -387,13 +384,13 @@ export function FinancePlanningPanel({
               required
               type="date"
             />
-            <button
-              className={primaryButtonClass}
+            <Button
               disabled={saving || accounts.length === 0}
+              loading={saving}
               type="submit"
             >
               Add subscription
-            </button>
+            </Button>
           </form>
           <ul className="mt-4 space-y-3">
             {subscriptions.map((subscription) => (
@@ -416,9 +413,9 @@ export function FinancePlanningPanel({
                 </p>
                 <div className="mt-2 flex gap-3">
                   {subscription.status !== "canceled" && (
-                    <button
-                      className={textButtonClass}
-                      onClick={() =>
+                    <Button
+                      className="min-h-9 px-3 text-xs"
+                      onPress={() =>
                         void updateFinanceSubscription(subscription.id, {
                           status:
                             subscription.status === "active"
@@ -428,25 +425,25 @@ export function FinancePlanningPanel({
                           .then(reload)
                           .catch(() => setError(true))
                       }
-                      type="button"
+                      variant="secondary"
                     >
                       {subscription.status === "active" ? "Pause" : "Resume"}
-                    </button>
+                    </Button>
                   )}
                   {subscription.status !== "canceled" && (
-                    <button
-                      className={textButtonClass}
-                      onClick={() =>
+                    <Button
+                      className="min-h-9 px-3 text-xs"
+                      onPress={() =>
                         void updateFinanceSubscription(subscription.id, {
                           status: "canceled",
                         })
                           .then(reload)
                           .catch(() => setError(true))
                       }
-                      type="button"
+                      variant="danger"
                     >
                       Cancel
-                    </button>
+                    </Button>
                   )}
                 </div>
               </li>
@@ -518,13 +515,13 @@ export function FinancePlanningPanel({
                 type="date"
               />
             </div>
-            <button
-              className={primaryButtonClass}
+            <Button
               disabled={saving || currencies.length === 0}
+              loading={saving}
               type="submit"
             >
               Add savings goal
-            </button>
+            </Button>
           </form>
           <ul className="mt-4 space-y-3">
             {goals.map((goal) => (
@@ -551,17 +548,17 @@ export function FinancePlanningPanel({
                   )}
                   /month · due {goal.target_date}
                 </p>
-                <button
-                  className={textButtonClass}
-                  onClick={() =>
+                <Button
+                  className="mt-2 min-h-9 px-3 text-xs"
+                  onPress={() =>
                     void deleteFinanceSavingsGoal(goal.id)
                       .then(reload)
                       .catch(() => setError(true))
                   }
-                  type="button"
+                  variant="tertiary"
                 >
                   Remove goal
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
@@ -589,9 +586,3 @@ function daysUntil(date: string): number {
 
 const fieldClass =
   "min-w-0 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm dark:border-white/10 dark:bg-stone-950";
-const primaryButtonClass =
-  "rounded-xl bg-stone-900 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900";
-const secondaryButtonClass =
-  "rounded-xl border border-stone-300 px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/15";
-const textButtonClass =
-  "mt-2 text-xs font-semibold text-stone-600 underline underline-offset-2 dark:text-stone-300";

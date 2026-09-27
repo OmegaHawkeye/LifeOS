@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import {
   addNutritionShoppingItem,
   deleteNutritionShoppingItem,
@@ -233,9 +234,9 @@ export function NutritionShoppingLists() {
             type="date"
           />
         </label>
-        <button className={buttonClass} type="submit">
+        <Button type="submit" variant="secondary">
           Generate from planned meals
-        </button>
+        </Button>
       </form>
 
       {loading ? (
@@ -331,20 +332,19 @@ export function NutritionShoppingLists() {
                                 ))}
                               </select>
                               <div className="flex gap-2">
-                                <button
-                                  className={buttonClass}
+                                <Button
                                   disabled={savingId === item.id}
+                                  loading={savingId === item.id}
                                   type="submit"
                                 >
                                   Save item
-                                </button>
-                                <button
-                                  className={secondaryButtonClass}
-                                  onClick={() => setEditingId(null)}
-                                  type="button"
+                                </Button>
+                                <Button
+                                  onPress={() => setEditingId(null)}
+                                  variant="secondary"
                                 >
                                   Cancel
-                                </button>
+                                </Button>
                               </div>
                             </form>
                           ) : (
@@ -378,22 +378,22 @@ export function NutritionShoppingLists() {
                                 )}
                               </div>
                               <div className="flex shrink-0 gap-1">
-                                <button
-                                  aria-label={`Edit ${item.name}`}
-                                  className={iconButtonClass}
-                                  onClick={() => setEditingId(item.id)}
-                                  type="button"
+                                <Button
+                                  accessibilityLabel={`Edit ${item.name}`}
+                                  className="min-h-9 rounded-md px-2 text-xs"
+                                  onPress={() => setEditingId(item.id)}
+                                  variant="secondary"
                                 >
                                   Edit
-                                </button>
-                                <button
-                                  aria-label={`Remove ${item.name}`}
-                                  className={iconButtonClass}
-                                  onClick={() => void removeItem(item.id)}
-                                  type="button"
+                                </Button>
+                                <Button
+                                  accessibilityLabel={`Remove ${item.name}`}
+                                  className="min-h-9 rounded-md px-2 text-xs"
+                                  onPress={() => void removeItem(item.id)}
+                                  variant="danger"
                                 >
                                   ×
-                                </button>
+                                </Button>
                               </div>
                             </div>
                           )}
@@ -452,9 +452,9 @@ export function NutritionShoppingLists() {
                 </option>
               ))}
             </select>
-            <button className={buttonClass} type="submit">
+            <Button disabled={!activeList} type="submit">
               Add item
-            </button>
+            </Button>
           </form>
         </>
       ) : !loading ? (
@@ -526,9 +526,3 @@ function dateString(date: Date) {
 
 const fieldClass =
   "mt-1 w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm dark:border-white/10 dark:bg-stone-950";
-const buttonClass =
-  "rounded-xl bg-stone-900 px-3 py-2 text-sm font-semibold text-white hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900";
-const secondaryButtonClass =
-  "rounded-lg border border-stone-200 px-3 py-2 text-xs font-semibold dark:border-white/15";
-const iconButtonClass =
-  "rounded-md px-2 py-1 text-xs text-stone-500 hover:bg-stone-100 dark:hover:bg-white/10";

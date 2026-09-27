@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { Button } from "@lifeos/ui/button";
 import type {
   FinanceAccount,
   FinanceSnapshot,
@@ -223,6 +223,7 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
               />
               <ActionButton
                 disabled={saving || accountName.trim().length === 0}
+                loading={saving}
                 label={saving ? "Creating account…" : "Create account"}
                 onPress={() => void addAccount()}
               />
@@ -360,8 +361,10 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                   disabled={
                     saving ||
                     selectedAccountId === null ||
-                    amount.trim().length === 0
+                    !isValidTransactionAmount(amount) ||
+                    !isCalendarDate(occurredOn)
                   }
+                  loading={saving}
                   label={saving ? "Saving…" : "Save transaction"}
                   onPress={() => void saveTransaction()}
                 />
@@ -448,6 +451,7 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
             />
             <ActionButton
               disabled={saving || accountName.trim().length === 0}
+              loading={saving}
               label="Add account"
               onPress={() => void addAccount()}
             />
@@ -484,6 +488,7 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
             />
             <ActionButton
               disabled={saving || categoryName.trim().length === 0}
+              loading={saving}
               label={saving ? "Creating category…" : "Create category"}
               onPress={() => void addCategory()}
             />
@@ -513,11 +518,11 @@ function MonthNavigationButton({
   const isPrevious = direction === "previous";
 
   return (
-    <Pressable
+    <Button
       accessibilityLabel={isPrevious ? "Previous month" : "Next month"}
-      accessibilityRole="button"
-      className="h-11 w-11 items-center justify-center rounded-xl border border-lifeos-border bg-lifeos-background active:opacity-70"
+      className="h-11 w-11 p-0"
       onPress={onPress}
+      variant="icon"
     >
       <Text
         className="text-2xl font-medium leading-[28px] text-lifeos-primary"
@@ -525,7 +530,7 @@ function MonthNavigationButton({
       >
         {isPrevious ? "‹" : "›"}
       </Text>
-    </Pressable>
+    </Button>
   );
 }
 
@@ -533,27 +538,26 @@ function ActionButton({
   disabled = false,
   label,
   onPress,
+  loading = false,
   selected = false,
 }: {
   disabled?: boolean;
   label: string;
+  loading?: boolean;
   onPress: () => void;
   selected?: boolean;
 }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ disabled, selected }}
-      className={`min-h-11 justify-center rounded-xl px-4 ${selected ? "bg-lifeos-accent" : "border border-lifeos-border bg-lifeos-surface"} ${disabled ? "opacity-50" : "active:opacity-70"}`}
+    <Button
+      className="flex-1"
       disabled={disabled}
+      loading={loading}
       onPress={onPress}
+      selected={selected}
+      variant={selected ? "primary" : "secondary"}
     >
-      <Text
-        className={`text-sm font-semibold ${selected ? "text-lifeos-accent-ink" : "text-lifeos-primary"}`}
-      >
-        {label}
-      </Text>
-    </Pressable>
+      {label}
+    </Button>
   );
 }
 
@@ -596,6 +600,11 @@ function money(amount: string, currency: string, masked: boolean): string {
   } catch {
     return `${amount} ${currency}`;
   }
+}
+
+function isValidTransactionAmount(value: string): boolean {
+  const parsed = Number(value.trim().replace(",", "."));
+  return value.trim().length > 0 && Number.isFinite(parsed) && parsed > 0;
 }
 
 function isCalendarDate(value: string): boolean {

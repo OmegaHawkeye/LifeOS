@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import { apiFetch } from "@/api/client";
 
 type Exercise = {
@@ -322,17 +323,17 @@ export function FitnessWorkoutTracker({
                 {activeSession.name}
               </h3>
             </div>
-            <button
-              className={secondaryButtonClass}
+            <Button
               disabled={
                 saving ||
                 activeSession.exercises.every((item) => item.sets.length === 0)
               }
-              onClick={() => void completeWorkout()}
-              type="button"
+              loading={saving}
+              onPress={() => void completeWorkout()}
+              variant="secondary"
             >
               Finish workout
-            </button>
+            </Button>
           </div>
 
           <div className="mt-4 space-y-4">
@@ -431,13 +432,14 @@ export function FitnessWorkoutTracker({
                       placeholder="Optional"
                     />
                   </label>
-                  <button
-                    className={`${primaryButtonClass} sm:col-span-2 lg:col-span-4`}
+                  <Button
+                    className="sm:col-span-2 lg:col-span-4"
                     disabled={saving}
+                    loading={saving}
                     type="submit"
                   >
                     Add set
-                  </button>
+                  </Button>
                 </form>
               </article>
             ))}
@@ -463,13 +465,15 @@ export function FitnessWorkoutTracker({
                   </option>
                 ))}
               </select>
-              <button
-                className={secondaryButtonClass}
+              <Button
+                className="min-h-11"
                 disabled={saving || !extraExerciseId}
+                loading={saving}
                 type="submit"
+                variant="secondary"
               >
                 Add
-              </button>
+              </Button>
             </form>
           </div>
         </article>
@@ -498,14 +502,13 @@ export function FitnessWorkoutTracker({
                             )}${template.scheduled_days.includes(new Date().getDay() || 7) ? " · Today" : ""}`}
                       </p>
                     </div>
-                    <button
-                      className={primaryButtonClass}
+                    <Button
                       disabled={saving}
-                      onClick={() => void startTemplate(template.id)}
-                      type="button"
+                      loading={saving}
+                      onPress={() => void startTemplate(template.id)}
                     >
                       Start workout
-                    </button>
+                    </Button>
                   </li>
                 ))}
               </ul>
@@ -536,13 +539,14 @@ export function FitnessWorkoutTracker({
                   onChange={(event) => setAdHocNotes(event.currentTarget.value)}
                 />
               </label>
-              <button
-                className={secondaryButtonClass}
+              <Button
                 disabled={saving}
+                loading={saving}
                 type="submit"
+                variant="secondary"
               >
                 Start without a template
-              </button>
+              </Button>
             </form>
           </article>
 
@@ -563,13 +567,15 @@ export function FitnessWorkoutTracker({
                     setNewExerciseName(event.currentTarget.value)
                   }
                 />
-                <button
-                  className={secondaryButtonClass}
-                  disabled={saving}
+                <Button
+                  className="min-h-11"
+                  disabled={saving || !newExerciseName.trim()}
+                  loading={saving}
                   type="submit"
+                  variant="secondary"
                 >
                   Add
-                </button>
+                </Button>
               </div>
               <p className="mt-2 text-xs text-stone-500">
                 {exercises.length} exercises available to your plans.
@@ -664,13 +670,14 @@ export function FitnessWorkoutTracker({
                   )}
                 </div>
               </fieldset>
-              <button
-                className={`${primaryButtonClass} w-full`}
+              <Button
+                className="w-full"
                 disabled={saving || !selectedExercises.length}
+                loading={saving}
                 type="submit"
               >
                 Save template
-              </button>
+              </Button>
             </form>
           </div>
         </div>
@@ -748,7 +755,3 @@ const panelClass =
   "mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7";
 const fieldClass =
   "mt-1 min-h-12 w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-base outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-stone-950";
-const primaryButtonClass =
-  "mt-3 min-h-12 rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-stone-900";
-const secondaryButtonClass =
-  "min-h-12 rounded-xl border border-stone-300 px-4 py-3 text-sm font-semibold transition hover:border-stone-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/20 dark:hover:border-white/40";

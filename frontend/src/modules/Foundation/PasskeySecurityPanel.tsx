@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Button } from "@lifeos/ui/button";
 import { Passkeys } from "@laravel/passkeys";
 import { usePasskeyRegister } from "@laravel/passkeys/react";
 import { apiFetch, initializeCsrfProtection } from "@/api/client";
@@ -144,13 +145,13 @@ export function PasskeySecurityPanel({
           key={passkey.id}
         >
           <span className="text-sm font-medium">{passkey.name}</span>
-          <button
-            className="text-sm font-semibold text-red-700 dark:text-red-300"
-            onClick={() => void removePasskey(passkey.id)}
-            type="button"
+          <Button
+            className="min-h-9 px-3 text-sm"
+            onPress={() => void removePasskey(passkey.id)}
+            variant="danger"
           >
             Remove
-          </button>
+          </Button>
         </div>
       ))}
       <label
@@ -166,18 +167,19 @@ export function PasskeySecurityPanel({
           value={name}
         />
       </label>
-      <button
-        className="rounded-xl border border-stone-300 px-5 py-3 text-sm font-semibold transition hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/15 dark:hover:bg-white/10"
+      <Button
+        className="px-5"
         disabled={
           isLoading || registration.isLoading || name.trim().length === 0
         }
-        onClick={() => void addPasskey()}
-        type="button"
+        loading={registration.isLoading}
+        onPress={() => void addPasskey()}
+        variant="secondary"
       >
         {isLoading || registration.isLoading
           ? "Waiting for your passkey…"
           : "Add passkey"}
-      </button>
+      </Button>
       {error || registration.error ? (
         <p className="text-sm text-red-700 dark:text-red-300" role="alert">
           {error ?? registration.error}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import {
   createNutritionMeal,
   createNutritionRecipe,
@@ -30,6 +31,8 @@ export function NutritionPage() {
     { name: "", quantity: "", unit: "g" },
   ]);
   const [mealRecipeId, setMealRecipeId] = useState("");
+  const [recipeFormValid, setRecipeFormValid] = useState(false);
+  const [mealFormValid, setMealFormValid] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -214,13 +217,14 @@ export function NutritionPage() {
             }
           />
         </label>
-        <button className={buttonClass} type="submit">
-          Save nutrition target
-        </button>
+        <Button type="submit">Save nutrition target</Button>
       </form>
       <div className="mt-8 grid gap-5 xl:grid-cols-2">
         <form
           className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8"
+          onInput={(event) =>
+            setRecipeFormValid(event.currentTarget.checkValidity())
+          }
           onSubmit={saveRecipe}
         >
           <h2 className="text-xl font-semibold">Recipe library</h2>
@@ -332,18 +336,18 @@ export function NutritionPage() {
                 />
               </div>
             ))}
-            <button
-              className={secondaryButtonClass}
-              onClick={() =>
+            <Button
+              className="min-h-9 px-3 text-xs"
+              onPress={() =>
                 setIngredientLines((lines) => [
                   ...lines,
                   { name: "", quantity: "", unit: "g" },
                 ])
               }
-              type="button"
+              variant="secondary"
             >
               Add ingredient
-            </button>
+            </Button>
           </div>
           <textarea
             aria-label="Recipe instructions"
@@ -368,9 +372,9 @@ export function NutritionPage() {
               ))}
             </div>
           </fieldset>
-          <button className={buttonClass + " mt-4"} type="submit">
+          <Button className="mt-4" disabled={!recipeFormValid} type="submit">
             Save recipe
-          </button>
+          </Button>
           <ul className="mt-5 space-y-2 text-sm text-stone-600 dark:text-stone-300">
             {recipes.map((recipe) => (
               <li
@@ -392,6 +396,9 @@ export function NutritionPage() {
         <div className="space-y-5">
           <form
             className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8"
+            onInput={(event) =>
+              setMealFormValid(event.currentTarget.checkValidity())
+            }
             onSubmit={logMeal}
           >
             <h2 className="text-xl font-semibold">Log a meal</h2>
@@ -400,7 +407,16 @@ export function NutritionPage() {
                 aria-label="Recipe"
                 className={fieldClass}
                 value={mealRecipeId}
-                onChange={(event) => setMealRecipeId(event.currentTarget.value)}
+                onChange={(event) => {
+                  const nextRecipeId = event.currentTarget.value;
+                  setMealRecipeId(nextRecipeId);
+                  const eatenAt = event.currentTarget.form?.elements.namedItem(
+                    "eaten_at",
+                  ) as HTMLInputElement | null;
+                  setMealFormValid(
+                    Boolean(nextRecipeId && eatenAt?.checkValidity()),
+                  );
+                }}
               >
                 <option value="">Free-form meal</option>
                 {recipes.map((recipe) => (
@@ -494,9 +510,9 @@ export function NutritionPage() {
               name="meal_notes"
               placeholder="Notes (optional)"
             />
-            <button className={buttonClass + " mt-4"} type="submit">
+            <Button className="mt-4" disabled={!mealFormValid} type="submit">
               Log meal
-            </button>
+            </Button>
           </form>
           <article className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8">
             <h2 className="text-xl font-semibold">Today</h2>
@@ -557,10 +573,6 @@ function TargetField({
 
 const fieldClass =
   "mt-2 w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-stone-950";
-const buttonClass =
-  "rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 dark:bg-white dark:text-stone-900";
-const secondaryButtonClass =
-  "rounded-lg border border-stone-200 px-3 py-2 text-xs font-semibold dark:border-white/15";
 
 function optionalNumber(value: FormDataEntryValue | null): number | null {
   if (value === null || value === "") return null;

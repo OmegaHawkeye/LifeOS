@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import {
   createFinanceAsset,
   createFinanceAssetValuation,
@@ -358,13 +359,20 @@ export function FinanceAssetsPanel() {
               value={valuationDate}
             />
           </label>
-          <button
-            className="rounded-xl bg-emerald-400 px-4 py-3 text-sm font-semibold text-stone-950 disabled:cursor-wait disabled:opacity-60 sm:col-span-2"
-            disabled={busy}
+          <Button
+            className="sm:col-span-2"
+            disabled={
+              busy ||
+              !name.trim() ||
+              !/^[A-Z]{3}$/.test(currency) ||
+              !isNonNegativeValue(initialValue) ||
+              !isDate(valuationDate)
+            }
+            loading={busy}
             type="submit"
           >
             {busy ? "Saving…" : "Add asset"}
-          </button>
+          </Button>
         </form>
       </div>
 
@@ -407,14 +415,14 @@ export function FinanceAssetsPanel() {
                     />
                     Include in net worth
                   </label>
-                  <button
-                    className="rounded-lg border border-stone-300 px-3 py-2 text-sm dark:border-white/15"
+                  <Button
+                    className="min-h-9 px-3 text-sm"
                     disabled={busy}
-                    onClick={() => void archiveAsset(asset)}
-                    type="button"
+                    onPress={() => void archiveAsset(asset)}
+                    variant="secondary"
                   >
                     Archive
-                  </button>
+                  </Button>
                 </div>
               </div>
               <div className="mt-4 grid gap-4 border-t border-stone-200 pt-4 dark:border-white/10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
@@ -440,13 +448,15 @@ export function FinanceAssetsPanel() {
                       value={valuationValue}
                     />
                   </label>
-                  <button
-                    className="rounded-xl border border-stone-300 px-4 py-3 text-sm font-semibold dark:border-white/15"
-                    disabled={busy}
+                  <Button
+                    className="px-4"
+                    disabled={busy || !isNonNegativeValue(valuationValue)}
+                    loading={busy}
                     type="submit"
+                    variant="secondary"
                   >
                     Record value
-                  </button>
+                  </Button>
                 </form>
                 <div>
                   <h4 className="text-sm font-semibold">History</h4>
@@ -493,6 +503,17 @@ const fieldClass =
   "mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 font-normal dark:border-white/15 dark:bg-stone-950";
 function today() {
   return new Date().toISOString().slice(0, 10);
+}
+function isNonNegativeValue(value: string) {
+  const parsed = Number(value);
+  return value.trim() !== "" && Number.isFinite(parsed) && parsed >= 0;
+}
+function isDate(value: string) {
+  return (
+    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+    !Number.isNaN(new Date(`${value}T00:00:00Z`).getTime()) &&
+    new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value
+  );
 }
 function money(amount: string, currency: string) {
   return new Intl.NumberFormat(undefined, {

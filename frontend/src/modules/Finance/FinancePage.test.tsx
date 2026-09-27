@@ -132,7 +132,10 @@ describe("FinancePage", () => {
 
     expect(await screen.findByText("Market shop")).toBeVisible();
     expect(screen.getByText("€2,500.00")).toBeVisible();
+    const submit = screen.getByRole("button", { name: "Add transaction" });
+    expect(submit).toBeDisabled();
     await user.type(screen.getByLabelText("Amount"), "18.50");
+    expect(submit).toBeEnabled();
     await user.type(screen.getByLabelText(/Note/), "Market shop");
     await user.click(screen.getByRole("button", { name: "Add transaction" }));
 

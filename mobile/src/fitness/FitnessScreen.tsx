@@ -2,12 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import {
   ActivityIndicator,
-  Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { Button } from "@lifeos/ui/button";
 import { SummaryCard } from "@lifeos/ui";
 import type { FitnessSnapshot } from "./mobileFitnessService";
 import type { MobileFitnessService } from "./mobileFitnessService";
@@ -223,17 +223,14 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
             <View className="mt-5 gap-4">
               <View className="flex-row flex-wrap gap-3">
                 {(Object.keys(metricLabels) as MetricType[]).map((type) => (
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityState={{ selected: metricType === type }}
+                  <Button
                     key={type}
                     onPress={() => setMetricType(type)}
-                    className={`min-h-11 justify-center rounded-xl border px-4 ${metricType === type ? "border-lifeos-accent-dark bg-lifeos-accent/25" : "border-lifeos-border bg-lifeos-background"}`}
+                    selected={metricType === type}
+                    variant={metricType === type ? "primary" : "secondary"}
                   >
-                    <Text className="text-sm font-semibold text-lifeos-primary">
-                      {metricLabels[type]}
-                    </Text>
-                  </Pressable>
+                    {metricLabels[type]}
+                  </Button>
                 ))}
               </View>
 
@@ -288,7 +285,13 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
                 </Text>
               ) : null}
               <ActionButton
-                disabled={saving || state.status !== "ready"}
+                disabled={
+                  saving ||
+                  state.status !== "ready" ||
+                  !isValidFitnessTarget(value) ||
+                  !isCalendarDate(date)
+                }
+                loading={saving}
                 label={saving ? "Saving…" : "Save measurement"}
                 onPress={() => void saveMetric()}
               />
@@ -323,7 +326,8 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
                 />
               </Field>
               <ActionButton
-                disabled={savingGoal || goalTarget.trim().length === 0}
+                disabled={savingGoal || !isValidFitnessTarget(goalTarget)}
+                loading={savingGoal}
                 label={savingGoal ? "Saving…" : "Save fitness goal"}
                 onPress={() => void saveGoal()}
               />
@@ -354,23 +358,31 @@ function Field({
 
 function ActionButton({
   disabled = false,
+  loading = false,
   label,
   onPress,
 }: {
   disabled?: boolean;
+  loading?: boolean;
   label: string;
   onPress: () => void;
 }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      className={`min-h-12 items-center justify-center rounded-xl px-5 ${disabled ? "bg-lifeos-border" : "bg-lifeos-accent active:opacity-70"}`}
+    <Button
+      className="min-h-12 px-5"
       disabled={disabled}
+      loading={loading}
       onPress={onPress}
+      variant="primary"
     >
-      <Text className="text-sm font-bold text-lifeos-accent-ink">{label}</Text>
-    </Pressable>
+      {label}
+    </Button>
   );
+}
+
+function isValidFitnessTarget(value: string): boolean {
+  const parsed = Number(value.trim().replace(",", "."));
+  return value.trim().length > 0 && Number.isFinite(parsed) && parsed > 0;
 }
 
 function latestMetricDetail(snapshot: FitnessSnapshot): string {

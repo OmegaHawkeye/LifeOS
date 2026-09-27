@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import { useAuth } from "./auth-context";
 import {
   downloadOwnerDataExport,
@@ -283,13 +284,14 @@ export function SettingsPage() {
           </label>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          <button
-            className="rounded-xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-emerald-300 disabled:cursor-wait disabled:opacity-60"
+          <Button
+            className="px-5"
             disabled={isSaving}
+            loading={isSaving}
             type="submit"
           >
             {isSaving ? "Saving…" : "Save settings"}
-          </button>
+          </Button>
           {saved && (
             <p
               aria-live="polite"
@@ -318,14 +320,15 @@ export function SettingsPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          <button
-            className="rounded-xl border border-stone-300 px-5 py-3 text-sm font-semibold transition hover:bg-stone-100 disabled:cursor-wait disabled:opacity-60 dark:border-white/15 dark:hover:bg-white/10"
+          <Button
+            className="px-5"
             disabled={isExporting}
-            onClick={() => void exportData()}
-            type="button"
+            loading={isExporting}
+            onPress={() => void exportData()}
+            variant="secondary"
           >
             {isExporting ? "Preparing export…" : "Download my data"}
-          </button>
+          </Button>
           {exportError && (
             <p className="text-sm text-red-700 dark:text-red-300" role="alert">
               Your data export could not be prepared. Please try again.
@@ -438,13 +441,20 @@ export function SettingsPage() {
           />
         </label>
         <div className="flex flex-wrap items-center gap-4">
-          <button
-            className="rounded-xl border border-stone-300 px-5 py-3 text-sm font-semibold transition hover:bg-stone-100 disabled:cursor-wait disabled:opacity-60 dark:border-white/15 dark:hover:bg-white/10"
-            disabled={isChangingPassword}
+          <Button
+            className="px-5"
+            disabled={
+              isChangingPassword ||
+              passwords.current.length === 0 ||
+              passwords.next.length < 12 ||
+              passwords.next !== passwords.confirmation
+            }
+            loading={isChangingPassword}
             type="submit"
+            variant="secondary"
           >
             {isChangingPassword ? "Changing…" : "Change password"}
-          </button>
+          </Button>
           {passwordMessage && (
             <p
               className="text-sm text-emerald-700 dark:text-emerald-300"
@@ -485,13 +495,13 @@ export function SettingsPage() {
           </p>
         </div>
         {!showDeleteConfirmation ? (
-          <button
-            className="rounded-xl border border-red-400 px-5 py-3 text-sm font-semibold text-red-800 transition hover:bg-red-50 dark:border-red-400/40 dark:text-red-300 dark:hover:bg-red-950/30"
-            onClick={() => setShowDeleteConfirmation(true)}
-            type="button"
+          <Button
+            className="px-5"
+            onPress={() => setShowDeleteConfirmation(true)}
+            variant="danger"
           >
             Delete account…
-          </button>
+          </Button>
         ) : (
           <form className="space-y-4" onSubmit={deleteAccount}>
             <p className="text-sm font-medium text-red-800 dark:text-red-300">
@@ -532,8 +542,8 @@ export function SettingsPage() {
               />
             </label>
             <div className="flex flex-wrap gap-3">
-              <button
-                className="rounded-xl bg-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-800 disabled:cursor-wait disabled:opacity-60"
+              <Button
+                className="px-5"
                 disabled={
                   isDeletingAccount ||
                   !owner ||
@@ -541,24 +551,25 @@ export function SettingsPage() {
                   deletePassword.length === 0
                 }
                 type="submit"
+                variant="danger"
               >
                 {isDeletingAccount
                   ? "Deleting account…"
                   : "Permanently delete account"}
-              </button>
-              <button
-                className="rounded-xl border border-stone-300 px-5 py-3 text-sm font-semibold transition hover:bg-stone-100 dark:border-white/15 dark:hover:bg-white/10"
+              </Button>
+              <Button
+                className="px-5"
                 disabled={isDeletingAccount}
-                onClick={() => {
+                onPress={() => {
                   setShowDeleteConfirmation(false);
                   setDeletePassword("");
                   setEmailConfirmation("");
                   setDeleteError(null);
                 }}
-                type="button"
+                variant="secondary"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
             {deleteError && (
               <p

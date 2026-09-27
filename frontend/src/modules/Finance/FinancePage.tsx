@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
+import { Button } from "@lifeos/ui/button";
 import {
   createFinanceTransaction,
   createFinanceAccount,
@@ -271,14 +272,13 @@ export function FinancePage() {
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white p-1 dark:border-white/10 dark:bg-stone-900">
-          <button
-            aria-label="Previous month"
-            className={iconButtonClass}
-            onClick={() => setMonth((value) => shiftMonth(value, -1))}
-            type="button"
+          <Button
+            accessibilityLabel="Previous month"
+            onPress={() => setMonth((value) => shiftMonth(value, -1))}
+            variant="icon"
           >
             ‹
-          </button>
+          </Button>
           <label className="sr-only" htmlFor="overview-month">
             Overview month
           </label>
@@ -289,14 +289,13 @@ export function FinancePage() {
             type="month"
             value={month}
           />
-          <button
-            aria-label="Next month"
-            className={iconButtonClass}
-            onClick={() => setMonth((value) => shiftMonth(value, 1))}
-            type="button"
+          <Button
+            accessibilityLabel="Next month"
+            onPress={() => setMonth((value) => shiftMonth(value, 1))}
+            variant="icon"
           >
             ›
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -309,13 +308,9 @@ export function FinancePage() {
             Finance data could not be loaded. Check your connection and try
             again.
           </span>
-          <button
-            className="font-semibold underline"
-            onClick={() => void reloadFinance()}
-            type="button"
-          >
+          <Button onPress={() => void reloadFinance()} variant="tertiary">
             Try again
-          </button>
+          </Button>
         </div>
       )}
 
@@ -353,13 +348,14 @@ export function FinancePage() {
               <option>CHF</option>
               <option>GBP</option>
             </select>
-            <button
-              className={primaryButtonClass}
-              disabled={accountSaving}
+            <Button
+              className="w-full sm:w-auto"
+              disabled={accountSaving || accountName.trim().length === 0}
+              loading={accountSaving}
               type="submit"
             >
               {accountSaving ? "Adding…" : "Add account"}
-            </button>
+            </Button>
           </div>
         </form>
       )}
@@ -474,13 +470,9 @@ export function FinancePage() {
             </h2>
           </div>
           {editingTransaction && (
-            <button
-              className={quietButtonClass}
-              onClick={resetForm}
-              type="button"
-            >
+            <Button onPress={resetForm} variant="secondary">
               Cancel edit
-            </button>
+            </Button>
           )}
         </div>
         {accounts.length === 0 ? (
@@ -639,9 +631,15 @@ export function FinancePage() {
               </p>
             )}
             <div className="flex flex-wrap items-center gap-3 sm:col-span-2 xl:col-span-4">
-              <button
-                className={primaryButtonClass}
-                disabled={isSaving}
+              <Button
+                className="w-full sm:w-auto"
+                disabled={
+                  isSaving ||
+                  !form.accountId ||
+                  !isValidPositiveAmount(form.amount) ||
+                  !isCalendarDate(form.occurredOn)
+                }
+                loading={isSaving}
                 type="submit"
               >
                 {isSaving
@@ -649,7 +647,7 @@ export function FinancePage() {
                   : editingTransaction
                     ? "Save changes"
                     : "Add transaction"}
-              </button>
+              </Button>
               {!editingTransaction && (
                 <span className="text-xs text-stone-500 dark:text-stone-400">
                   {form.accountId
@@ -677,13 +675,9 @@ export function FinancePage() {
               filters
             </p>
           </div>
-          <button
-            className={quietButtonClass}
-            onClick={() => setFilters(emptyFilters)}
-            type="button"
-          >
+          <Button onPress={() => setFilters(emptyFilters)} variant="tertiary">
             Clear filters
-          </button>
+          </Button>
         </div>
 
         <div className="mt-4 grid gap-3 rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900 sm:grid-cols-2 xl:grid-cols-6">
@@ -882,22 +876,22 @@ function TransactionRow({
         {formatCurrency(transaction.amount, transaction.currency)}
       </p>
       <div className="flex shrink-0 gap-1">
-        <button
-          aria-label={`Edit ${transaction.description || "transaction"}`}
-          className={iconButtonClass}
-          onClick={onEdit}
-          type="button"
+        <Button
+          accessibilityLabel={`Edit ${transaction.description || "transaction"}`}
+          className="size-9 min-h-9"
+          onPress={onEdit}
+          variant="icon"
         >
           ✎
-        </button>
-        <button
-          aria-label={`Delete ${transaction.description || "transaction"}`}
-          className={iconButtonClass}
-          onClick={onDelete}
-          type="button"
+        </Button>
+        <Button
+          accessibilityLabel={`Delete ${transaction.description || "transaction"}`}
+          className="size-9 min-h-9"
+          onPress={onDelete}
+          variant="danger"
         >
           ×
-        </button>
+        </Button>
       </div>
     </li>
   );
@@ -948,13 +942,20 @@ function formatDate(date: string): string {
   }).format(new Date(date));
 }
 
+function isValidPositiveAmount(value: string): boolean {
+  const amount = Number(value.trim().replace(",", "."));
+  return value.trim().length > 0 && Number.isFinite(amount) && amount > 0;
+}
+
+function isCalendarDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return (
+    Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value
+  );
+}
+
 const fieldClass =
   "mt-2 w-full rounded-xl border border-stone-300 bg-white px-3 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950";
 const filterClass =
   "mt-1.5 w-full rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-sm font-normal text-stone-800 outline-none focus:border-emerald-500 dark:border-white/15 dark:bg-stone-950 dark:text-stone-100";
-const primaryButtonClass =
-  "rounded-xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-emerald-300 disabled:cursor-wait disabled:opacity-60";
-const quietButtonClass =
-  "rounded-xl px-3 py-2 text-sm font-semibold text-stone-600 transition hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/10";
-const iconButtonClass =
-  "grid size-9 shrink-0 place-items-center rounded-lg text-lg text-stone-500 transition hover:bg-stone-100 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-white/10 dark:hover:text-white";

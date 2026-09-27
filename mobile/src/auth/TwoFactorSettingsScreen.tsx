@@ -2,12 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Platform,
-  Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { Button } from "@lifeos/ui/button";
 import type { MobileTwoFactorService } from "./mobileTwoFactorService";
 import type { MobilePasskeyService } from "./mobilePasskeyService";
 import { PasskeySettingsPanel } from "./PasskeySettingsPanel";
@@ -175,6 +175,7 @@ export function TwoFactorSettingsScreen({
           />
           <Action
             disabled={busy || code.length !== 6}
+            loading={busy}
             label={busy ? "Confirming…" : "Confirm authenticator"}
             onPress={() => void confirmSetup()}
           />
@@ -213,6 +214,7 @@ export function TwoFactorSettingsScreen({
           />
           <Action
             disabled={busy || password.length === 0 || code.length !== 6}
+            loading={busy}
             label={busy ? "Disabling…" : "Disable two-factor authentication"}
             onPress={() => void disable()}
           />
@@ -236,6 +238,7 @@ export function TwoFactorSettingsScreen({
           />
           <Action
             disabled={busy || password.length === 0}
+            loading={busy}
             label={busy ? "Starting…" : "Set up authenticator"}
             onPress={() => void beginSetup()}
           />
@@ -271,24 +274,24 @@ function SettingsCard({ children }: { children: React.ReactNode }) {
 
 function Action({
   disabled = false,
+  loading = false,
   label,
   onPress,
 }: {
   disabled?: boolean;
+  loading?: boolean;
   label: string;
   onPress: () => void;
 }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ disabled }}
-      className={`min-h-11 justify-center rounded-xl bg-lifeos-accent px-4 ${disabled ? "opacity-50" : "active:opacity-70"}`}
+    <Button
+      className="min-h-11 px-4"
       disabled={disabled}
+      loading={loading}
       onPress={onPress}
+      variant="primary"
     >
-      <Text className="text-center text-sm font-semibold text-lifeos-accent-ink">
-        {label}
-      </Text>
-    </Pressable>
+      {label}
+    </Button>
   );
 }
