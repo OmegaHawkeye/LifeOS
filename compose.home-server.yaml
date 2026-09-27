@@ -40,7 +40,7 @@ services:
       - lifeos-home-postgres:/var/lib/postgresql
 
   lifeos:
-    build: .
+    image: ghcr.io/omegahawkeye/lifeos:${LIFEOS_VERSION:?Set LIFEOS_VERSION in the root .env file}
     restart: unless-stopped
     init: true
     environment: *lifeos-environment
@@ -68,7 +68,7 @@ services:
       start_period: 30s
 
   scheduler:
-    build: .
+    image: ghcr.io/omegahawkeye/lifeos:${LIFEOS_VERSION:?Set LIFEOS_VERSION in the root .env file}
     restart: unless-stopped
     init: true
     healthcheck:

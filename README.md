@@ -99,16 +99,25 @@ scripts/     Cross-project workflow and architecture checks
 
 Domain code lives below each application's `Modules` directory. Cross-module calls must use a target module's public application interface; `pnpm lint` enforces that boundary.
 
-## Current deployment status
+## Home-server deployment
 
-An initial Docker Compose setup for a home server is available in `compose.home-server.yaml`; it runs LifeOS, PostgreSQL, and Laravel's scheduler locally. The old `render.yaml` hosted deployment blueprint is retained as historical scaffolding and is not the supported product deployment target. Do not use it for personal LifeOS data.
+The supported Docker Compose setup in `compose.home-server.yaml` runs a versioned LifeOS image, PostgreSQL, and Laravel's scheduler on your server. Publishing a stable SemVer GitHub release builds an `amd64`/`arm64` image in GitHub Container Registry; the release workflow serializes publishing and refuses to reuse an existing version tag. Treat version tags as write-once; package maintainers can still change them directly in the registry. CI smoke-tests a clean install and upgrades from the latest published image (or the base revision before the first image release) before changes merge. The running app stores personal data only in the server's PostgreSQL database and storage volume. Updates contact the registry to download the version you select; LifeOS adds no telemetry or hosted-service dependency. The old `render.yaml` is historical scaffolding and is not a supported deployment target.
 
 ### Home-server setup
 
-1. Copy `.env.example` to `.env`. Set `HOME_SERVER_POSTGRES_PASSWORD` to a unique password and `APP_URL` to the address used by your devices. Set `APP_KEY` to `base64:` followed by the output of `openssl rand -base64 32`; keep this key in a password manager because it is required to decrypt protected app data after a restore.
+1. Download the release's `compose.home-server.yaml` and `.env.example` to a folder on your server, then copy `.env.example` to `.env`. Set `LIFEOS_VERSION` to the release you want, `HOME_SERVER_POSTGRES_PASSWORD` to a unique password, and `APP_URL` to the address used by your devices. Set `APP_KEY` to `base64:` followed by the output of `openssl rand -base64 32`; keep this key in a password manager because it is required to decrypt protected app data after a restore.
 2. Optionally set `LIFEOS_BACKUP_HOST_PATH` to a mounted NAS or second drive. The default `./backups` directory is allowed, but it shares the server's disk. Do not forward the HTTP port to the public internet.
-3. Start the local stack with `docker compose -f compose.home-server.yaml up -d --build`.
-4. Create the single owner with `docker compose -f compose.home-server.yaml exec lifeos php artisan lifeos:owner`.
-5. Create and securely store the separately displayed backup recovery key with `docker compose -f compose.home-server.yaml exec lifeos php artisan lifeos:backup:key`. Keep both this key and `APP_KEY` outside the server and backup drive.
+3. Start the selected release with `docker compose -f compose.home-server.yaml up -d --wait`. Compose pulls the published image; it does not build LifeOS from source.
+4. Open `APP_URL` in a browser and follow the first-run owner and authenticator setup.
+5. Create and securely store the backup recovery key with `docker compose -f compose.home-server.yaml exec lifeos php artisan lifeos:backup:key`. Keep this key and `APP_KEY` outside the server and backup drive.
 
-Backups run daily at 02:00 in the configured timezone. Check them with `docker compose -f compose.home-server.yaml exec lifeos php artisan lifeos:backup:status`. Restore is intentionally destructive and requires an explicit `--force`; follow the recovery steps in [the backup policy](docs/backup-policy.md).
+Backups run daily at 02:00 in the configured timezone. Check them in Settings or with `docker compose -f compose.home-server.yaml exec lifeos php artisan lifeos:backup:status`. Restore is intentionally destructive and requires an explicit `--force`; follow the recovery steps in [the backup policy](docs/backup-policy.md).
+
+### Updating and recovering
+
+1. Confirm the latest successful backup in Settings. For a manual backup, run `docker compose -f compose.home-server.yaml exec lifeos php artisan lifeos:backup:run` and confirm it succeeded before continuing.
+2. Change `LIFEOS_VERSION` in `.env` to the exact release you want to install.
+3. Apply it with `docker compose -f compose.home-server.yaml pull && docker compose -f compose.home-server.yaml up -d --wait`.
+4. Confirm the app opens and the backup status is healthy. If the new image does not start, inspect `docker compose -f compose.home-server.yaml logs lifeos` and restore the prior `LIFEOS_VERSION` before restarting.
+
+Never run `docker compose down -v` during an update; it deletes persistent database and app-storage volumes. A previous image can only safely use the upgraded database if its migrations are backward-compatible. If not, restore the database and storage from the same pre-update backup using the original `APP_KEY` and backup recovery key. See [the backup policy](docs/backup-policy.md).

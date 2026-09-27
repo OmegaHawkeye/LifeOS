@@ -1,10 +1,14 @@
 FROM node:24-bookworm-slim AS web
 
-WORKDIR /build/frontend
+WORKDIR /build
 RUN npm install --global pnpm@11.18.0
-COPY frontend/package.json frontend/pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
-COPY frontend/ ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY frontend/package.json frontend/pnpm-lock.yaml ./frontend/
+COPY ui/package.json ui/pnpm-lock.yaml ./ui/
+RUN pnpm --filter @lifeos/web... install --frozen-lockfile
+COPY frontend/ ./frontend/
+COPY ui/ ./ui/
+WORKDIR /build/frontend
 RUN pnpm build
 
 FROM composer:2 AS backend
@@ -47,6 +51,9 @@ RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framewor
 ENV APP_ENV=production \
     APP_DEBUG=false \
     SERVER_NAME=:8080
+
+LABEL org.opencontainers.image.source="https://github.com/OmegaHawkeye/LifeOS" \
+    org.opencontainers.image.description="Self-hosted personal dashboard for home servers and wall tablets"
 
 EXPOSE 8080
 
