@@ -1,3 +1,8 @@
+# 0.14.0
+
+- Web und Mobile nutzen einheitliche Button-Varianten mit klaren Lade- und Disabled-Zuständen.
+- Formulare aktivieren Speichern erst bei gültigen Pflichtangaben.
+
 # 0.13.0
 
 - Lokale Fehlerberichte helfen bei der Diagnose und werden nur auf Wunsch exportiert.

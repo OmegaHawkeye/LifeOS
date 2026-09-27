@@ -1,3 +1,8 @@
+# 0.14.0
+
+- Web and mobile now share button variants with clear loading and disabled states.
+- Forms enable submission only when required fields are valid.
+
 # 0.13.0
 
 - Local error reports help diagnose issues and are exported only on request.
