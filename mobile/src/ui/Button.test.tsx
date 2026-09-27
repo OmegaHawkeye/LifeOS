@@ -31,5 +31,6 @@ describe("shared native Button", () => {
     const button = screen.getByRole("button", { name: "Saving" });
     expect(button).toBeDisabled();
     expect(button.props.accessibilityState.busy).toBe(true);
+    expect(button.props.className).toContain("flex-row");
   });
 });
