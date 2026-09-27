@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
-use App\Modules\Foundation\Models\OwnerSettings;
+use App\Modules\Foundation\Application\Authentication\CreateInitialOwner;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Validator;
 #[Description('Provision the initial LifeOS owner or recover owner access')]
 class ProvisionOwner extends Command
 {
+    public function __construct(private readonly CreateInitialOwner $createInitialOwner)
+    {
+        parent::__construct();
+    }
+
     public function handle(): int
     {
         if (! $this->input->isInteractive()) {
@@ -59,16 +64,17 @@ class ProvisionOwner extends Command
             return self::INVALID;
         }
 
-        $owner = DB::transaction(function () use ($name, $email, $password): User {
-            $owner = User::query()->create([
-                'name' => $name,
-                'email' => $email,
-                'password' => $password,
-            ]);
-            $owner->settings()->create(OwnerSettings::defaults());
+        $owner = $this->createInitialOwner->create([
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+        ]);
 
-            return $owner;
-        });
+        if (! $owner instanceof User) {
+            $this->error('The owner account already exists. Use --reset-password to recover access.');
+
+            return self::FAILURE;
+        }
 
         $this->info("LifeOS owner provisioned for {$owner->email}.");
 
