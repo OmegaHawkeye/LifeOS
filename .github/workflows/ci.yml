@@ -128,6 +128,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: smoke-base
+          file: ${{ github.workspace }}/Dockerfile
           load: true
           tags: ghcr.io/omegahawkeye/lifeos:0.0.0-smoke-base
           cache-from: type=gha,scope=lifeos-smoke-base
