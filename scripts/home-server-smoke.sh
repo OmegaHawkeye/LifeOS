@@ -53,9 +53,22 @@ cleanup() {
 }
 
 check_stack() {
-  compose up --detach --wait
-  compose exec --no-TTY lifeos curl --fail --silent --show-error \
-    http://127.0.0.1:8080/api/v1/readiness
+  compose up --detach
+
+  local readiness_url="http://127.0.0.1:$port/api/v1/readiness"
+  local attempts=0
+
+  until curl --fail --silent "$readiness_url" >/dev/null; do
+    attempts=$((attempts + 1))
+    if [[ $attempts -ge 60 ]]; then
+      printf 'LifeOS did not become ready within 120 seconds.\n' >&2
+      compose logs lifeos postgres >&2 || true
+      exit 1
+    fi
+
+    sleep 2
+  done
+
   local migration_status
 
   migration_status="$(compose exec --no-TTY lifeos php artisan migrate:status --no-interaction --no-ansi)"
