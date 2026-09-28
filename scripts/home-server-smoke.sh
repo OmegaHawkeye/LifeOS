@@ -120,7 +120,7 @@ if [[ "$setup_status" != *'"required":false'* ]]; then
 fi
 
 compose exec --no-TTY lifeos php -r \
-  'file_put_contents("/app/storage/app/compose-upgrade-marker", "preserved")'
+  'file_put_contents("/app/storage/app/compose-upgrade-marker", "preserved");'
 
 write_environment "$candidate_version"
 check_stack
@@ -132,7 +132,7 @@ if [[ "$setup_status" != *'"required":false'* ]]; then
 fi
 
 storage_marker="$(compose exec --no-TTY lifeos php -r \
-  'echo file_get_contents("/app/storage/app/compose-upgrade-marker")')"
+  'echo file_get_contents("/app/storage/app/compose-upgrade-marker");')"
 if [[ "$storage_marker" != 'preserved' ]]; then
   printf 'Application storage did not persist after the Compose upgrade.\n' >&2
   exit 1
