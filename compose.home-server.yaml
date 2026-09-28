@@ -79,6 +79,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      lifeos:
+        condition: service_healthy
     volumes:
       - lifeos-home-storage:/app/storage
       - type: bind
