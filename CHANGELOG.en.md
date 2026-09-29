@@ -1,3 +1,7 @@
+# 0.15.0
+
+- LifeOS can now be installed locally and updated to a selected release with Docker Compose.
+
 # 0.14.0
 
 - Web and mobile now share button variants with clear loading and disabled states.
