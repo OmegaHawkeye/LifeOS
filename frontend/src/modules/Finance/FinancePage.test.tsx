@@ -195,6 +195,10 @@ describe("FinancePage", () => {
         status: "paused",
       }),
     );
-    expect(financeApi.getFinanceBudgets).toHaveBeenCalledWith("2026-09");
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(
+      now.getMonth() + 1,
+    ).padStart(2, "0")}`;
+    expect(financeApi.getFinanceBudgets).toHaveBeenCalledWith(currentMonth);
   });
 });
