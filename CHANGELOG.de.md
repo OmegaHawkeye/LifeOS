@@ -1,6 +1,7 @@
 # 0.15.0
 
 - LifeOS lässt sich jetzt mit Docker Compose lokal installieren und auf eine ausgewählte Version aktualisieren.
+- LifeOS kann jetzt über einen Umbrel Community App Store installiert werden.
 
 # 0.14.0
 
