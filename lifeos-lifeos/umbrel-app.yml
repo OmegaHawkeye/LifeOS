@@ -1,0 +1,30 @@
+manifestVersion: 1.1
+id: lifeos-lifeos
+storage:
+  dataRoot: data
+category: productivity
+name: LifeOS
+version: "0.15.0"
+tagline: Your private, self-hosted life dashboard
+description: >-
+  A free, open-source dashboard for your finances, fitness, nutrition, and
+  health. LifeOS keeps your data on your own server and requires no LifeOS
+  cloud account. Your first visit opens the local owner setup in a browser.
+
+  Daily backups are stored locally and retained for 30 days by default. Keep a
+  separate copy on a NAS or external drive for protection from server failure.
+developer: LifeOS
+website: https://github.com/OmegaHawkeye/LifeOS
+dependencies: []
+repo: https://github.com/OmegaHawkeye/LifeOS
+support: https://github.com/OmegaHawkeye/LifeOS/issues
+port: 8890
+gallery: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+torOnly: false
+permissions: []
+releaseNotes: >-
+  First Umbrel package for LifeOS 0.15.0. Includes persistent local data,
+  automatic database migrations, and scheduled local backups.
