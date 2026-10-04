@@ -105,6 +105,9 @@ The supported Docker Compose setup in `compose.home-server.yaml` runs a versione
 
 ### Home-server setup
 
+For installing from the umbrelOS App Store without using a terminal, see the
+[Umbrel installation guide](docs/umbrel.md).
+
 1. Download the release's `compose.home-server.yaml` and `.env.example` to a folder on your server, then copy `.env.example` to `.env`. Set `LIFEOS_VERSION` to the release you want, `HOME_SERVER_POSTGRES_PASSWORD` to a unique password, and `APP_URL` to the address used by your devices. Set `APP_KEY` to `base64:` followed by the output of `openssl rand -base64 32`; keep this key in a password manager because it is required to decrypt protected app data after a restore.
 2. Optionally set `LIFEOS_BACKUP_HOST_PATH` to a mounted NAS or second drive. The default `./backups` directory is allowed, but it shares the server's disk. Do not forward the HTTP port to the public internet.
 3. Start the selected release with `docker compose -f compose.home-server.yaml up -d --wait`. Compose pulls the published image; it does not build LifeOS from source.
