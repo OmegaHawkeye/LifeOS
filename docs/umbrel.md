@@ -62,6 +62,10 @@ container logs in umbrelOS. Laravel errors are written to the container output
 and include the same ID, so the failing request can be traced without exposing
 internal error details in the browser.
 
+On startup, the Postgres healthcheck verifies the configured database password.
+If an existing database has a stale password, it updates the database role
+without replacing the persistent database or its data before LifeOS starts.
+
 ## Maintainer notes
 
 The community store ID is `lifeos` and the app ID is `lifeos-lifeos`.

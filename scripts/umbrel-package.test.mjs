@@ -40,6 +40,7 @@ test("CI runs the Umbrel persistent storage permission smoke test", async () => 
     workflow,
     /bash scripts\/umbrel-storage-smoke\.sh 0\.0\.0-smoke-candidate/,
   );
+  assert.match(workflow, /bash scripts\/umbrel-database-auth-smoke\.sh/);
 });
 
 test("Umbrel compose routes through app_proxy without publishing service ports", async () => {
@@ -86,6 +87,18 @@ test("runtime and database data are persisted under the app data directory", asy
   assert.match(compose, /\$\{APP_DATA_DIR\}\/data\/storage:/);
   assert.match(compose, /\$\{APP_DATA_DIR\}\/data\/backups:/);
   assert.match(compose, /LIFEOS_BACKUP_RETENTION_DAYS:\s*["']?30/);
+});
+
+test("Umbrel repairs a stale Postgres password without replacing the database", async () => {
+  const compose = await read("lifeos-lifeos/docker-compose.yml");
+
+  assert.match(compose, /postgres:\n(?:.|\n)*?POSTGRES_PASSWORD:/);
+  assert.match(compose, /PGPASSWORD=.*POSTGRES_PASSWORD/);
+  assert.match(compose, /\\password/);
+  assert.match(compose, /hostname -i/);
+  assert.match(compose, /POSTGRES_DB/);
+  assert.match(compose, /POSTGRES_USER/);
+  assert.match(compose, /--command='SELECT 1'/);
 });
 
 test("Umbrel secrets are derived per app installation and never hard-coded", async () => {

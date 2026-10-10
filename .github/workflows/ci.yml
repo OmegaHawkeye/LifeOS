@@ -148,3 +148,6 @@ jobs:
 
       - name: Test Umbrel storage permissions
         run: bash scripts/umbrel-storage-smoke.sh 0.0.0-smoke-candidate
+
+      - name: Test Umbrel persisted database password recovery
+        run: bash scripts/umbrel-database-auth-smoke.sh
