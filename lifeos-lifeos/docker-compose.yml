@@ -80,7 +80,23 @@ services:
     volumes:
       - ${APP_DATA_DIR}/data/postgres:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lifeos -d lifeos"]
+      test:
+        - CMD-SHELL
+        - >-
+          db_host="$$(hostname -i)";
+          if PGPASSWORD="$$POSTGRES_PASSWORD" psql --no-password --host="$$db_host"
+          --username="$$POSTGRES_USER" --dbname="$$POSTGRES_DB"
+          --command='SELECT 1' >/dev/null 2>&1; then exit 0; fi;
+          if ! psql --no-password --username="$$POSTGRES_USER"
+          --dbname="$$POSTGRES_DB" --command='SELECT 1' >/dev/null 2>&1;
+          then exit 1; fi;
+          printf '%s\n%s\n' "$$POSTGRES_PASSWORD" "$$POSTGRES_PASSWORD" |
+          psql --no-password --username="$$POSTGRES_USER"
+          --dbname="$$POSTGRES_DB" --no-psqlrc --set=ON_ERROR_STOP=1
+          --command="\password $$POSTGRES_USER" >/dev/null 2>&1
+          && PGPASSWORD="$$POSTGRES_PASSWORD" psql --no-password
+          --host="$$db_host" --username="$$POSTGRES_USER"
+          --dbname="$$POSTGRES_DB" --command='SELECT 1' >/dev/null 2>&1
       interval: 10s
       timeout: 5s
       retries: 12
