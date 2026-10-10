@@ -145,3 +145,6 @@ jobs:
 
       - name: Test clean install and Compose upgrade
         run: bash scripts/home-server-smoke.sh 0.0.0-smoke-base 0.0.0-smoke-candidate
+
+      - name: Test Umbrel storage permissions
+        run: bash scripts/umbrel-storage-smoke.sh 0.0.0-smoke-candidate

@@ -33,6 +33,15 @@ test("LifeOS release workflow builds both supported Umbrel architectures", async
   assert.match(workflow, /platforms:\s*linux\/amd64,linux\/arm64/);
 });
 
+test("CI runs the Umbrel persistent storage permission smoke test", async () => {
+  const workflow = await read(".github/workflows/ci.yml");
+
+  assert.match(
+    workflow,
+    /bash scripts\/umbrel-storage-smoke\.sh 0\.0\.0-smoke-candidate/,
+  );
+});
+
 test("Umbrel compose routes through app_proxy without publishing service ports", async () => {
   const compose = await read("lifeos-lifeos/docker-compose.yml");
 
@@ -47,6 +56,27 @@ test("Umbrel compose routes through app_proxy without publishing service ports",
   );
   assert.match(compose, /image:\s+ghcr\.io\/omegahawkeye\/lifeos:0\.15\.0/);
   assert.match(compose, /DB_HOST:\s+postgres/);
+});
+
+test("Umbrel runtime initializes writable storage before starting LifeOS as uid 1000", async () => {
+  const compose = await read("lifeos-lifeos/docker-compose.yml");
+  const initializer = await read("docker/prepare-umbrel-storage.sh");
+
+  assert.match(
+    compose,
+    /storage-init:\n(?:.|\n)*?user:\s*["']?0:0["']?\n(?:.|\n)*?lifeos-prepare-umbrel-storage/,
+  );
+  assert.match(
+    compose,
+    /lifeos:\n(?:.|\n)*?storage-init:\n\s+condition:\s+service_completed_successfully/,
+  );
+  assert.match(compose, /LOG_CHANNEL:\s*stderr/);
+  assert.match(compose, /XDG_CONFIG_HOME:\s*\/tmp\/lifeos-caddy\/config/);
+  assert.match(compose, /XDG_DATA_HOME:\s*\/tmp\/lifeos-caddy\/data/);
+  assert.match(initializer, /chown -R 1000:1000 "\$storage_root"/);
+  assert.match(initializer, /\$storage_root\/logs/);
+  assert.match(initializer, /\$storage_root\/framework\/views/);
+  assert.match(initializer, /\/backups/);
 });
 
 test("runtime and database data are persisted under the app data directory", async () => {
@@ -124,4 +154,6 @@ test("Umbrel docs describe UI install, update, backups, and uninstall data loss"
   assert.match(docs, /30 days/);
   assert.match(docs, /uninstall.*(delete|remove)|delete.*data/is);
   assert.match(docs, /update/i);
+  assert.match(docs, /correlation ID/i);
+  assert.match(docs, /container logs/i);
 });

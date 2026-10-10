@@ -7,6 +7,16 @@ services:
       APP_PORT: 8080
       PROXY_AUTH_ADD: "false"
 
+  storage-init:
+    image: ghcr.io/omegahawkeye/lifeos:0.15.0
+    user: "0:0"
+    init: true
+    restart: "no"
+    entrypoint: ["/usr/local/bin/lifeos-prepare-umbrel-storage"]
+    volumes:
+      - ${APP_DATA_DIR}/data/storage:/app/storage
+      - ${APP_DATA_DIR}/data/backups:/backups
+
   lifeos:
     image: ghcr.io/omegahawkeye/lifeos:0.15.0
     user: "1000:1000"
@@ -16,12 +26,17 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      storage-init:
+        condition: service_completed_successfully
     environment: &lifeos-environment
       APP_NAME: LifeOS
       APP_ENV: production
       APP_KEY: "base64:${APP_LIFEOS_APP_KEY:?LifeOS app key was not derived by Umbrel}"
       APP_DEBUG: "false"
+      LOG_CHANNEL: stderr
       APP_URL: "http://${DEVICE_DOMAIN_NAME}:8890"
+      XDG_CONFIG_HOME: /tmp/lifeos-caddy/config
+      XDG_DATA_HOME: /tmp/lifeos-caddy/data
       APP_TIMEZONE: Europe/Vienna
       DB_CONNECTION: pgsql
       DB_HOST: postgres
