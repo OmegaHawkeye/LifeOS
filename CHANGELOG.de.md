@@ -1,3 +1,7 @@
+# 0.15.2
+
+- Umbrel gleicht abweichende Datenbank-Zugangsdaten beim Start ab, ohne Daten zu löschen.
+
 # 0.15.1
 
 - Umbrel-Ersteinrichtung funktioniert jetzt mit beschreibbarem Speicher und nachvollziehbaren Fehlerprotokollen.
