@@ -26,6 +26,14 @@ return Application::configure(basePath: dirname(__DIR__))
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->context(function (): array {
+            $correlationId = request()->attributes->get('correlation_id');
+
+            return is_string($correlationId)
+                ? ['correlation_id' => $correlationId]
+                : [];
+        });
+
         $exceptions->respond(function (Response $response): Response {
             $request = request();
             $correlationId = $request->attributes->get('correlation_id');

@@ -43,9 +43,10 @@ COPY --from=backend /app ./
 COPY --from=web /build/frontend/dist ./public
 COPY Caddyfile /etc/frankenphp/Caddyfile
 COPY docker/home-server-entrypoint.sh /usr/local/bin/lifeos-entrypoint
+COPY docker/prepare-umbrel-storage.sh /usr/local/bin/lifeos-prepare-umbrel-storage
 
 RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
-    && chmod +x /usr/local/bin/lifeos-entrypoint \
+    && chmod +x /usr/local/bin/lifeos-entrypoint /usr/local/bin/lifeos-prepare-umbrel-storage \
     && chown -R www-data:www-data storage bootstrap/cache
 
 ENV APP_ENV=production \

@@ -55,6 +55,13 @@ require a secure HTTPS origin. Configure trusted HTTPS for your Umbrel host
 before enabling or registering passkeys. Apple Health data continues to reach
 LifeOS only through the user's paired iPhone app and local server connection.
 
+## Troubleshooting
+
+If an API request fails, note its correlation ID and compare it with the LifeOS
+container logs in umbrelOS. Laravel errors are written to the container output
+and include the same ID, so the failing request can be traced without exposing
+internal error details in the browser.
+
 ## Maintainer notes
 
 The community store ID is `lifeos` and the app ID is `lifeos-lifeos`.
