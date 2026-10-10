@@ -22,7 +22,7 @@ test("Umbrel manifest advertises the supported version and app port", async () =
   const manifest = await read("lifeos-lifeos/umbrel-app.yml");
 
   assert.match(manifest, /^manifestVersion:\s*1\.1\s*$/m);
-  assert.match(manifest, /^version:\s*["']?0\.15\.1["']?\s*$/m);
+  assert.match(manifest, /^version:\s*["']?0\.15\.2["']?\s*$/m);
   assert.match(manifest, /^port:\s*8890\s*$/m);
   assert.match(manifest, /^storage:\n\s+dataRoot:\s+data\s*$/m);
 });
@@ -55,7 +55,7 @@ test("Umbrel compose routes through app_proxy without publishing service ports",
     compose,
     /APP_URL:\s+["']http:\/\/\$\{DEVICE_DOMAIN_NAME\}:8890["']/,
   );
-  assert.match(compose, /image:\s+ghcr\.io\/omegahawkeye\/lifeos:0\.15\.1/);
+  assert.match(compose, /image:\s+ghcr\.io\/omegahawkeye\/lifeos:0\.15\.2/);
   assert.match(compose, /DB_HOST:\s+postgres/);
 });
 

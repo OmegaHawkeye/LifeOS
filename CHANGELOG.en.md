@@ -1,3 +1,7 @@
+# 0.15.2
+
+- Umbrel now reconciles stale database credentials on startup without deleting data.
+
 # 0.15.1
 
 - Umbrel first-run setup now has writable storage and traceable server errors.

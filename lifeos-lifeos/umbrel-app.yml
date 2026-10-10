@@ -4,7 +4,7 @@ storage:
   dataRoot: data
 category: productivity
 name: LifeOS
-version: "0.15.1"
+version: "0.15.2"
 tagline: Your private, self-hosted life dashboard
 description: >-
   A free, open-source dashboard for your finances, fitness, nutrition, and
@@ -26,5 +26,6 @@ defaultPassword: ""
 torOnly: false
 permissions: []
 releaseNotes: >-
-  Umbrel storage permissions and request logging improved. Includes persistent
-  local data, automatic database migrations, and scheduled local backups.
+  Umbrel now repairs stale database credentials on startup without replacing
+  your existing database. Also includes writable app storage and traceable
+  server errors.
