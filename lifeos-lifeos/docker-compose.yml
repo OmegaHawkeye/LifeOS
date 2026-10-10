@@ -8,7 +8,7 @@ services:
       PROXY_AUTH_ADD: "false"
 
   storage-init:
-    image: ghcr.io/omegahawkeye/lifeos:0.15.0
+    image: ghcr.io/omegahawkeye/lifeos:0.15.1
     user: "0:0"
     init: true
     restart: "no"
@@ -18,7 +18,7 @@ services:
       - ${APP_DATA_DIR}/data/backups:/backups
 
   lifeos:
-    image: ghcr.io/omegahawkeye/lifeos:0.15.0
+    image: ghcr.io/omegahawkeye/lifeos:0.15.1
     user: "1000:1000"
     init: true
     restart: on-failure
@@ -87,7 +87,7 @@ services:
       start_period: 30s
 
   scheduler:
-    image: ghcr.io/omegahawkeye/lifeos:0.15.0
+    image: ghcr.io/omegahawkeye/lifeos:0.15.1
     user: "1000:1000"
     init: true
     restart: on-failure
