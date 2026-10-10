@@ -1,3 +1,7 @@
+# 0.15.1
+
+- Umbrel-Ersteinrichtung funktioniert jetzt mit beschreibbarem Speicher und nachvollziehbaren Fehlerprotokollen.
+
 # 0.15.0
 
 - LifeOS lässt sich jetzt mit Docker Compose lokal installieren und auf eine ausgewählte Version aktualisieren.

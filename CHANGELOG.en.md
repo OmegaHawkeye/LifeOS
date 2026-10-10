@@ -1,3 +1,7 @@
+# 0.15.1
+
+- Umbrel first-run setup now has writable storage and traceable server errors.
+
 # 0.15.0
 
 - LifeOS can now be installed locally and updated to a selected release with Docker Compose.
