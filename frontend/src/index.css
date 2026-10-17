@@ -1,11 +1,18 @@
 @import "tailwindcss";
-@import "@lifeos/ui/theme.css";
-@source "../../ui/src";
+@import "@fontsource-variable/instrument-sans";
+@import "@fontsource-variable/newsreader/opsz.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@import "@lifeos/ui/theme.css";
+@import "@lifeos/ui/theme.web.css";
+@source "../../ui/src";
+
 :root {
   font-family: var(--font-sans);
+  background: var(--color-canvas);
+  color: var(--color-ink);
   color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;

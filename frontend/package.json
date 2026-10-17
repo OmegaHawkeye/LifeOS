@@ -21,6 +21,9 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
     "@laravel/passkeys": "^0.4.0",
     "@lifeos/ui": "workspace:*",
     "@tanstack/react-query": "^5.102.8",

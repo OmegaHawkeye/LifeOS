@@ -15,7 +15,7 @@ describe("shared web Button", () => {
     const button = screen.getByRole("button", { name: "Save changes" });
     expect(button).toBeDisabled();
     expect(button.className).toContain("disabled:cursor-not-allowed");
-    expect(button.className).toContain("disabled:bg-stone-300");
+    expect(button.className).toContain("disabled:bg-surface-sunken");
     fireEvent.click(button);
     expect(onPress).not.toHaveBeenCalled();
   });

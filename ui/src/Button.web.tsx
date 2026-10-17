@@ -8,16 +8,17 @@ type WebButtonProps = ButtonProps &
   >;
 
 const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary:
-    "bg-lifeos-accent text-lifeos-accent-ink hover:bg-lifeos-accent-dark active:bg-lifeos-accent-dark disabled:bg-stone-300 disabled:text-stone-600",
+  primary: "bg-primary text-on-primary hover:bg-primary-hover",
   secondary:
-    "border border-lifeos-border bg-lifeos-surface text-lifeos-primary hover:bg-lifeos-background active:bg-stone-100 disabled:bg-stone-200 disabled:text-stone-500 dark:border-white/15 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800 dark:active:bg-stone-800 dark:disabled:bg-stone-700 dark:disabled:text-stone-400",
+    "border border-line-strong bg-surface text-ink hover:bg-surface-sunken",
   tertiary:
-    "bg-transparent text-lifeos-primary hover:bg-lifeos-background active:bg-stone-100 disabled:bg-stone-100 disabled:text-stone-500 dark:text-stone-100 dark:hover:bg-white/10 dark:active:bg-white/10 dark:disabled:bg-stone-800 dark:disabled:text-stone-400",
-  danger:
-    "bg-red-700 text-white hover:bg-red-800 active:bg-red-900 disabled:bg-stone-300 disabled:text-stone-600",
-  icon: "size-11 rounded-lg border border-lifeos-border bg-lifeos-surface p-0 text-lifeos-primary hover:bg-lifeos-background disabled:bg-stone-200 disabled:text-stone-500 dark:border-white/15 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800 dark:disabled:bg-stone-700 dark:disabled:text-stone-400",
+    "bg-transparent text-primary-text hover:bg-primary-soft disabled:bg-transparent",
+  danger: "bg-danger text-on-danger",
+  icon: "size-target-min border border-line-strong bg-surface p-0 text-ink hover:bg-surface-sunken",
 };
+
+const selectedStyles =
+  "aria-pressed:border aria-pressed:border-primary aria-pressed:bg-primary-soft aria-pressed:text-primary-text";
 
 export function Button({
   accessibilityLabel,
@@ -39,7 +40,7 @@ export function Button({
       aria-label={accessibilityLabel ?? props["aria-label"]}
       aria-busy={loading || undefined}
       aria-pressed={selected}
-      className={`inline-flex ${variant === "icon" ? "items-center justify-center" : "min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 font-semibold"} transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lifeos-accent-dark disabled:cursor-not-allowed ${variants[variant]} ${className}`.trim()}
+      className={`inline-flex items-center justify-center rounded-sm ${variant === "icon" ? "" : "min-h-target-min gap-2 px-4 text-label"} transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:border-line disabled:bg-surface-sunken disabled:text-ink-muted ${variants[variant]} ${selectedStyles} ${className}`.trim()}
       disabled={isDisabled}
       onClick={onPress}
       type={type}
@@ -47,7 +48,7 @@ export function Button({
       {loading ? (
         <span
           aria-hidden="true"
-          className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+          className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent motion-reduce:animate-[spin_2.4s_linear_infinite]"
         />
       ) : null}
       {children}

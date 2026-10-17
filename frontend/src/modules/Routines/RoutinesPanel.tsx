@@ -85,16 +85,16 @@ export function RoutinesPanel() {
   }
 
   return (
-    <article className="mt-5 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8">
+    <article className="rounded-md border border-line bg-surface p-4 shadow-raised tablet:p-5 desktop:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          <p className="m-0 text-overline uppercase text-ink-muted">
             Small rhythms, less noise
           </p>
-          <h2 className="mt-1 text-xl font-semibold">Routines</h2>
+          <h2 className="m-0 mt-1 text-title-m text-ink">Routines</h2>
         </div>
         <Link
-          className="text-sm font-semibold text-emerald-700 underline underline-offset-4 dark:text-emerald-300"
+          className="inline-flex min-h-target-min items-center text-label text-primary-text underline-offset-4 hover:underline"
           to="/review"
         >
           Open weekly review
@@ -102,7 +102,7 @@ export function RoutinesPanel() {
       </div>
 
       {overview && !overview.notifications_enabled && (
-        <p className="mt-4 rounded-2xl bg-stone-100 p-3 text-sm leading-5 text-stone-600 dark:bg-white/5 dark:text-stone-300">
+        <p className="m-0 mt-4 rounded-sm bg-surface-sunken p-3 text-body-s text-ink-muted">
           Reminders are off. You can opt in to quiet in-app reminders in
           Settings.
         </p>
@@ -111,7 +111,7 @@ export function RoutinesPanel() {
         overview.routines.some((routine) => routine.reminder_active) && (
           <p
             aria-live="polite"
-            className="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 p-3 text-sm font-medium text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100"
+            className="m-0 mt-4 rounded-sm bg-primary-soft p-3 text-body-s font-semibold text-primary-text"
             role="status"
           >
             Reminder due:{" "}
@@ -122,24 +122,21 @@ export function RoutinesPanel() {
           </p>
         )}
       {error && (
-        <p
-          className="mt-4 text-sm text-rose-700 dark:text-rose-300"
-          role="alert"
-        >
+        <p className="m-0 mt-4 text-body-s text-danger" role="alert">
           {error}
         </p>
       )}
 
       {overview?.routines.length ? (
-        <ul className="mt-5 divide-y divide-stone-200 dark:divide-white/10">
+        <ul className="m-0 mt-4 list-none divide-y divide-line p-0">
           {overview.routines.map((routine) => (
             <li
               className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0"
               key={routine.id}
             >
               <div>
-                <p className="font-medium">{routine.title}</p>
-                <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                <p className="m-0 text-title-s text-ink">{routine.title}</p>
+                <p className="m-0 mt-0.5 text-body-s text-ink-muted">
                   {routine.is_scheduled_today
                     ? routine.status === "completed"
                       ? "Done today"
@@ -176,7 +173,7 @@ export function RoutinesPanel() {
           ))}
         </ul>
       ) : (
-        <p className="mt-5 text-sm leading-6 text-stone-500 dark:text-stone-400">
+        <p className="m-0 mt-4 text-body-s text-ink-muted">
           No routines due today. Add one below; past days won’t become a
           backlog.
         </p>
@@ -185,12 +182,12 @@ export function RoutinesPanel() {
       {overview?.recent_completions.length ? (
         <section
           aria-labelledby="routine-history-title"
-          className="mt-5 border-t border-stone-200 pt-5 dark:border-white/10"
+          className="mt-4 border-t border-line pt-4"
         >
-          <h3 className="text-sm font-semibold" id="routine-history-title">
+          <h3 className="m-0 text-label text-ink" id="routine-history-title">
             Recent completion history
           </h3>
-          <ul className="mt-2 grid gap-2 text-sm text-stone-500 dark:text-stone-400 sm:grid-cols-2">
+          <ul className="m-0 mt-2 grid list-none gap-2 p-0 text-body-s text-ink-muted tablet:grid-cols-2">
             {overview.recent_completions.slice(0, 6).map((completion) => (
               <li key={`${completion.routine_id}-${completion.completed_at}`}>
                 {completion.title ?? "Routine"} ·{" "}
@@ -202,10 +199,10 @@ export function RoutinesPanel() {
       ) : null}
 
       <form
-        className="mt-6 grid gap-3 border-t border-stone-200 pt-5 dark:border-white/10 sm:grid-cols-2 lg:grid-cols-5"
+        className="mt-5 grid gap-3 border-t border-line pt-5 tablet:grid-cols-2 wide:grid-cols-5"
         onSubmit={submit}
       >
-        <label className="text-sm font-medium sm:col-span-2 lg:col-span-2">
+        <label className="text-label text-ink tablet:col-span-2">
           New routine
           <input
             className={fieldClass}
@@ -216,7 +213,7 @@ export function RoutinesPanel() {
             value={title}
           />
         </label>
-        <label className="text-sm font-medium">
+        <label className="text-label text-ink">
           Area
           <select
             className={fieldClass}
@@ -234,7 +231,7 @@ export function RoutinesPanel() {
             <option value="review">Review</option>
           </select>
         </label>
-        <label className="text-sm font-medium">
+        <label className="text-label text-ink">
           Schedule
           <select
             className={fieldClass}
@@ -250,7 +247,7 @@ export function RoutinesPanel() {
           </select>
         </label>
         {frequency === "weekly" ? (
-          <label className="text-sm font-medium">
+          <label className="text-label text-ink">
             Day
             <select
               className={fieldClass}
@@ -265,7 +262,7 @@ export function RoutinesPanel() {
             </select>
           </label>
         ) : (
-          <label className="text-sm font-medium">
+          <label className="text-label text-ink">
             Reminder time
             <input
               className={fieldClass}
@@ -276,7 +273,7 @@ export function RoutinesPanel() {
           </label>
         )}
         {frequency === "weekly" && (
-          <label className="text-sm font-medium">
+          <label className="text-label text-ink">
             Reminder time
             <input
               className={fieldClass}
@@ -287,7 +284,7 @@ export function RoutinesPanel() {
           </label>
         )}
         <button
-          className="self-end rounded-xl bg-emerald-400 px-4 py-3 text-sm font-semibold text-stone-950 disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex min-h-target-touch items-center justify-center self-end rounded-sm bg-primary px-4 text-label text-on-primary hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-ink-muted"
           disabled={busy || !title.trim()}
           type="submit"
         >
@@ -308,9 +305,9 @@ const weekdays = [
   "Sunday",
 ];
 const fieldClass =
-  "mt-1.5 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 font-normal dark:border-white/15 dark:bg-stone-950";
+  "mt-1.5 block min-h-target-touch w-full rounded-sm border border-line-strong bg-surface px-3 text-body text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 const smallButtonClass =
-  "rounded-lg border border-stone-300 px-3 py-2 text-sm font-medium hover:bg-stone-100 disabled:cursor-wait disabled:opacity-60 dark:border-white/15 dark:hover:bg-white/10";
+  "inline-flex min-h-target-min items-center rounded-sm border border-line-strong bg-surface px-3 text-label text-ink hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:text-ink-muted";
 
 function formatCompletionDate(value: string | null) {
   if (value === null) return "Completed recently";

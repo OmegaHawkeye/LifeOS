@@ -18,3 +18,49 @@ disabled styles remain visibly muted and never rely on transparency. Use
 has no visible text. Web adds a visible keyboard focus ring and a not-allowed
 cursor; native exposes button, busy, selected, and disabled accessibility
 states with press feedback.
+
+## Design tokens and themes
+
+`tokens.json` is the single source for colour, type, spacing, radius, shadow,
+size and breakpoint tokens; it mirrors the LifeOS design system. After editing
+it, run `pnpm --dir ui theme:generate` to rewrite the Tailwind v4 theme files,
+which are never edited by hand:
+
+- `theme.css`: shared `@theme` tokens with light values as defaults.
+- `theme.web.css`: Dark and Wall overrides for the web. Dark follows the
+  `.dark` class on the root; Wall follows `data-theme="wall"` and adds a
+  `wall:` variant.
+- `theme.native.css`: light, dark and wall blocks for Uniwind, which needs
+  every theme to declare the same variables. `mobile/global.css` imports it by
+  relative path so Uniwind can scan it before it defines the `wall` variant,
+  and `mobile/metro.config.js` registers `wall` as an extra theme.
+
+Use the token vocabulary in components: `bg-canvas`, `bg-surface`, `text-ink`,
+`text-ink-muted`, `border-line-strong`, `bg-primary text-on-primary`,
+`bg-finance-soft text-finance`, `text-body`, `text-label`, `text-figure-xl`,
+`min-h-target-min`, `rounded-md`, `shadow-raised`, `tablet:` and `desktop:`.
+The pre-redesign `lifeos-*` colour names remain as aliases until every screen
+has moved to the new names.
+
+The web app bundles Instrument Sans, Newsreader and IBM Plex Mono through
+Fontsource, so no font loads from a third-party host. Native still falls back
+to the system font until the same families are bundled with `expo-font`.
+
+## Components
+
+Each component has one `*.types.ts` contract with `*.web.tsx` and
+`*.native.tsx` renderers, exported by subpath.
+
+| Import                         | Use                                                                                                                        |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `@lifeos/ui/button`            | Actions; see the contract above.                                                                                           |
+| `@lifeos/ui/icons`             | `AppIcon`: 24px stroke icons, including module, trend, status and navigation glyphs.                                       |
+| `@lifeos/ui/tag`               | A module, status or `now` label. Status tags always carry a word.                                                          |
+| `@lifeos/ui/meter`             | Budget, macro and consistency progress with an optional target tick. The fill grows in on first render.                    |
+| `@lifeos/ui/signal-card`       | One dashboard summary per module: figure, trend, next step and action. Cards rise in; pass `enterDelayMs` to stagger them. |
+| `@lifeos/ui/segmented-control` | Two to four peer views or values. On web the thumb slides to the selection.                                                |
+| `@lifeos/ui/switch`            | Settings that apply immediately. Stacked rows are separated by padding and a hairline.                                     |
+
+Web animations respect `prefers-reduced-motion`; the native meter checks the
+system's reduce-motion setting before animating. Native module icons take
+their colour from `tokens.json` and follow light and dark only.

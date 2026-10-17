@@ -1,7 +1,9 @@
 import "./global.css";
 
 import * as SplashScreen from "expo-splash-screen";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Text, View, useColorScheme } from "react-native";
+import { LogoMark } from "@lifeos/ui/app-nav";
+import { tokenColor } from "@lifeos/ui/tokens";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { MobileAuthProvider, useMobileAuth } from "./src/auth/authContext";
 import { mobileAuthService } from "./src/auth/mobileAuth";
@@ -27,23 +29,26 @@ export default function App() {
 
 export function LifeOSApp() {
   const { isLoading, owner } = useMobileAuth();
+  const scheme = useColorScheme() === "dark" ? "dark" : "light";
+  const signedIn = !isLoading && owner !== null;
 
   return (
-    <SafeAreaView edges={["top", "bottom"]} style={styles.safeArea}>
+    <SafeAreaView
+      // Signed in, the shell pads the bottom itself so the tab bar reaches the home indicator.
+      edges={signedIn ? ["top"] : ["top", "bottom"]}
+      style={{ backgroundColor: tokenColor("canvas", scheme), flex: 1 }}
+    >
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <View className="h-[72px] w-[72px] items-center justify-center rounded-[22px] bg-lifeos-accent">
-            <Text className="text-[38px] font-extrabold text-lifeos-accent-ink">
-              L
-            </Text>
-          </View>
-          <Text className="mt-3 text-[28px] font-extrabold text-lifeos-primary">
-            LifeOS
-          </Text>
-          <Text className="mb-5 mt-2 text-sm text-lifeos-muted">
+          <LogoMark size={72} />
+          <Text className="mt-3 text-display-m text-ink">LifeOS</Text>
+          <Text className="mb-5 mt-2 text-body-s text-ink-muted">
             Connecting to your home server…
           </Text>
-          <ActivityIndicator color="#39896c" size="large" />
+          <ActivityIndicator
+            color={tokenColor("primary", scheme)}
+            size="large"
+          />
         </View>
       ) : owner === null ? (
         <SignInScreen />
@@ -53,7 +58,3 @@ export function LifeOSApp() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { backgroundColor: "#f3f6f4", flex: 1 },
-});

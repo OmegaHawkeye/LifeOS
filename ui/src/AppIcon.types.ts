@@ -4,7 +4,23 @@ export type LifeOSIconName =
   | "fitness"
   | "nutrition"
   | "health"
-  | "settings";
+  | "settings"
+  | "routines"
+  | "review"
+  | "plus"
+  | "check"
+  | "close"
+  | "chevron-right"
+  | "chevron-down"
+  | "trend-up"
+  | "trend-down"
+  | "bell"
+  | "calendar"
+  | "scale"
+  | "alert"
+  | "info"
+  | "server"
+  | "more";
 
 export type AppIconProps = {
   name: LifeOSIconName;
@@ -13,4 +29,6 @@ export type AppIconProps = {
   testID?: string;
 };
 
-export declare const AppIcon: (props: AppIconProps) => import("react").JSX.Element;
+export declare const AppIcon: (
+  props: AppIconProps,
+) => import("react").JSX.Element;

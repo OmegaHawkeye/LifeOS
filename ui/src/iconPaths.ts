@@ -1,12 +1,7 @@
 import type { LifeOSIconName } from "./AppIcon.types";
 
 export const iconPaths: Record<LifeOSIconName, string[]> = {
-  today: [
-    "M4 4h6v6H4z",
-    "M14 4h6v4h-6z",
-    "M14 12h6v8h-6z",
-    "M4 14h6v6H4z",
-  ],
+  today: ["M4 4h6v6H4z", "M14 4h6v4h-6z", "M14 12h6v8h-6z", "M4 14h6v6H4z"],
   finance: [
     "M4 6h16a2 2 0 0 1 2 2v12H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14",
     "M2 10h20",
@@ -35,4 +30,25 @@ export const iconPaths: Record<LifeOSIconName, string[]> = {
     "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z",
     "M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 2.9-.2-.1a1.7 1.7 0 0 0-1.8.1l-.2.1h-3.4l-.1-.2a1.7 1.7 0 0 0-1.5-.9h-.2l-.2.1-2.9-1.7.1-.2a1.7 1.7 0 0 0-.1-1.8l-.1-.2v-3.4l.2-.1a1.7 1.7 0 0 0 .9-1.5v-.2l-.1-.2 1.7-2.9.2.1a1.7 1.7 0 0 0 1.8-.1l.2-.1h3.4l.1.2a1.7 1.7 0 0 0 1.5.9h.2l.2-.1 2.9 1.7-.1.2a1.7 1.7 0 0 0 .1 1.8l.1.2v3.4l-.2.1a1.7 1.7 0 0 0-1 1.5Z",
   ],
+  routines: [
+    "M4 12a8 8 0 0 1 13.7-5.6L20 8.7",
+    "M20 4v4.7h-4.7",
+    "M20 12a8 8 0 0 1-13.7 5.6L4 15.3",
+    "M4 20v-4.7h4.7",
+  ],
+  review: ["M5 4h14v16H5z", "M9 9h6", "M9 13h6", "M9 17h3"],
+  plus: ["M12 5v14", "M5 12h14"],
+  check: ["M5 12.5l4.5 4.5L19 7.5"],
+  close: ["M6 6l12 12", "M18 6L6 18"],
+  "chevron-right": ["M9 5l7 7-7 7"],
+  "chevron-down": ["M5 9l7 7 7-7"],
+  "trend-up": ["M4 17l6-6 4 4 6-7", "M14 8h6v6"],
+  "trend-down": ["M4 7l6 6 4-4 6 7", "M14 16h6v-6"],
+  bell: ["M6 16V11a6 6 0 1 1 12 0v5l2 2H4z", "M10 20.5a2 2 0 0 0 4 0"],
+  calendar: ["M4 6h16v14H4z", "M4 10h16", "M8 3v4", "M16 3v4"],
+  scale: ["M4 4h16v16H4z", "M8.5 11a5 5 0 0 1 7 0", "M12 11l1.5-2"],
+  alert: ["M12 4l9 16H3z", "M12 10v4", "M12 17h.01"],
+  info: ["M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z", "M12 11v5", "M12 8h.01"],
+  server: ["M4 4h16v6H4z", "M4 14h16v6H4z", "M8 7h.01", "M8 17h.01"],
+  more: ["M5 12h.01", "M12 12h.01", "M19 12h.01"],
 };

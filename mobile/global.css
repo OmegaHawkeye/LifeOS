@@ -1,4 +1,6 @@
 @import "tailwindcss";
 @import "uniwind";
 @import "@lifeos/ui/theme.css";
+/* Relative on purpose: Uniwind scans relative imports for theme variables before it defines the `wall` variant. */
+@import "../ui/theme.native.css";
 @source "../ui/src";

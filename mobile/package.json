@@ -43,8 +43,18 @@
       "**/*.test.tsx"
     ],
     "moduleNameMapper": {
+      "^react$": "<rootDir>/node_modules/react",
+      "^react/(.*)$": "<rootDir>/node_modules/react/$1",
       "^@lifeos/ui/button$": "<rootDir>/../ui/src/Button.native.tsx",
       "^@lifeos/ui$": "<rootDir>/../ui/src/SummaryCard.native.tsx",
+      "^@lifeos/ui/icons$": "<rootDir>/../ui/src/AppIcon.native.tsx",
+      "^@lifeos/ui/tag$": "<rootDir>/../ui/src/Tag.native.tsx",
+      "^@lifeos/ui/meter$": "<rootDir>/../ui/src/Meter.native.tsx",
+      "^@lifeos/ui/signal-card$": "<rootDir>/../ui/src/SignalCard.native.tsx",
+      "^@lifeos/ui/segmented-control$": "<rootDir>/../ui/src/SegmentedControl.native.tsx",
+      "^@lifeos/ui/switch$": "<rootDir>/../ui/src/Switch.native.tsx",
+      "^@lifeos/ui/app-nav$": "<rootDir>/../ui/src/AppNav.native.tsx",
+      "^@lifeos/ui/tokens$": "<rootDir>/../ui/src/nativeTokens.ts",
       "\\.css$": "<rootDir>/src/test/styleMock.js"
     }
   }
