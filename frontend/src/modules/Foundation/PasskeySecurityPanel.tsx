@@ -93,35 +93,35 @@ export function PasskeySecurityPanel({
   }
 
   return (
-    <section className="mt-8 space-y-5 rounded-3xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900 sm:p-7">
+    <section className="mt-8 space-y-5 rounded-md border border-line bg-surface p-5 sm:p-7">
       <div>
-        <h2 className="text-lg font-semibold">Passkeys</h2>
-        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+        <h2 className="text-title-m font-semibold">Passkeys</h2>
+        <p className="mt-1 text-body-s text-ink-muted">
           Use Apple Passwords, 1Password, or another WebAuthn-compatible
           manager. LifeOS stores only the public key.
         </p>
       </div>
       <label
-        className="flex cursor-pointer items-start gap-3 rounded-2xl border border-stone-200 p-4 text-sm dark:border-white/10"
+        className="flex cursor-pointer items-start gap-3 rounded-md border border-line p-4 text-body-s"
         htmlFor="passkeys-enabled"
       >
         <input
           checked={enabled}
-          className="mt-0.5 size-4 accent-emerald-500"
+          className="mt-0.5 size-4 accent-primary"
           id="passkeys-enabled"
           onChange={(event) => onToggle(event.currentTarget.checked)}
           type="checkbox"
         />
         <span>
           <span className="block font-medium">Allow passkey sign-in</span>
-          <span className="mt-1 block leading-5 text-stone-500 dark:text-stone-400">
+          <span className="mt-1 block leading-5 text-ink-muted">
             Disable this to keep password and two-factor sign-in as the only
             authentication method. Existing passkeys are not deleted.
           </span>
         </span>
       </label>
       <div
-        className={`rounded-2xl border p-4 text-sm ${originIsSecure ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-400/20 dark:bg-emerald-950/20 dark:text-emerald-200" : "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-400/20 dark:bg-amber-950/20 dark:text-amber-200"}`}
+        className={`rounded-md border p-4 text-body-s ${originIsSecure ? "border-primary bg-primary-soft text-primary-text" : "border-warning bg-warning-soft text-warning"}`}
       >
         <p className="font-medium">WebAuthn origin</p>
         <p className="mt-1 break-all">{origin}</p>
@@ -141,12 +141,12 @@ export function PasskeySecurityPanel({
       </div>
       {passkeys.map((passkey) => (
         <div
-          className="flex items-center justify-between gap-4 rounded-xl border border-stone-200 p-4 dark:border-white/10"
+          className="flex items-center justify-between gap-4 rounded-sm border border-line p-4"
           key={passkey.id}
         >
-          <span className="text-sm font-medium">{passkey.name}</span>
+          <span className="text-body-s font-medium">{passkey.name}</span>
           <Button
-            className="min-h-9 px-3 text-sm"
+            className="min-h-9 px-3 text-body-s"
             onPress={() => void removePasskey(passkey.id)}
             variant="danger"
           >
@@ -155,12 +155,12 @@ export function PasskeySecurityPanel({
         </div>
       ))}
       <label
-        className="block text-sm font-medium"
+        className="block text-body-s font-medium"
         htmlFor="settings-passkey-name"
       >
         Name this passkey
         <input
-          className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none focus:border-emerald-500 dark:border-white/15 dark:bg-stone-950"
+          className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none focus:border-focus"
           id="settings-passkey-name"
           onChange={(event) => setName(event.currentTarget.value)}
           placeholder="iPhone, MacBook, 1Password…"
@@ -181,7 +181,7 @@ export function PasskeySecurityPanel({
           : "Add passkey"}
       </Button>
       {error || registration.error ? (
-        <p className="text-sm text-red-700 dark:text-red-300" role="alert">
+        <p className="text-body-s text-danger" role="alert">
           {error ?? registration.error}
         </p>
       ) : null}

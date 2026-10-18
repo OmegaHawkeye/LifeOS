@@ -28,13 +28,13 @@ export class DiagnosticErrorBoundary extends Component<
       return (
         <main className="grid min-h-svh place-items-center px-6 text-center">
           <section className="max-w-md">
-            <h1 className="text-xl font-semibold">LifeOS hit a problem</h1>
-            <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
+            <h1 className="text-title-l font-semibold">LifeOS hit a problem</h1>
+            <p className="mt-3 text-body-s text-ink-muted">
               A privacy-safe diagnostic was saved on this device. Reload to try
               again.
             </p>
             <button
-              className="mt-6 rounded-xl bg-emerald-400 px-4 py-2 font-semibold text-stone-950"
+              className="mt-6 rounded-sm bg-primary px-4 py-2 font-semibold text-on-primary"
               onClick={() => window.location.reload()}
               type="button"
             >

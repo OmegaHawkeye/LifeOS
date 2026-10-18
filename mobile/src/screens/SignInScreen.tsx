@@ -4,12 +4,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { useMobileAuth } from "../auth/authContext";
+import { LogoMark } from "@lifeos/ui/app-nav";
 import { Button } from "@lifeos/ui/button";
 import { getErrorMessage } from "../auth/errorMessage";
 import type { MobileLoginChallenge } from "../auth/mobileAuthService";
@@ -101,25 +101,27 @@ export function SignInScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={styles.page}
+      className="flex-1 bg-canvas p-6"
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerClassName="grow items-center justify-center"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        style={styles.scrollView}
+        className="w-full flex-1"
         testID="sign-in-scroll"
       >
-        <View style={styles.card}>
-          <View style={styles.brandRow}>
-            <View style={styles.brandMark}>
-              <Text style={styles.brandGlyph}>L</Text>
-            </View>
-            <Text style={styles.brandName}>LifeOS</Text>
+        <View className="w-full max-w-[440px] rounded-lg border border-line bg-surface p-7">
+          <View className="mb-8 flex-row items-center gap-3">
+            <LogoMark size={44} />
+            <Text className="text-title-l text-ink">LifeOS</Text>
           </View>
-          <Text style={styles.eyebrow}>Your home, in context</Text>
-          <Text style={styles.title}>Sign in</Text>
-          <Text style={styles.description}>
+          <Text className="mb-2 text-overline uppercase text-ink-muted">
+            Your home, in context
+          </Text>
+          <Text accessibilityRole="header" className="text-display-m text-ink">
+            Sign in
+          </Text>
+          <Text className="mb-6 mt-2 text-body text-ink-muted">
             {challenge === null
               ? "Connect securely to the LifeOS server on your home network."
               : challenge.status === "setup_required"
@@ -129,7 +131,7 @@ export function SignInScreen() {
 
           {challenge === null ? (
             <>
-              <Text style={styles.label}>Email</Text>
+              <Text className="mb-2 mt-4 text-label text-ink">Email</Text>
               <TextInput
                 accessibilityLabel="LifeOS email"
                 autoCapitalize="none"
@@ -138,23 +140,23 @@ export function SignInScreen() {
                 keyboardType="email-address"
                 onChangeText={setEmail}
                 placeholder="you@example.com"
-                placeholderTextColor="#8b938f"
+                placeholderTextColorClassName="accent-ink-muted"
                 returnKeyType="next"
-                style={styles.input}
+                className="min-h-target-touch rounded-sm border border-line-strong bg-surface px-3 text-body text-ink"
                 textContentType="emailAddress"
                 value={email}
               />
 
-              <Text style={styles.label}>Password</Text>
+              <Text className="mb-2 mt-4 text-label text-ink">Password</Text>
               <TextInput
                 accessibilityLabel="LifeOS password"
                 autoComplete="password"
                 onChangeText={setPassword}
                 placeholder="Your password"
-                placeholderTextColor="#8b938f"
+                placeholderTextColorClassName="accent-ink-muted"
                 returnKeyType="done"
                 secureTextEntry
-                style={styles.input}
+                className="min-h-target-touch rounded-sm border border-line-strong bg-surface px-3 text-body text-ink"
                 textContentType="password"
                 value={password}
               />
@@ -162,27 +164,34 @@ export function SignInScreen() {
           ) : (
             <>
               {challenge.status === "setup_required" ? (
-                <View style={styles.setupKey}>
-                  <Text style={styles.label}>Authenticator setup key</Text>
-                  <Text selectable style={styles.secret}>
+                <View className="mt-1 rounded-md bg-surface-sunken p-4">
+                  <Text className="mb-2 mt-4 text-label text-ink">
+                    Authenticator setup key
+                  </Text>
+                  <Text
+                    selectable
+                    className="mt-1 font-mono text-figure-m tracking-[1.5px] text-ink"
+                  >
                     {challenge.secret}
                   </Text>
-                  <Text style={styles.setupHint}>
+                  <Text className="mt-2 text-caption text-ink-muted">
                     Keep this key private. It is shown only during setup and is
                     not saved on this device.
                   </Text>
                 </View>
               ) : null}
-              <Text style={styles.label}>Authenticator code</Text>
+              <Text className="mb-2 mt-4 text-label text-ink">
+                Authenticator code
+              </Text>
               <TextInput
                 accessibilityLabel="Authenticator code"
                 keyboardType="number-pad"
                 maxLength={6}
                 onChangeText={setCode}
                 placeholder="6-digit code"
-                placeholderTextColor="#8b938f"
+                placeholderTextColorClassName="accent-ink-muted"
                 returnKeyType="done"
-                style={styles.input}
+                className="min-h-target-touch rounded-sm border border-line-strong bg-surface px-3 text-body text-ink"
                 {...Platform.select({
                   ios: { textContentType: "oneTimeCode" },
                   android: { autoComplete: "one-time-code" },
@@ -200,7 +209,10 @@ export function SignInScreen() {
           )}
 
           {(error !== null || passkeyError !== null) && (
-            <Text accessibilityRole="alert" style={styles.error}>
+            <Text
+              accessibilityRole="alert"
+              className="mt-4 rounded-sm bg-danger-soft p-3 text-body-s text-danger"
+            >
               {error ?? passkeyError}
             </Text>
           )}
@@ -233,7 +245,7 @@ export function SignInScreen() {
               Sign in with a passkey
             </Button>
           ) : null}
-          <Text style={styles.privacyNote}>
+          <Text className="mt-5 text-center text-caption text-ink-muted">
             Your credentials stay on this device and are sent only to your
             LifeOS server.
           </Text>
@@ -247,110 +259,3 @@ export function SignInScreen() {
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
-
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: "#f3f6f4",
-    flex: 1,
-    padding: 24,
-  },
-  scrollContent: {
-    alignItems: "center",
-    flexGrow: 1,
-    justifyContent: "center",
-  },
-  scrollView: { flex: 1, width: "100%" },
-  card: {
-    backgroundColor: "#ffffff",
-    borderColor: "#e2e9e4",
-    borderRadius: 28,
-    borderWidth: 1,
-    maxWidth: 440,
-    padding: 28,
-    width: "100%",
-  },
-  brandRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 12,
-    marginBottom: 32,
-  },
-  brandMark: {
-    alignItems: "center",
-    backgroundColor: "#4dc995",
-    borderRadius: 17,
-    height: 46,
-    justifyContent: "center",
-    width: 46,
-  },
-  brandGlyph: { color: "#102c20", fontSize: 20, fontWeight: "800" },
-  brandName: { color: "#17251e", fontSize: 22, fontWeight: "700" },
-  eyebrow: {
-    color: "#39896c",
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  title: {
-    color: "#17251e",
-    fontSize: 34,
-    fontWeight: "700",
-    letterSpacing: -0.7,
-  },
-  description: {
-    color: "#6d7771",
-    fontSize: 15,
-    lineHeight: 22,
-    marginBottom: 24,
-    marginTop: 9,
-  },
-  setupKey: {
-    backgroundColor: "#f3f6f4",
-    borderRadius: 14,
-    marginTop: 4,
-    padding: 14,
-  },
-  secret: {
-    color: "#18261e",
-    fontSize: 18,
-    fontWeight: "700",
-    letterSpacing: 1.5,
-    marginTop: 5,
-  },
-  setupHint: { color: "#6d7771", fontSize: 12, lineHeight: 18, marginTop: 8 },
-  label: {
-    color: "#34433a",
-    fontSize: 13,
-    fontWeight: "600",
-    marginBottom: 8,
-    marginTop: 14,
-  },
-  input: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dce4de",
-    borderRadius: 13,
-    borderWidth: 1,
-    color: "#18261e",
-    fontSize: 16,
-    minHeight: 50,
-    paddingHorizontal: 14,
-  },
-  error: {
-    backgroundColor: "#fdf0ef",
-    borderColor: "#f0d3d0",
-    borderRadius: 12,
-    borderWidth: 1,
-    color: "#913b35",
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 16,
-    padding: 12,
-  },
-  privacyNote: {
-    color: "#7b8580",
-    fontSize: 12,
-    lineHeight: 18,
-    marginTop: 18,
-    textAlign: "center",
-  },
-});

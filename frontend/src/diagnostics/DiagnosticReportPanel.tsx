@@ -42,20 +42,20 @@ export function DiagnosticReportPanel() {
   return (
     <section
       aria-labelledby="diagnostics-title"
-      className="mt-8 space-y-4 rounded-3xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900 sm:p-7"
+      className="mt-8 space-y-4 rounded-md border border-line bg-surface p-5 sm:p-7"
     >
       <div>
-        <h2 className="text-lg font-semibold" id="diagnostics-title">
+        <h2 className="text-title-m font-semibold" id="diagnostics-title">
           Local diagnostics
         </h2>
-        <p className="mt-1 text-sm leading-6 text-stone-500 dark:text-stone-400">
+        <p className="mt-1 text-body-s leading-6 text-ink-muted">
           Recent errors are stored in this browser only. Messages, request
           bodies, credentials, and health values are not included. Nothing is
           sent automatically.
         </p>
       </div>
       {diagnostics.length === 0 ? (
-        <p className="text-sm text-stone-500 dark:text-stone-400">
+        <p className="text-body-s text-ink-muted">
           No recent diagnostics recorded on this device.
         </p>
       ) : (
@@ -65,7 +65,7 @@ export function DiagnosticReportPanel() {
             .reverse()
             .map((diagnostic) => (
               <li
-                className="rounded-xl border border-stone-200 p-4 text-sm dark:border-white/10"
+                className="rounded-sm border border-line p-4 text-body-s"
                 key={diagnostic.id}
               >
                 <p className="font-medium">
@@ -74,11 +74,11 @@ export function DiagnosticReportPanel() {
                     : (diagnostic.errorType ?? "Unhandled app error")}
                   {diagnostic.status ? ` (HTTP ${diagnostic.status})` : ""}
                 </p>
-                <p className="mt-1 text-stone-500 dark:text-stone-400">
+                <p className="mt-1 text-ink-muted">
                   {new Date(diagnostic.occurredAt).toLocaleString()}
                 </p>
                 {diagnostic.correlationId ? (
-                  <p className="mt-1 break-all font-mono text-xs text-stone-500 dark:text-stone-400">
+                  <p className="mt-1 break-all font-mono text-caption text-ink-muted">
                     Correlation ID: {diagnostic.correlationId}
                   </p>
                 ) : null}
@@ -88,7 +88,7 @@ export function DiagnosticReportPanel() {
       )}
       <div className="flex flex-wrap gap-3">
         <button
-          className="rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-stone-300 disabled:text-stone-500"
+          className="rounded-sm bg-primary px-5 py-3 text-body-s font-semibold text-on-primary transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-ink-muted"
           disabled={diagnostics.length === 0}
           onClick={downloadReport}
           type="button"
@@ -96,7 +96,7 @@ export function DiagnosticReportPanel() {
           Export diagnostic report
         </button>
         <button
-          className="rounded-xl border border-stone-300 px-5 py-3 text-sm font-semibold transition hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/15 dark:hover:bg-white/10"
+          className="rounded-sm border border-line-strong px-5 py-3 text-body-s font-semibold transition hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50"
           disabled={diagnostics.length === 0}
           onClick={() => clearLocalDiagnostics()}
           type="button"

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { LogoMark } from "@lifeos/ui/app-nav";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@lifeos/ui/button";
@@ -194,28 +195,23 @@ export function LoginPage() {
   const isSettingUpTwoFactor = pendingTwoFactor?.status === "setup_required";
 
   return (
-    <main className="grid min-h-svh place-items-center bg-stone-100 px-5 py-12 text-stone-950 dark:bg-stone-950 dark:text-stone-100">
-      <section className="w-full max-w-md rounded-3xl border border-stone-200 bg-white p-7 shadow-xl shadow-stone-900/5 dark:border-white/10 dark:bg-stone-900 sm:p-9">
+    <main className="grid min-h-svh place-items-center bg-canvas px-5 py-12 text-ink">
+      <section className="w-full max-w-md rounded-md border border-line bg-surface p-7 shadow-overlay sm:p-9">
         <div className="mb-9 flex items-center gap-3">
-          <span
-            aria-hidden="true"
-            className="grid size-10 place-items-center rounded-2xl bg-emerald-400 text-sm font-bold text-stone-950"
-          >
-            L
-          </span>
-          <span className="text-lg font-semibold tracking-tight">LifeOS</span>
+          <LogoMark size={40} />
+          <span className="text-title-m text-ink">LifeOS</span>
         </div>
-        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+        <p className="m-0 text-overline uppercase text-ink-muted">
           Your private workspace
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+        <h1 className="m-0 mt-2 text-balance font-display text-display-m text-ink">
           {pendingTwoFactor
             ? isSettingUpTwoFactor
               ? "Set up two-factor authentication"
               : "Two-factor verification"
             : "Sign in"}
         </h1>
-        <p className="mt-3 text-sm leading-6 text-stone-500 dark:text-stone-400">
+        <p className="mt-3 text-body text-ink-muted">
           {pendingTwoFactor
             ? "Use an authenticator app that supports time-based one-time passwords (TOTP)."
             : "This LifeOS account is private. Sign in with your owner credentials to continue."}
@@ -224,11 +220,11 @@ export function LoginPage() {
         <form className="mt-8 space-y-5" onSubmit={submit}>
           {!pendingTwoFactor && (
             <>
-              <label className="block text-sm font-medium" htmlFor="email">
+              <label className="block text-body-s font-medium" htmlFor="email">
                 Email
                 <input
                   autoComplete="username"
-                  className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950"
+                  className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus"
                   id="email"
                   name="email"
                   onChange={(event) => setEmail(event.currentTarget.value)}
@@ -237,11 +233,14 @@ export function LoginPage() {
                   value={email}
                 />
               </label>
-              <label className="block text-sm font-medium" htmlFor="password">
+              <label
+                className="block text-body-s font-medium"
+                htmlFor="password"
+              >
                 Password
                 <input
                   autoComplete="current-password"
-                  className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950"
+                  className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus"
                   id="password"
                   name="password"
                   onChange={(event) => setPassword(event.currentTarget.value)}
@@ -253,27 +252,27 @@ export function LoginPage() {
             </>
           )}
           {isSettingUpTwoFactor && (
-            <div className="rounded-2xl border border-emerald-700/20 bg-emerald-50 p-4 text-sm dark:border-emerald-300/20 dark:bg-emerald-950/30">
+            <div className="rounded-md border border-primary bg-primary-soft p-4 text-body-s">
               <p className="font-medium">
                 Add this key to your authenticator app
               </p>
-              <code className="mt-2 block break-all rounded-lg bg-white px-3 py-2 font-mono text-xs dark:bg-stone-950">
+              <code className="mt-2 block break-all rounded-sm bg-surface px-3 py-2 font-mono text-caption">
                 {pendingTwoFactor.secret}
               </code>
-              <p className="mt-2 text-stone-600 dark:text-stone-300">
+              <p className="mt-2 text-ink-muted">
                 Keep the key private. LifeOS encrypts it when stored.
               </p>
             </div>
           )}
           {pendingTwoFactor && (
             <label
-              className="block text-sm font-medium"
+              className="block text-body-s font-medium"
               htmlFor="authenticator-code"
             >
               6-digit authenticator code
               <input
                 autoComplete="one-time-code"
-                className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-center font-mono text-lg tracking-[0.35em] outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950"
+                className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-center font-mono text-title-m tracking-[0.35em] outline-none transition focus:border-focus focus:ring-4 focus:ring-focus"
                 id="authenticator-code"
                 inputMode="numeric"
                 maxLength={6}
@@ -291,7 +290,7 @@ export function LoginPage() {
           )}
           {error && (
             <p
-              className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800 dark:bg-red-950/50 dark:text-red-200"
+              className="rounded-sm bg-danger-soft px-4 py-3 text-body-s text-danger"
               role="alert"
             >
               {error}
@@ -341,10 +340,7 @@ export function LoginPage() {
                   : "Sign in with a passkey"}
             </Button>
             {passkeyLoginError && (
-              <p
-                className="text-sm text-red-700 dark:text-red-300"
-                role="alert"
-              >
+              <p className="text-body-s text-danger" role="alert">
                 {passkeyLoginError}
               </p>
             )}

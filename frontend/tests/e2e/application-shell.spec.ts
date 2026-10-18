@@ -453,7 +453,7 @@ test("loads the LifeOS application shell", async ({ page }) => {
     await expect(
       page.getByRole("heading", { name: "Today's focus" }),
     ).toBeVisible();
-    await expect(page.locator("#wall-title")).toHaveCSS("font-size", "72px");
+    await expect(page.locator("#wall-title")).toHaveCSS("font-size", "64px");
   }
   await page.getByRole("link", { name: "Exit display mode" }).click();
   await expect(

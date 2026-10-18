@@ -27,20 +27,20 @@ export class DiagnosticErrorBoundary extends Component<
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <View className="flex-1 items-center justify-center gap-4 bg-lifeos-background p-6">
-          <Text className="text-center text-xl font-bold text-lifeos-primary">
+        <View className="flex-1 items-center justify-center gap-4 bg-canvas p-6">
+          <Text className="text-center text-title-l font-semibold text-ink">
             LifeOS hit a problem
           </Text>
-          <Text className="text-center text-sm text-lifeos-muted">
+          <Text className="text-center text-body-s text-ink-muted">
             A privacy-safe diagnostic was saved on this device. Close and reopen
             LifeOS to try again.
           </Text>
           <Pressable
             accessibilityRole="button"
-            className="min-h-11 justify-center rounded-xl bg-lifeos-accent px-4"
+            className="min-h-11 justify-center rounded-sm bg-primary px-4"
             onPress={() => this.setState({ hasError: false })}
           >
-            <Text className="text-center font-semibold text-lifeos-accent-ink">
+            <Text className="text-center font-semibold text-on-primary">
               Try again
             </Text>
           </Pressable>

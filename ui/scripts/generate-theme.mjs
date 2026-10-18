@@ -12,18 +12,6 @@ const header = (purpose) =>
 const themes = tokens.color.themes.map((theme) => theme.id);
 const colors = tokens.color.tokens;
 
-// Pre-redesign utility names stay available while screens migrate to the new vocabulary.
-const legacyAliases = {
-  "lifeos-background": "canvas",
-  "lifeos-surface": "surface",
-  "lifeos-border": "line",
-  "lifeos-primary": "ink",
-  "lifeos-muted": "ink-muted",
-  "lifeos-accent": "primary",
-  "lifeos-accent-dark": "primary-text",
-  "lifeos-accent-ink": "on-primary",
-};
-
 function colorValue(token, theme) {
   const value =
     typeof token.value === "string"
@@ -40,10 +28,6 @@ function themedVariables(theme) {
   const lines = colors.map(
     (token) => `--color-${token.name}: ${colorValue(token, theme)};`,
   );
-  for (const [alias, target] of Object.entries(legacyAliases)) {
-    const token = colors.find((color) => color.name === target);
-    lines.push(`--color-${alias}: ${colorValue(token, theme)};`);
-  }
   for (const shadow of tokens.shadow.tokens) {
     const value =
       typeof shadow.value === "string"

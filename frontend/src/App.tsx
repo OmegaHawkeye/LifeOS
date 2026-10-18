@@ -53,14 +53,14 @@ function ProtectedRoutes() {
     return (
       <main className="grid min-h-svh place-items-center px-6 text-center">
         <section className="max-w-md">
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-title-l font-semibold">
             LifeOS is temporarily unavailable
           </h1>
-          <p className="mt-3 text-sm text-stone-400">
+          <p className="mt-3 text-body-s text-ink-muted">
             Check your connection and reload this page.
           </p>
           <button
-            className="mt-6 rounded-xl bg-emerald-400 px-4 py-2 font-semibold text-stone-950"
+            className="mt-6 rounded-sm bg-primary px-4 py-2 font-semibold text-on-primary"
             onClick={() => window.location.reload()}
           >
             Reload
@@ -118,25 +118,21 @@ function ModulePage({
 
   return (
     <section aria-labelledby="page-title" className="mx-auto w-full max-w-5xl">
-      <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+      <p className="m-0 text-overline uppercase text-ink-muted">
         Your private workspace
       </p>
       <h1
         id="page-title"
-        className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl"
+        className="m-0 mt-2 text-balance font-display text-display-m text-ink tablet:text-display-l"
       >
         {title}
       </h1>
-      <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
-        {description}
-      </p>
+      <p className="mt-3 text-body-s text-ink-muted">{description}</p>
       {title === "Dashboard" && (
-        <div className="mt-10 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8">
-          <p className="text-sm text-stone-500 dark:text-stone-400">
-            Welcome back
-          </p>
-          <p className="mt-2 text-xl font-medium">{owner?.name}</p>
-          <p className="mt-5 max-w-xl text-sm leading-6 text-stone-500 dark:text-stone-400">
+        <div className="mt-10 rounded-md border border-line bg-surface p-6 shadow-raised sm:p-8">
+          <p className="text-body-s text-ink-muted">Welcome back</p>
+          <p className="mt-2 text-title-l font-medium">{owner?.name}</p>
+          <p className="mt-5 max-w-xl text-body text-ink-muted">
             Your LifeOS workspace is ready. Choose a module to start capturing
             and planning your week.
           </p>

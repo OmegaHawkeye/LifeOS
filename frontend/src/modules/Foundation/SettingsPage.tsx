@@ -146,22 +146,22 @@ export function SettingsPage() {
 
   return (
     <section aria-labelledby="page-title" className="mx-auto w-full max-w-3xl">
-      <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+      <p className="m-0 text-overline uppercase text-ink-muted">
         LifeOS preferences
       </p>
       <h1
-        className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl"
+        className="m-0 mt-2 text-balance font-display text-display-m text-ink tablet:text-display-l"
         id="page-title"
       >
         Settings
       </h1>
-      <p className="mt-3 text-sm leading-6 text-stone-500 dark:text-stone-400">
+      <p className="mt-3 text-body text-ink-muted">
         Choose the defaults LifeOS uses across your private workspace.
       </p>
 
       <form className="mt-8 space-y-5" onSubmit={saveSettings}>
-        <div className="grid gap-5 rounded-3xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900 sm:grid-cols-2 sm:p-7">
-          <label className="block text-sm font-medium" htmlFor="timezone">
+        <div className="grid gap-5 rounded-md border border-line bg-surface p-5 sm:grid-cols-2 sm:p-7">
+          <label className="block text-body-s font-medium" htmlFor="timezone">
             Time zone
             <input
               className={fieldClass}
@@ -176,7 +176,7 @@ export function SettingsPage() {
               value={settings.timezone}
             />
           </label>
-          <label className="block text-sm font-medium" htmlFor="currency">
+          <label className="block text-body-s font-medium" htmlFor="currency">
             Currency
             <input
               className={fieldClass}
@@ -194,7 +194,7 @@ export function SettingsPage() {
             />
           </label>
           <label
-            className="block text-sm font-medium"
+            className="block text-body-s font-medium"
             htmlFor="measurement-system"
           >
             Measurement units
@@ -214,7 +214,7 @@ export function SettingsPage() {
               <option value="imperial">Imperial (lb, in)</option>
             </select>
           </label>
-          <label className="block text-sm font-medium" htmlFor="theme">
+          <label className="block text-body-s font-medium" htmlFor="theme">
             Appearance
             <select
               className={fieldClass}
@@ -233,12 +233,12 @@ export function SettingsPage() {
             </select>
           </label>
           <label
-            className="flex cursor-pointer items-start gap-3 rounded-2xl border border-stone-200 p-4 text-sm dark:border-white/10 sm:col-span-2"
+            className="flex cursor-pointer items-start gap-3 rounded-md border border-line p-4 text-body-s sm:col-span-2"
             htmlFor="mask-sensitive-data"
           >
             <input
               checked={settings.mask_sensitive_data_by_default}
-              className="mt-0.5 size-4 accent-emerald-500"
+              className="mt-0.5 size-4 accent-primary"
               id="mask-sensitive-data"
               onChange={(event) =>
                 setSettings({
@@ -252,19 +252,19 @@ export function SettingsPage() {
               <span className="block font-medium">
                 Hide sensitive values by default
               </span>
-              <span className="mt-1 block leading-5 text-stone-500 dark:text-stone-400">
+              <span className="mt-1 block leading-5 text-ink-muted">
                 Keep private amounts and personal details concealed in shared or
                 glanceable views.
               </span>
             </span>
           </label>
           <label
-            className="flex cursor-pointer items-start gap-3 rounded-2xl border border-stone-200 p-4 text-sm dark:border-white/10 sm:col-span-2"
+            className="flex cursor-pointer items-start gap-3 rounded-md border border-line p-4 text-body-s sm:col-span-2"
             htmlFor="notifications-enabled"
           >
             <input
               checked={settings.notifications_enabled}
-              className="mt-0.5 size-4 accent-emerald-500"
+              className="mt-0.5 size-4 accent-primary"
               id="notifications-enabled"
               onChange={(event) =>
                 setSettings({
@@ -276,7 +276,7 @@ export function SettingsPage() {
             />
             <span>
               <span className="block font-medium">Enable in-app reminders</span>
-              <span className="mt-1 block leading-5 text-stone-500 dark:text-stone-400">
+              <span className="mt-1 block leading-5 text-ink-muted">
                 Off by default. LifeOS will keep reminders quiet until you opt
                 in.
               </span>
@@ -293,28 +293,22 @@ export function SettingsPage() {
             {isSaving ? "Saving…" : "Save settings"}
           </Button>
           {saved && (
-            <p
-              aria-live="polite"
-              className="text-sm text-emerald-700 dark:text-emerald-300"
-            >
+            <p aria-live="polite" className="text-body-s text-primary-text">
               Settings saved.
             </p>
           )}
           {saveError && (
-            <p
-              aria-live="polite"
-              className="text-sm text-red-700 dark:text-red-300"
-            >
+            <p aria-live="polite" className="text-body-s text-danger">
               Settings could not be saved. Check the values and try again.
             </p>
           )}
         </div>
       </form>
 
-      <section className="mt-8 space-y-4 rounded-3xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900 sm:p-7">
+      <section className="mt-8 space-y-4 rounded-md border border-line bg-surface p-5 sm:p-7">
         <div>
-          <h2 className="text-lg font-semibold">Your data</h2>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <h2 className="text-title-m font-semibold">Your data</h2>
+          <p className="mt-1 text-body-s text-ink-muted">
             Download your settings and personal records as a portable archive.
             Progress photos are included in their original format.
           </p>
@@ -330,53 +324,44 @@ export function SettingsPage() {
             {isExporting ? "Preparing export…" : "Download my data"}
           </Button>
           {exportError && (
-            <p className="text-sm text-red-700 dark:text-red-300" role="alert">
+            <p className="text-body-s text-danger" role="alert">
               Your data export could not be prepared. Please try again.
             </p>
           )}
         </div>
       </section>
 
-      <section className="mt-8 space-y-3 rounded-3xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900 sm:p-7">
+      <section className="mt-8 space-y-3 rounded-md border border-line bg-surface p-5 sm:p-7">
         <div>
-          <h2 className="text-lg font-semibold">Backups on your server</h2>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <h2 className="text-title-m font-semibold">Backups on your server</h2>
+          <p className="mt-1 text-body-s text-ink-muted">
             Automatic daily backups · {backupStatus?.retention_days ?? 30} days
             retained by default.
           </p>
         </div>
         {backupStatusError ? (
-          <p className="text-sm text-red-700 dark:text-red-300" role="alert">
+          <p className="text-body-s text-danger" role="alert">
             Backup status could not be loaded. Check the LifeOS server.
           </p>
         ) : backupStatus?.status === "failed" ? (
-          <p className="text-sm text-red-700 dark:text-red-300" role="alert">
+          <p className="text-body-s text-danger" role="alert">
             The latest backup failed. Check the LifeOS server before relying on
             your backups.
           </p>
         ) : backupStatus?.status === "never" ? (
-          <p
-            className="text-sm text-amber-700 dark:text-amber-300"
-            role="status"
-          >
+          <p className="text-body-s text-warning" role="status">
             No successful backup has been recorded yet.
           </p>
         ) : backupStatus ? (
-          <p
-            className="text-sm text-emerald-700 dark:text-emerald-300"
-            role="status"
-          >
+          <p className="text-body-s text-primary-text" role="status">
             Last successful backup: {backupStatus.last_successful_backup_at}
           </p>
         ) : (
-          <p
-            className="text-sm text-stone-500 dark:text-stone-400"
-            aria-live="polite"
-          >
+          <p className="text-body-s text-ink-muted" aria-live="polite">
             Loading backup status…
           </p>
         )}
-        <p className="text-sm leading-6 text-stone-500 dark:text-stone-400">
+        <p className="text-body text-ink-muted">
           A NAS or second external drive is recommended to protect against
           server-disk failure, but is not required. Backups on this server
           remain enabled without one.
@@ -384,16 +369,19 @@ export function SettingsPage() {
       </section>
 
       <form
-        className="mt-8 space-y-5 rounded-3xl border border-stone-200 bg-white p-5 dark:border-white/10 dark:bg-stone-900 sm:p-7"
+        className="mt-8 space-y-5 rounded-md border border-line bg-surface p-5 sm:p-7"
         onSubmit={savePassword}
       >
         <div>
-          <h2 className="text-lg font-semibold">Change password</h2>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <h2 className="text-title-m font-semibold">Change password</h2>
+          <p className="mt-1 text-body-s text-ink-muted">
             Use at least 12 characters.
           </p>
         </div>
-        <label className="block text-sm font-medium" htmlFor="current-password">
+        <label
+          className="block text-body-s font-medium"
+          htmlFor="current-password"
+        >
           Current password
           <input
             className={fieldClass}
@@ -407,7 +395,7 @@ export function SettingsPage() {
             }
           />
         </label>
-        <label className="block text-sm font-medium" htmlFor="new-password">
+        <label className="block text-body-s font-medium" htmlFor="new-password">
           New password
           <input
             className={fieldClass}
@@ -422,7 +410,10 @@ export function SettingsPage() {
             }
           />
         </label>
-        <label className="block text-sm font-medium" htmlFor="confirm-password">
+        <label
+          className="block text-body-s font-medium"
+          htmlFor="confirm-password"
+        >
           Confirm new password
           <input
             className={fieldClass}
@@ -456,15 +447,12 @@ export function SettingsPage() {
             {isChangingPassword ? "Changing…" : "Change password"}
           </Button>
           {passwordMessage && (
-            <p
-              className="text-sm text-emerald-700 dark:text-emerald-300"
-              role="status"
-            >
+            <p className="text-body-s text-primary-text" role="status">
               {passwordMessage}
             </p>
           )}
           {passwordError && (
-            <p className="text-sm text-red-700 dark:text-red-300" role="alert">
+            <p className="text-body-s text-danger" role="alert">
               {passwordError}
             </p>
           )}
@@ -482,12 +470,12 @@ export function SettingsPage() {
 
       <DiagnosticReportPanel />
 
-      <section className="mt-8 space-y-4 rounded-3xl border border-red-300 bg-white p-5 dark:border-red-400/30 dark:bg-stone-900 sm:p-7">
+      <section className="mt-8 space-y-4 rounded-md border border-danger bg-surface p-5 sm:p-7">
         <div>
-          <h2 className="text-lg font-semibold text-red-800 dark:text-red-300">
+          <h2 className="text-title-m font-semibold text-danger">
             Danger zone
           </h2>
-          <p className="mt-1 text-sm leading-6 text-stone-500 dark:text-stone-400">
+          <p className="mt-1 text-body text-ink-muted">
             Permanently delete your LifeOS account and all associated records,
             private progress photos, active sessions, and access tokens. This
             cannot be undone. Copies in backups, if any, may remain until those
@@ -504,11 +492,11 @@ export function SettingsPage() {
           </Button>
         ) : (
           <form className="space-y-4" onSubmit={deleteAccount}>
-            <p className="text-sm font-medium text-red-800 dark:text-red-300">
+            <p className="text-body-s font-medium text-danger">
               This permanently deletes your LifeOS account and data.
             </p>
             <label
-              className="block text-sm font-medium"
+              className="block text-body-s font-medium"
               htmlFor="delete-current-password"
             >
               Password to confirm
@@ -525,7 +513,7 @@ export function SettingsPage() {
               />
             </label>
             <label
-              className="block text-sm font-medium"
+              className="block text-body-s font-medium"
               htmlFor="delete-email-confirmation"
             >
               Type your account email to confirm
@@ -572,10 +560,7 @@ export function SettingsPage() {
               </Button>
             </div>
             {deleteError && (
-              <p
-                className="text-sm text-red-700 dark:text-red-300"
-                role="alert"
-              >
+              <p className="text-body-s text-danger" role="alert">
                 {deleteError}
               </p>
             )}
@@ -587,4 +572,4 @@ export function SettingsPage() {
 }
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950";
+  "mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";

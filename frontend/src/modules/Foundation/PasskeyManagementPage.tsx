@@ -146,16 +146,16 @@ export function PasskeyManagementPage() {
   const visibleError = error ?? registrationError;
 
   return (
-    <main className="grid min-h-svh place-items-center bg-stone-100 px-5 py-12 text-stone-950 dark:bg-stone-950 dark:text-stone-100">
-      <section className="w-full max-w-xl space-y-6 rounded-3xl border border-stone-200 bg-white p-7 shadow-xl shadow-stone-900/5 dark:border-white/10 dark:bg-stone-900 sm:p-9">
+    <main className="grid min-h-svh place-items-center bg-canvas px-5 py-12 text-ink">
+      <section className="w-full max-w-xl space-y-6 rounded-md border border-line bg-surface p-7 shadow-overlay sm:p-9">
         <div>
-          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          <p className="m-0 text-overline uppercase text-ink-muted">
             LifeOS account security
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+          <h1 className="m-0 mt-2 text-balance font-display text-display-m text-ink">
             Passkeys
           </h1>
-          <p className="mt-3 text-sm leading-6 text-stone-500 dark:text-stone-400">
+          <p className="mt-3 text-body text-ink-muted">
             Passkeys are stored by your device or compatible credential manager,
             such as Apple Passwords or 1Password. LifeOS stores only the public
             key needed to verify sign-ins.
@@ -163,19 +163,19 @@ export function PasskeyManagementPage() {
         </div>
 
         {!isReady && !error ? (
-          <p aria-live="polite" className="text-sm text-stone-500">
+          <p aria-live="polite" className="text-body-s text-ink-muted">
             Preparing secure passkey management…
           </p>
         ) : null}
 
         {passkeys.map((passkey) => (
           <div
-            className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 p-4 dark:border-white/10"
+            className="flex items-center justify-between gap-3 rounded-sm border border-line p-4"
             key={passkey.id}
           >
-            <span className="text-sm font-medium">{passkey.name}</span>
+            <span className="text-body-s font-medium">{passkey.name}</span>
             <Button
-              className="min-h-9 px-3 text-sm"
+              className="min-h-9 px-3 text-body-s"
               disabled={!isReady}
               onPress={() => void deletePasskey(passkey.id)}
               variant="danger"
@@ -185,11 +185,11 @@ export function PasskeyManagementPage() {
           </div>
         ))}
 
-        <label className="block text-sm font-medium" htmlFor="passkey-name">
+        <label className="block text-body-s font-medium" htmlFor="passkey-name">
           Name this passkey
           <input
             autoComplete="off"
-            className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none focus:border-emerald-500 dark:border-white/15 dark:bg-stone-950"
+            className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none focus:border-focus"
             id="passkey-name"
             onChange={(event) => setName(event.currentTarget.value)}
             placeholder="iPhone, MacBook, 1Password…"
@@ -213,15 +213,12 @@ export function PasskeyManagementPage() {
         </Button>
 
         {message ? (
-          <p
-            className="text-sm text-emerald-700 dark:text-emerald-300"
-            role="status"
-          >
+          <p className="text-body-s text-primary-text" role="status">
             {message}
           </p>
         ) : null}
         {visibleError ? (
-          <p className="text-sm text-red-700 dark:text-red-300" role="alert">
+          <p className="text-body-s text-danger" role="alert">
             {visibleError}
           </p>
         ) : null}

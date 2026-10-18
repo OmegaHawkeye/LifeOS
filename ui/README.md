@@ -39,8 +39,6 @@ Use the token vocabulary in components: `bg-canvas`, `bg-surface`, `text-ink`,
 `text-ink-muted`, `border-line-strong`, `bg-primary text-on-primary`,
 `bg-finance-soft text-finance`, `text-body`, `text-label`, `text-figure-xl`,
 `min-h-target-min`, `rounded-md`, `shadow-raised`, `tablet:` and `desktop:`.
-The pre-redesign `lifeos-*` colour names remain as aliases until every screen
-has moved to the new names.
 
 The web app bundles Instrument Sans, Newsreader and IBM Plex Mono through
 Fontsource, so no font loads from a third-party host. The iOS app embeds the

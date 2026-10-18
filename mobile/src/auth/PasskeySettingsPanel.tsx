@@ -97,19 +97,19 @@ export function PasskeySettingsPanel({
   }
 
   return (
-    <View className="gap-4 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
+    <View className="gap-4 rounded-md border border-line bg-surface p-5 tablet:p-6">
       <View>
-        <Text className="text-xl font-bold text-lifeos-primary">Passkeys</Text>
-        <Text className="mt-1 text-sm leading-[21px] text-lifeos-muted">
+        <Text className="text-title-l font-semibold text-ink">Passkeys</Text>
+        <Text className="mt-1 text-body-s text-ink-muted">
           Add a passkey stored by Apple Passwords, 1Password, or another
           compatible credential manager.
         </Text>
       </View>
 
       {settings ? (
-        <View className="gap-3 rounded-2xl border border-lifeos-border p-4">
+        <View className="gap-3 rounded-md border border-line p-4">
           <View className="flex-row items-center justify-between gap-3">
-            <Text className="flex-1 text-sm font-medium text-lifeos-primary">
+            <Text className="flex-1 text-body-s font-medium text-ink">
               Allow passkey sign-in
             </Text>
             <Switch
@@ -119,12 +119,12 @@ export function PasskeySettingsPanel({
               value={settings.passkeys_enabled}
             />
           </View>
-          <Text className="text-sm leading-[21px] text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             {settings.passkey_origin_is_secure
               ? `Secure origin: ${settings.passkey_origin}`
               : `Passkeys need trusted HTTPS. Current origin: ${settings.passkey_origin}`}
           </Text>
-          <Text className="text-sm leading-[21px] text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             Use a stable hostname, trusted certificate, and restart the server
             after changing its URL. Changing the origin later may invalidate
             existing passkeys.
@@ -135,16 +135,16 @@ export function PasskeySettingsPanel({
       {isLoading ? (
         <ActivityIndicator accessibilityLabel="Loading passkeys" />
       ) : passkeys.length === 0 ? (
-        <Text className="text-sm text-lifeos-muted">
+        <Text className="text-body-s text-ink-muted">
           No passkeys added yet.
         </Text>
       ) : (
         passkeys.map((passkey) => (
           <View
-            className="flex-row items-center justify-between gap-3 rounded-xl border border-lifeos-border p-3"
+            className="flex-row items-center justify-between gap-3 rounded-sm border border-line p-3"
             key={passkey.id}
           >
-            <Text className="flex-1 text-sm font-medium text-lifeos-primary">
+            <Text className="flex-1 text-body-s font-medium text-ink">
               {passkey.name}
             </Text>
             <Button
@@ -160,7 +160,7 @@ export function PasskeySettingsPanel({
       )}
 
       {error ? (
-        <Text accessibilityRole="alert" className="text-sm text-red-700">
+        <Text accessibilityRole="alert" className="text-body-s text-danger">
           {error}
         </Text>
       ) : null}

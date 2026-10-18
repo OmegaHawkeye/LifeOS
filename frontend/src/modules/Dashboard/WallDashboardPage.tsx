@@ -18,6 +18,22 @@ export function WallDashboardPage() {
   const [data, setData] = useState<WallDashboardData | null>(null);
   const [error, setError] = useState(false);
 
+  // The wall tokens switch on the root element; put the owner's theme back on exit.
+  useEffect(() => {
+    const root = document.documentElement;
+    const hadDark = root.classList.contains("dark");
+    if (lightMode) {
+      root.classList.remove("dark");
+      delete root.dataset.theme;
+    } else {
+      root.dataset.theme = "wall";
+    }
+    return () => {
+      delete root.dataset.theme;
+      root.classList.toggle("dark", hadDark);
+    };
+  }, [lightMode]);
+
   useEffect(() => {
     const clock = window.setInterval(() => setNow(new Date()), 30_000);
     return () => window.clearInterval(clock);
@@ -64,20 +80,22 @@ export function WallDashboardPage() {
 
   return (
     <main
-      className={`min-h-svh px-6 py-7 sm:px-10 sm:py-9 lg:px-14 lg:py-12 ${lightMode ? "bg-stone-100 text-stone-950" : "bg-stone-950 text-stone-50"}`}
+      className="min-h-svh bg-canvas px-6 py-7 text-ink tablet:px-10 tablet:py-9 desktop:px-12 desktop:py-12"
       aria-labelledby="wall-title"
     >
-      <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-7 lg:gap-10">
-        <header className="flex flex-wrap items-end justify-between gap-5">
+      <div className="mx-auto flex w-full max-w-[1800px] flex-col gap-8 desktop:gap-10">
+        <header className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p
-              className={`text-lg font-medium ${lightMode ? "text-emerald-800" : "text-emerald-300"}`}
-            >
+            <p className="m-0 flex items-center gap-3 text-body-l font-semibold text-ink-muted">
+              <span
+                aria-hidden="true"
+                className="size-3 rounded-full bg-marigold"
+              />
               LifeOS · Today
             </p>
             <h1
               id="wall-title"
-              className="mt-2 text-4xl font-semibold tracking-tight sm:text-6xl lg:text-7xl"
+              className="m-0 mt-2 font-display text-display-l tabular-nums text-ink desktop:text-display-xl"
             >
               {now.toLocaleTimeString([], {
                 hour: "2-digit",
@@ -85,9 +103,7 @@ export function WallDashboardPage() {
                 timeZone: data?.timezone,
               })}
             </h1>
-            <p
-              className={`mt-2 text-xl sm:text-2xl ${lightMode ? "text-stone-600" : "text-stone-400"}`}
-            >
+            <p className="m-0 mt-2 text-title-l font-normal text-ink-muted">
               {now.toLocaleDateString([], {
                 weekday: "long",
                 month: "long",
@@ -99,7 +115,7 @@ export function WallDashboardPage() {
           <div className="flex flex-wrap items-center gap-3">
             <button
               aria-pressed={showSensitive}
-              className={`rounded-full border px-5 py-3 text-base font-medium ${lightMode ? "border-stone-300 hover:bg-stone-200" : "border-white/15 hover:bg-white/10"}`}
+              className={wallControlClass}
               onClick={() => setShowSensitive((visible) => !visible)}
               type="button"
             >
@@ -108,16 +124,13 @@ export function WallDashboardPage() {
                 : "Reveal sensitive values"}
             </button>
             <button
-              className={`rounded-full border px-5 py-3 text-base font-medium ${lightMode ? "border-stone-300 hover:bg-stone-200" : "border-white/15 hover:bg-white/10"}`}
+              className={wallControlClass}
               onClick={() => setLightMode((light) => !light)}
               type="button"
             >
               {lightMode ? "Use ambient dark" : "Switch to light"}
             </button>
-            <Link
-              className={`rounded-full px-5 py-3 text-base font-medium ${lightMode ? "bg-stone-200 hover:bg-stone-300" : "bg-white/10 hover:bg-white/15"}`}
-              to="/dashboard"
-            >
+            <Link className={wallControlClass} to="/dashboard">
               Exit display mode
             </Link>
           </div>
@@ -125,7 +138,7 @@ export function WallDashboardPage() {
 
         {error && (
           <p
-            className="rounded-2xl border border-rose-400/30 bg-rose-950/50 p-5 text-lg text-rose-100"
+            className="m-0 rounded-lg bg-danger-soft p-5 text-body-l text-danger"
             role="alert"
           >
             Some LifeOS data could not be loaded. Check the connection and
@@ -135,117 +148,126 @@ export function WallDashboardPage() {
 
         <section
           aria-label="Today's focus"
-          className="grid gap-5 md:grid-cols-2 xl:grid-cols-4"
+          className="grid gap-5 tablet:grid-cols-2 desktop:grid-cols-4 [&>*]:min-w-0"
         >
-          <WallCard
-            className="md:col-span-2 xl:col-span-2"
-            lightMode={lightMode}
-            title="Today's focus"
-          >
+          <WallCard className="tablet:col-span-2" title="Today's focus">
             {nextWorkout ? (
               <>
-                <p className="text-2xl font-semibold sm:text-3xl">
+                <WallFigure>
                   {showSensitive ? nextWorkout.name : "Workout planned"}
-                </p>
-                <p
-                  className={`mt-2 text-lg ${lightMode ? "text-stone-600" : "text-stone-400"}`}
-                >
+                </WallFigure>
+                <WallNote>
                   {nextWorkout.scheduled_for
                     ? `Next workout · ${formatDate(nextWorkout.scheduled_for, data?.timezone)}`
                     : "Next workout from your plan"}
-                </p>
+                </WallNote>
               </>
             ) : (
-              <p className="text-2xl font-semibold sm:text-3xl">
+              <WallFigure>
                 {dueCount
                   ? `${dueCount} routine${dueCount === 1 ? "" : "s"} ready when you are`
                   : "Choose one useful next step."}
-              </p>
+              </WallFigure>
             )}
-            <p
-              className={`mt-3 text-lg ${lightMode ? "text-stone-600" : "text-stone-400"}`}
-            >
+            <WallNote>
               {completedCount ?? 0} routines completed · {dueCount ?? 0} still
               open
-            </p>
+            </WallNote>
           </WallCard>
 
-          <WallCard lightMode={lightMode} title="Finance pulse">
+          <WallCard module="finance" title="Finance pulse">
             {showSensitive && total ? (
-              <p className="text-3xl font-semibold sm:text-4xl">
+              <WallFigure>
                 {formatMoney(total.net_cashflow, total.currency)}
-              </p>
+              </WallFigure>
             ) : (
-              <p
-                className={`text-xl font-medium ${lightMode ? "text-stone-700" : "text-stone-300"}`}
-              >
+              <p className="m-0 text-title-l font-normal text-ink">
                 {total ? "Monthly cashflow hidden" : "No cashflow recorded"}
               </p>
             )}
-            <p
-              className={`mt-2 text-base ${lightMode ? "text-stone-600" : "text-stone-400"}`}
-            >
-              {data?.finance.month ?? "This month"}
-            </p>
+            <WallNote>{data?.finance.month ?? "This month"}</WallNote>
           </WallCard>
 
-          <WallCard lightMode={lightMode} title="Routines & alerts">
-            <p className="text-3xl font-semibold sm:text-4xl">
-              {dueCount ?? "—"} <span className="text-xl font-medium">due</span>
-            </p>
-            <p
-              className={`mt-2 text-base ${lightMode ? "text-stone-600" : "text-stone-400"}`}
-            >
+          <WallCard module="routines" title="Routines & alerts">
+            <WallFigure>
+              {dueCount ?? "—"}
+              <span className="text-title-l font-normal text-ink-muted">
+                due
+              </span>
+            </WallFigure>
+            <WallNote>
               {data?.routines.notifications_enabled
                 ? "Quiet reminders are enabled"
                 : "Reminders are off"}
-            </p>
+            </WallNote>
           </WallCard>
 
-          <WallCard lightMode={lightMode} title="Fitness">
-            <p className="text-3xl font-semibold sm:text-4xl">
+          <WallCard module="fitness" title="Fitness">
+            <WallFigure>
               {data?.fitness.weekly_workouts.completed ?? "—"}
-              <span className="text-xl font-medium"> workouts this week</span>
-            </p>
-            <p
-              className={`mt-2 text-base ${lightMode ? "text-stone-600" : "text-stone-400"}`}
-            >
+              <span className="text-title-l font-normal text-ink-muted">
+                workouts this week
+              </span>
+            </WallFigure>
+            <WallNote>
               {nextWorkout
                 ? showSensitive
                   ? nextWorkout.name
                   : "Next session planned"
                 : "No next workout planned"}
-            </p>
+            </WallNote>
           </WallCard>
 
-          <WallCard lightMode={lightMode} title="Nutrition">
-            <p className="text-3xl font-semibold sm:text-4xl">
+          <WallCard module="nutrition" title="Nutrition">
+            <WallFigure>
               {data?.nutrition.today.planned_meal_count ?? "—"}
-              <span className="text-xl font-medium"> meals planned today</span>
-            </p>
-            <p className="mt-2 text-base text-stone-400">
+              <span className="text-title-l font-normal text-ink-muted">
+                meals planned today
+              </span>
+            </WallFigure>
+            <WallNote>
               {data?.nutrition.today.eaten_meal_count ?? "—"} meals logged
-            </p>
+            </WallNote>
           </WallCard>
 
-          <WallCard lightMode={lightMode} title="Privacy">
-            <p className="text-xl font-medium">
+          <WallCard title="Privacy">
+            <p className="m-0 text-title-l font-normal text-ink">
               {showSensitive
                 ? "Private values are visible"
                 : "Sensitive values are hidden"}
             </p>
-            <p
-              className={`mt-2 text-base ${lightMode ? "text-stone-600" : "text-stone-400"}`}
-            >
+            <WallNote>
               {showSensitive
                 ? "Personal workout names and finance amounts are visible."
                 : "Names, amounts, and personal measurements stay off this display."}
-            </p>
+            </WallNote>
           </WallCard>
         </section>
       </div>
     </main>
   );
+}
+
+const wallControlClass =
+  "inline-flex min-h-target-wall items-center rounded-full border border-line-strong bg-surface px-6 text-body-l font-semibold text-ink no-underline transition-colors duration-150 hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus aria-pressed:border-primary aria-pressed:bg-primary-soft aria-pressed:text-primary-text motion-reduce:transition-none";
+
+const wallModuleText = {
+  finance: "text-finance",
+  fitness: "text-fitness",
+  nutrition: "text-nutrition",
+  routines: "text-routines",
+} as const;
+
+function WallFigure({ children }: { children: ReactNode }) {
+  return (
+    <p className="m-0 flex flex-wrap items-baseline gap-x-2 text-figure-xl tabular-nums text-ink">
+      {children}
+    </p>
+  );
+}
+
+function WallNote({ children }: { children: ReactNode }) {
+  return <p className="m-0 mt-2 text-body-l text-ink-muted">{children}</p>;
 }
 
 type WallDashboardData = {
@@ -259,20 +281,20 @@ type WallDashboardData = {
 function WallCard({
   title,
   children,
-  lightMode,
+  module,
   className = "",
 }: {
   title: string;
   children: ReactNode;
-  lightMode: boolean;
+  module?: keyof typeof wallModuleText;
   className?: string;
 }) {
   return (
     <article
-      className={`min-h-48 rounded-3xl border p-6 sm:min-h-56 sm:p-8 lg:p-10 ${lightMode ? "border-stone-300 bg-white" : "border-white/10 bg-white/[0.06]"} ${className}`}
+      className={`flex min-h-56 animate-rise flex-col gap-2 rounded-lg border border-line bg-surface p-6 shadow-raised motion-reduce:animate-none tablet:p-8 desktop:p-10 ${className}`}
     >
       <h2
-        className={`mb-5 text-lg font-medium sm:text-xl ${lightMode ? "text-emerald-800" : "text-emerald-300"}`}
+        className={`m-0 mb-3 text-overline uppercase ${module ? wallModuleText[module] : "text-ink-muted"}`}
       >
         {title}
       </h2>

@@ -111,15 +111,18 @@ export function TwoFactorSettingsScreen({
   return (
     <ScrollView
       className="flex-1"
-      contentContainerClassName="mx-auto w-full max-w-[900px] gap-3 px-5 pb-12 pt-8 md:px-9 md:pt-10"
+      contentContainerClassName="mx-auto w-full max-w-[900px] gap-3 px-4 pb-10 pt-6 tablet:px-6 tablet:pt-8 desktop:px-8"
     >
-      <Text className="text-sm font-semibold text-lifeos-accent-dark">
+      <Text className="text-overline uppercase text-ink-muted">
         Keep your account yours
       </Text>
-      <Text className="text-[38px] font-bold tracking-[-0.7px] text-lifeos-primary">
+      <Text
+        accessibilityRole="header"
+        className="text-display-m text-ink tablet:text-display-l"
+      >
         Security
       </Text>
-      <Text className="mb-2 text-[15px] leading-[22px] text-lifeos-muted">
+      <Text className="mb-2 text-body text-ink-muted">
         Manage authenticator-based two-factor authentication for this LifeOS
         account.
       </Text>
@@ -127,46 +130,46 @@ export function TwoFactorSettingsScreen({
       {status === "loading" ? (
         <View
           accessibilityLabel="Loading security settings"
-          className="min-h-[150px] items-center justify-center gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-6"
+          className="min-h-[150px] items-center justify-center gap-3 rounded-md border border-line bg-surface p-6"
         >
           <ActivityIndicator size="large" />
-          <Text className="text-sm text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             Loading security settings…
           </Text>
         </View>
       ) : status === "error" ? (
         <SettingsCard>
-          <Text className="text-lg font-bold text-lifeos-primary">
+          <Text className="text-title-m font-semibold text-ink">
             Security settings unavailable
           </Text>
-          <Text className="text-sm text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             Check your server connection and retry.
           </Text>
           <Action label="Try again" onPress={() => void reload()} />
         </SettingsCard>
       ) : secret !== null ? (
         <SettingsCard>
-          <Text className="text-xl font-bold text-lifeos-primary">
+          <Text className="text-title-l font-semibold text-ink">
             Finish authenticator setup
           </Text>
-          <Text className="text-sm leading-[21px] text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             Add this key to your authenticator app. The key stays only in this
             screen until setup completes.
           </Text>
           <Text
             selectable
-            className="rounded-xl bg-lifeos-background p-4 text-lg font-bold tracking-[1.5px] text-lifeos-primary"
+            className="rounded-sm bg-canvas p-4 text-title-m font-semibold text-ink"
           >
             {secret}
           </Text>
           <TextInput
             accessibilityLabel="Authenticator code"
-            className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+            className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
             keyboardType="number-pad"
             maxLength={6}
             onChangeText={setCode}
             placeholder="6-digit code"
-            placeholderTextColor="#758078"
+            placeholderTextColorClassName="accent-ink-muted"
             {...Platform.select({
               ios: { textContentType: "oneTimeCode" },
               android: { autoComplete: "one-time-code" },
@@ -182,30 +185,30 @@ export function TwoFactorSettingsScreen({
         </SettingsCard>
       ) : status === "enabled" ? (
         <SettingsCard>
-          <Text className="text-xl font-bold text-lifeos-primary">
+          <Text className="text-title-l font-semibold text-ink">
             Two-factor authentication is on
           </Text>
-          <Text className="text-sm leading-[21px] text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             Sign-in requires your password and a current authenticator code.
             Disabling it signs out other mobile sessions.
           </Text>
           <TextInput
             accessibilityLabel="Current password"
-            className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+            className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
             onChangeText={setPassword}
             placeholder="Current password"
-            placeholderTextColor="#758078"
+            placeholderTextColorClassName="accent-ink-muted"
             secureTextEntry
             value={password}
           />
           <TextInput
             accessibilityLabel="Authenticator code"
-            className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+            className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
             keyboardType="number-pad"
             maxLength={6}
             onChangeText={setCode}
             placeholder="6-digit code"
-            placeholderTextColor="#758078"
+            placeholderTextColorClassName="accent-ink-muted"
             {...Platform.select({
               ios: { textContentType: "oneTimeCode" },
               android: { autoComplete: "one-time-code" },
@@ -221,18 +224,18 @@ export function TwoFactorSettingsScreen({
         </SettingsCard>
       ) : (
         <SettingsCard>
-          <Text className="text-xl font-bold text-lifeos-primary">
+          <Text className="text-title-l font-semibold text-ink">
             Two-factor authentication is off
           </Text>
-          <Text className="text-sm leading-[21px] text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             Use an authenticator app to add a second step to password sign-in.
           </Text>
           <TextInput
             accessibilityLabel="Current password"
-            className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+            className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
             onChangeText={setPassword}
             placeholder="Current password"
-            placeholderTextColor="#758078"
+            placeholderTextColorClassName="accent-ink-muted"
             secureTextEntry
             value={password}
           />
@@ -251,7 +254,7 @@ export function TwoFactorSettingsScreen({
           accessibilityLiveRegion={
             messageType === "success" ? "polite" : "assertive"
           }
-          className={`rounded-xl p-4 text-sm ${messageType === "success" ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}
+          className={`rounded-sm p-4 text-body-s ${messageType === "success" ? "bg-primary-soft text-primary-text" : "bg-danger-soft text-danger"}`}
         >
           {message}
         </Text>
@@ -266,7 +269,7 @@ export function TwoFactorSettingsScreen({
 
 function SettingsCard({ children }: { children: React.ReactNode }) {
   return (
-    <View className="gap-4 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
+    <View className="gap-4 rounded-md border border-line bg-surface p-5 tablet:p-6">
       {children}
     </View>
   );
