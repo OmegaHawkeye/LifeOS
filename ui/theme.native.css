@@ -1,4 +1,4 @@
-/* Generated from ui/tokens.json by ui/scripts/generate-theme.mjs. Do not edit. Native (Uniwind): light, dark and wall themes. */
+/* Generated from ui/tokens.json by ui/scripts/generate-theme.mjs. Do not edit. Native (Uniwind): light, dark and wall themes, and embedded font families. */
 
 @layer theme {
   :root {
@@ -135,4 +135,59 @@
       --shadow-overlay: 0 12px 32px #000000cc;
     }
   }
+}
+
+@theme {
+  --font-display: "Newsreader";
+  --font-sans: "Instrument Sans";
+  --font-mono: "IBM Plex Mono";
+}
+
+@utility text-display-xl {
+  font-family: "Newsreader";
+}
+@utility text-display-l {
+  font-family: "Newsreader";
+}
+@utility text-display-m {
+  font-family: "Newsreader";
+}
+@utility text-title-l {
+  font-family: "Instrument Sans";
+}
+@utility text-title-m {
+  font-family: "Instrument Sans";
+}
+@utility text-title-s {
+  font-family: "Instrument Sans";
+}
+@utility text-body-l {
+  font-family: "Instrument Sans";
+}
+@utility text-body {
+  font-family: "Instrument Sans";
+}
+@utility text-body-s {
+  font-family: "Instrument Sans";
+}
+@utility text-label {
+  font-family: "Instrument Sans";
+}
+@utility text-caption {
+  font-family: "Instrument Sans";
+}
+@utility text-overline {
+  font-family: "Instrument Sans";
+}
+@utility text-figure-xl {
+  font-family: "Instrument Sans";
+}
+@utility text-figure-l {
+  font-family: "Instrument Sans";
+}
+@utility text-figure-m {
+  font-family: "Instrument Sans";
+}
+@utility text-unit {
+  font-family: "IBM Plex Mono";
 }

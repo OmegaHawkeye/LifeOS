@@ -43,8 +43,12 @@ The pre-redesign `lifeos-*` colour names remain as aliases until every screen
 has moved to the new names.
 
 The web app bundles Instrument Sans, Newsreader and IBM Plex Mono through
-Fontsource, so no font loads from a third-party host. Native still falls back
-to the system font until the same families are bundled with `expo-font`.
+Fontsource, so no font loads from a third-party host. The iOS app embeds the
+same families at build time with the `expo-font` config plugin in
+`mobile/app.json`, so a font change needs a native rebuild (`pnpm ios`).
+React Native has no inherited font, so on native each `text-*` style carries
+its own family (`ui/tokens.json` → `type.nativeFamilies`); text without a
+`text-*` style uses the system font.
 
 ## Components
 

@@ -148,14 +148,31 @@ ${themeBlocks(themes.slice(1))}
 }
 `;
 
+// React Native takes one family name, not a CSS stack, and has no inherited font.
+// So native names the embedded families (see mobile/app.json) and each text style carries its own.
+function nativeType() {
+  const families = tokens.type.nativeFamilies;
+  const variables = Object.entries(families).map(
+    ([key, family]) => `  --font-${key}: "${family}";`,
+  );
+  const utilities = tokens.type.groups.flatMap((group) =>
+    group.styles.map(
+      (style) =>
+        `@utility text-${style.name} {\n  font-family: "${families[style.family ?? group.family]}";\n}`,
+    ),
+  );
+  return `@theme {\n${variables.join("\n")}\n}\n\n${utilities.join("\n")}\n`;
+}
+
 // Uniwind needs every theme, light included, to declare the same variables; register `wall` as an extra theme in metro.config.js.
-const native = `${header("Native (Uniwind): light, dark and wall themes.")}
+const native = `${header("Native (Uniwind): light, dark and wall themes, and embedded font families.")}
 @layer theme {
   :root {
 ${themeBlocks(themes)}
   }
 }
-`;
+
+${nativeType()}`;
 
 writeFileSync(join(root, "theme.css"), sharedTheme());
 writeFileSync(join(root, "theme.web.css"), web);
