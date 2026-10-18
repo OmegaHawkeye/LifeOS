@@ -3,10 +3,13 @@ import {
   Alert,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
+  useColorScheme,
 } from "react-native";
+import { Button } from "@lifeos/ui/button";
+import { AppIcon } from "@lifeos/ui/icons";
+import { tokenColor } from "@lifeos/ui/tokens";
 import { mobileAuthService } from "../auth/mobileAuth";
 import { useMobileAuth } from "../auth/authContext";
 import { MobileApiError } from "../auth/mobileAuthService";
@@ -40,6 +43,7 @@ export function HealthSyncScreen({
   service?: HealthSyncService;
 }) {
   const { signOut } = useMobileAuth();
+  const scheme = useColorScheme() === "dark" ? "dark" : "light";
   const [state, setState] = useState<HealthSyncState | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -170,51 +174,69 @@ export function HealthSyncScreen({
 
   if (state === null) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.body}>Loading Apple Health settings…</Text>
+      <View className="flex-1 justify-center p-6">
+        <Text className="text-body text-ink-muted">
+          Loading Apple Health settings…
+        </Text>
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
-      <Text style={styles.eyebrow}>PRIVATE, ON YOUR DEVICE</Text>
-      <Text style={styles.title}>Apple Health</Text>
-      <Text style={styles.body}>
+    <ScrollView
+      className="flex-1"
+      contentContainerClassName="mx-auto w-full max-w-content gap-4 px-4 pb-10 pt-6 tablet:px-6 tablet:pt-8 desktop:px-8"
+    >
+      <Text className="text-overline uppercase text-ink-muted">
+        Private, on your device
+      </Text>
+      <Text
+        accessibilityRole="header"
+        className="text-display-m text-ink tablet:text-display-l"
+      >
+        Apple Health
+      </Text>
+      <Text className="text-body text-ink-muted">
         Choose the categories LifeOS may read. Selected records sync directly
         from this device to your LifeOS server; LifeOS has no cloud relay.
       </Text>
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Read-only categories</Text>
+      <View className="gap-3 rounded-md border border-line bg-surface p-4 tablet:p-5">
+        <Text className="text-title-m text-ink">Read-only categories</Text>
         {healthMetrics.map((metric) => {
           const checked = selectedMetrics.includes(metric);
           return (
             <Pressable
               accessibilityRole="checkbox"
               accessibilityState={{ checked, disabled: isWorking }}
+              className="min-h-target-min flex-row items-center gap-3"
               key={metric}
               onPress={() => toggleMetric(metric)}
-              style={styles.metric}
             >
               <View
-                style={[styles.checkbox, checked && styles.checkboxChecked]}
+                className={`size-6 items-center justify-center rounded-xs border ${checked ? "border-primary bg-primary" : "border-line-strong bg-surface"}`}
               >
-                {checked ? <Text style={styles.checkmark}>✓</Text> : null}
+                {checked ? (
+                  <AppIcon
+                    color={tokenColor("on-primary", scheme)}
+                    name="check"
+                    size={16}
+                  />
+                ) : null}
               </View>
-              <Text style={styles.metricLabel}>{metricLabels[metric]}</Text>
+              <Text className="text-body text-ink">{metricLabels[metric]}</Text>
             </Pressable>
           );
         })}
-        <Text style={styles.note}>
+        <Text className="text-caption text-ink-muted">
           Permissions are requested only when you connect or sync your selected
           categories. LifeOS never writes to Apple Health.
         </Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Sync status</Text>
-        <Text style={styles.status}>
+      <View className="gap-3 rounded-md border border-line bg-surface p-4 tablet:p-5">
+        <Text className="text-title-m text-ink">Sync status</Text>
+        <Text className="text-body-s text-ink">
           {state.lastSyncAt
             ? `Last sync: ${new Date(state.lastSyncAt).toLocaleString()}`
             : isConnected
@@ -222,52 +244,42 @@ export function HealthSyncScreen({
               : "Not connected"}
         </Text>
         {state.lastStatus === "failure" ? (
-          <Text accessibilityRole="alert" style={styles.error}>
+          <Text accessibilityRole="alert" className="text-body-s text-danger">
             {state.lastError ?? "The last sync failed."}
           </Text>
         ) : null}
         {error ? (
-          <Text accessibilityRole="alert" style={styles.error}>
+          <Text accessibilityRole="alert" className="text-body-s text-danger">
             {error}
           </Text>
         ) : null}
-        <Pressable
-          accessibilityRole="button"
-          disabled={isWorking || selectedMetrics.length === 0}
+        <Button
+          disabled={selectedMetrics.length === 0}
+          loading={isWorking}
           onPress={() => void syncSelectedData()}
-          style={({ pressed }) => [
-            styles.primaryButton,
-            (pressed || isWorking) && styles.buttonPressed,
-            selectedMetrics.length === 0 && styles.buttonDisabled,
-          ]}
         >
-          <Text style={styles.primaryButtonText}>
-            {isWorking
-              ? "Syncing…"
-              : isConnected
-                ? "Sync selected data"
-                : "Connect and sync selected data"}
-          </Text>
-        </Pressable>
+          {isWorking
+            ? "Syncing…"
+            : isConnected
+              ? "Sync selected data"
+              : "Connect and sync selected data"}
+        </Button>
         {isConnected ? (
           <>
-            <Pressable
-              accessibilityRole="button"
+            <Button
               disabled={isWorking}
               onPress={() => void (state.paused ? resumeSync() : pauseSync())}
-              style={styles.secondaryButton}
+              variant="secondary"
             >
-              <Text style={styles.secondaryButtonText}>
-                {state.paused ? "Resume syncing" : "Pause syncing"}
-              </Text>
-            </Pressable>
+              {state.paused ? "Resume syncing" : "Pause syncing"}
+            </Button>
             <Pressable
               accessibilityRole="button"
+              className="min-h-target-min items-center justify-center rounded-sm active:bg-danger-soft"
               disabled={isWorking}
               onPress={confirmDisconnect}
-              style={styles.destructiveButton}
             >
-              <Text style={styles.destructiveButtonText}>
+              <Text className="text-label text-danger">
                 Disconnect and delete imported records
               </Text>
             </Pressable>
@@ -275,7 +287,7 @@ export function HealthSyncScreen({
         ) : null}
       </View>
 
-      <Text style={styles.note}>
+      <Text className="text-caption text-ink-muted">
         Apple does not tell apps whether read access was denied. If no records
         appear, review LifeOS access in the Health app. You can revoke access
         there at any time.
@@ -283,70 +295,3 @@ export function HealthSyncScreen({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: { flex: 1 },
-  centered: { flex: 1, justifyContent: "center", padding: 24 },
-  content: { gap: 16, padding: 24, paddingBottom: 48 },
-  eyebrow: {
-    color: "#25815b",
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 1.4,
-  },
-  title: { color: "#17251e", fontSize: 30, fontWeight: "800" },
-  body: { color: "#65716a", fontSize: 15, lineHeight: 22 },
-  card: {
-    backgroundColor: "#ffffff",
-    borderColor: "#e2e9e4",
-    borderRadius: 18,
-    borderWidth: 1,
-    gap: 12,
-    padding: 18,
-  },
-  sectionTitle: { color: "#17251e", fontSize: 17, fontWeight: "700" },
-  metric: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 12,
-    minHeight: 40,
-  },
-  checkbox: {
-    alignItems: "center",
-    borderColor: "#aebbb2",
-    borderRadius: 7,
-    borderWidth: 1,
-    height: 23,
-    justifyContent: "center",
-    width: 23,
-  },
-  checkboxChecked: { backgroundColor: "#42c68d", borderColor: "#42c68d" },
-  checkmark: { color: "#102c20", fontSize: 16, fontWeight: "800" },
-  metricLabel: { color: "#25332b", fontSize: 15, fontWeight: "600" },
-  note: { color: "#65716a", fontSize: 13, lineHeight: 19 },
-  status: { color: "#3d4b43", fontSize: 14, lineHeight: 20 },
-  error: { color: "#a33131", fontSize: 14, lineHeight: 20 },
-  primaryButton: {
-    alignItems: "center",
-    backgroundColor: "#42c68d",
-    borderRadius: 13,
-    justifyContent: "center",
-    minHeight: 48,
-    paddingHorizontal: 14,
-  },
-  primaryButtonText: { color: "#102c20", fontSize: 14, fontWeight: "800" },
-  buttonPressed: { opacity: 0.75 },
-  buttonDisabled: { opacity: 0.45 },
-  secondaryButton: {
-    alignItems: "center",
-    borderColor: "#ccd8cf",
-    borderRadius: 13,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 44,
-    paddingHorizontal: 14,
-  },
-  secondaryButtonText: { color: "#304238", fontSize: 14, fontWeight: "700" },
-  destructiveButton: { alignItems: "center", padding: 10 },
-  destructiveButtonText: { color: "#a33131", fontSize: 13, fontWeight: "700" },
-});

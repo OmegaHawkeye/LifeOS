@@ -126,52 +126,55 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
   return (
     <ScrollView
       className="flex-1"
-      contentContainerClassName="mx-auto w-full max-w-[1120px] gap-3 px-5 pb-12 pt-8 md:px-9 md:pt-10"
+      contentContainerClassName="mx-auto w-full max-w-content gap-3 px-4 pb-10 pt-6 tablet:px-6 tablet:pt-8 desktop:px-8"
     >
-      <Text className="text-sm font-semibold text-lifeos-accent-dark">
+      <Text className="text-overline uppercase text-ink-muted">
         Eat with intention
       </Text>
-      <Text className="text-[38px] font-bold tracking-[-0.7px] text-lifeos-primary">
+      <Text
+        accessibilityRole="header"
+        className="text-display-m text-ink tablet:text-display-l"
+      >
         Nutrition
       </Text>
-      <Text className="mb-2 text-[15px] leading-[22px] text-lifeos-muted">
+      <Text className="mb-2 text-body text-ink-muted">
         Your meals and goals, stored on your LifeOS server.
       </Text>
 
       {state.status === "loading" ? (
         <View
           accessibilityLabel="Loading nutrition data"
-          className="min-h-[180px] items-center justify-center gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-6"
+          className="min-h-[180px] items-center justify-center gap-3 rounded-md border border-line bg-surface p-6"
         >
           <ActivityIndicator size="large" />
-          <Text className="text-sm text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             Loading your nutrition…
           </Text>
         </View>
       ) : state.status === "error" ? (
-        <View className="min-h-[180px] items-center justify-center gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-6">
-          <Text className="text-center text-lg font-bold text-lifeos-primary">
+        <View className="min-h-[180px] items-center justify-center gap-3 rounded-md border border-line bg-surface p-6">
+          <Text className="text-center text-title-m font-semibold text-ink">
             Nutrition data is unavailable
           </Text>
-          <Text className="text-center text-sm leading-[21px] text-lifeos-muted">
+          <Text className="text-center text-body-s text-ink-muted">
             Check your connection to your LifeOS server and try again.
           </Text>
           <NutritionButton label="Try again" onPress={() => void reload()} />
         </View>
       ) : (
         <>
-          <View className="rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-            <Text className="text-lg font-bold text-lifeos-primary">
+          <View className="rounded-md border border-line bg-surface p-5 tablet:p-6">
+            <Text className="text-title-m font-semibold text-ink">
               Today · {state.dashboard.today.date}
             </Text>
-            <Text className="mt-1 text-sm text-lifeos-muted">
+            <Text className="mt-1 text-body-s text-ink-muted">
               {state.dashboard.today.planned_meal_count} planned ·{" "}
               {state.dashboard.today.eaten_meal_count} logged
             </Text>
             {Object.values(state.dashboard.target).every(
               (value) => value === null,
             ) ? (
-              <Text className="mt-3 text-sm text-lifeos-muted">
+              <Text className="mt-3 text-body-s text-ink-muted">
                 No daily nutrition targets are set yet. You can set them in the
                 web app.
               </Text>
@@ -180,14 +183,14 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
               {nutrients.map(({ key, label, unit }) => (
                 <View
                   key={key}
-                  className="min-w-[130px] flex-1 rounded-2xl bg-lifeos-background p-4"
+                  className="min-w-[130px] flex-1 rounded-md bg-canvas p-4"
                 >
-                  <Text className="text-xs text-lifeos-muted">{label}</Text>
-                  <Text className="mt-1 text-lg font-bold text-lifeos-primary">
+                  <Text className="text-caption text-ink-muted">{label}</Text>
+                  <Text className="mt-1 text-title-m font-semibold text-ink">
                     {display(state.dashboard.today.eaten[key])} /{" "}
                     {display(state.dashboard.target[key])} {unit}
                   </Text>
-                  <Text className="mt-1 text-xs text-lifeos-muted">
+                  <Text className="mt-1 text-caption text-ink-muted">
                     logged / target
                   </Text>
                 </View>
@@ -195,11 +198,11 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
             </View>
           </View>
 
-          <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-            <Text className="text-lg font-bold text-lifeos-primary">
+          <View className="gap-3 rounded-md border border-line bg-surface p-5 tablet:p-6">
+            <Text className="text-title-m font-semibold text-ink">
               Daily nutrition target
             </Text>
-            <Text className="text-sm leading-[21px] text-lifeos-muted">
+            <Text className="text-body-s text-ink-muted">
               Set the targets used on this device and the web dashboard.
             </Text>
             <View className="flex-row flex-wrap gap-3">
@@ -228,62 +231,56 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
             />
           </View>
 
-          <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-            <Text className="text-lg font-bold text-lifeos-primary">
+          <View className="gap-3 rounded-md border border-line bg-surface p-5 tablet:p-6">
+            <Text className="text-title-m font-semibold text-ink">
               Today's plan
             </Text>
             {state.dashboard.today.plan.length === 0 ? (
-              <Text className="text-sm text-lifeos-muted">
+              <Text className="text-body-s text-ink-muted">
                 Nothing planned for today yet.
               </Text>
             ) : (
               state.dashboard.today.plan.map((meal) => (
                 <View
                   key={meal.id}
-                  className="flex-row flex-wrap items-center justify-between gap-2 border-t border-lifeos-border py-3"
+                  className="flex-row flex-wrap items-center justify-between gap-2 border-t border-line py-3"
                 >
                   <View className="min-w-0 flex-1">
-                    <Text
-                      numberOfLines={1}
-                      className="font-semibold text-lifeos-primary"
-                    >
+                    <Text numberOfLines={1} className="font-semibold text-ink">
                       {meal.recipe_name}
                     </Text>
-                    <Text className="mt-1 text-sm capitalize text-lifeos-muted">
+                    <Text className="mt-1 text-body-s capitalize text-ink-muted">
                       {meal.meal_slot}
                     </Text>
                   </View>
-                  <Text className="text-sm capitalize text-lifeos-muted">
+                  <Text className="text-body-s capitalize text-ink-muted">
                     {meal.status}
                   </Text>
                 </View>
               ))
             )}
-            <Text className="mt-2 text-lg font-bold text-lifeos-primary">
+            <Text className="mt-2 text-title-m font-semibold text-ink">
               Logged meals
             </Text>
             {state.dashboard.today.eaten_meals.length === 0 ? (
-              <Text className="text-sm text-lifeos-muted">
+              <Text className="text-body-s text-ink-muted">
                 No meals logged today.
               </Text>
             ) : (
               state.dashboard.today.eaten_meals.map((meal) => (
                 <View
                   key={meal.id}
-                  className="flex-row items-center justify-between gap-3 border-t border-lifeos-border py-3"
+                  className="flex-row items-center justify-between gap-3 border-t border-line py-3"
                 >
                   <View className="min-w-0 flex-1">
-                    <Text
-                      numberOfLines={1}
-                      className="font-semibold text-lifeos-primary"
-                    >
+                    <Text numberOfLines={1} className="font-semibold text-ink">
                       {meal.name}
                     </Text>
-                    <Text className="mt-1 text-sm capitalize text-lifeos-muted">
+                    <Text className="mt-1 text-body-s capitalize text-ink-muted">
                       {meal.meal_type}
                     </Text>
                   </View>
-                  <Text className="text-sm text-lifeos-muted">
+                  <Text className="text-body-s text-ink-muted">
                     {display(meal.calories)} kcal
                   </Text>
                 </View>
@@ -291,8 +288,8 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
             )}
           </View>
 
-          <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-            <Text className="text-lg font-bold text-lifeos-primary">
+          <View className="gap-3 rounded-md border border-line bg-surface p-5 tablet:p-6">
+            <Text className="text-title-m font-semibold text-ink">
               Log a meal
             </Text>
             <View className="flex-row flex-wrap gap-2">
@@ -307,11 +304,11 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
             </View>
             <TextInput
               accessibilityLabel="Meal name"
-              className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+              className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
               maxLength={160}
               onChangeText={setName}
               placeholder="What did you eat?"
-              placeholderTextColor="#758078"
+              placeholderTextColorClassName="accent-ink-muted"
               value={name}
             />
             <View className="flex-row flex-wrap gap-3">
@@ -350,7 +347,7 @@ export function NutritionScreen({ service }: NutritionScreenProps) {
       {formError ? (
         <Text
           accessibilityRole="alert"
-          className="rounded-xl bg-red-50 p-4 text-sm text-red-800"
+          className="rounded-sm bg-danger-soft p-4 text-body-s text-danger"
         >
           Check the meal name and nutrition values, then try again.
         </Text>
@@ -391,18 +388,16 @@ function MealNutrientField({
   return (
     <View className="min-w-[140px] flex-1 gap-1.5">
       <View className="flex-row flex-wrap items-baseline justify-between gap-x-2">
-        <Text className="text-sm font-semibold text-lifeos-primary">
-          {label}
-        </Text>
-        <Text className="text-sm font-medium text-lifeos-muted">{hint}</Text>
+        <Text className="text-body-s font-semibold text-ink">{label}</Text>
+        <Text className="text-body-s font-medium text-ink-muted">{hint}</Text>
       </View>
       <TextInput
         accessibilityLabel={accessibilityLabel}
-        className="min-h-12 min-w-0 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+        className="min-h-12 min-w-0 rounded-sm border border-line bg-canvas px-4 text-ink"
         keyboardType="decimal-pad"
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#758078"
+        placeholderTextColorClassName="accent-ink-muted"
         value={value}
       />
     </View>

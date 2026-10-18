@@ -150,21 +150,21 @@ export function NutritionPage() {
 
   return (
     <section aria-labelledby="page-title" className="mx-auto w-full max-w-3xl">
-      <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+      <p className="m-0 text-overline uppercase text-ink-muted">
         Eat with intention
       </p>
       <h1
-        className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl"
+        className="m-0 mt-2 text-balance font-display text-display-m text-ink tablet:text-display-l"
         id="page-title"
       >
         Nutrition
       </h1>
-      <p className="mt-3 text-sm leading-6 text-stone-500 dark:text-stone-400">
+      <p className="mt-3 text-body text-ink-muted">
         Set a daily target now; meals and recipes will build on this foundation.
       </p>
       {error && (
         <p
-          className="mt-6 rounded-xl bg-rose-50 p-4 text-sm text-rose-800"
+          className="mt-6 rounded-sm bg-danger-soft p-4 text-body-s text-danger"
           role="alert"
         >
           Nutrition data could not be saved or loaded.
@@ -172,7 +172,7 @@ export function NutritionPage() {
       )}
       {saved && (
         <p
-          className="mt-6 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800"
+          className="mt-6 rounded-sm bg-primary-soft p-4 text-body-s text-primary-text"
           role="status"
         >
           Nutrition target saved.
@@ -182,7 +182,7 @@ export function NutritionPage() {
       <WeeklyMealPlanner recipes={recipes} target={target} />
       <NutritionShoppingLists />
       <form
-        className="mt-8 grid gap-5 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:grid-cols-2 sm:p-8"
+        className="mt-8 grid gap-5 rounded-md border border-line bg-surface p-6 shadow-raised sm:grid-cols-2 sm:p-8 [&>*]:min-w-0"
         onSubmit={save}
       >
         <TargetField
@@ -207,7 +207,7 @@ export function NutritionPage() {
           value={target.fat_grams}
           onChange={(value) => setTarget({ ...target, fat_grams: value })}
         />
-        <label className="text-sm font-medium sm:col-span-2">
+        <label className="text-body-s font-medium sm:col-span-2">
           Notes
           <textarea
             className={fieldClass + " min-h-24 resize-y"}
@@ -219,19 +219,19 @@ export function NutritionPage() {
         </label>
         <Button type="submit">Save nutrition target</Button>
       </form>
-      <div className="mt-8 grid gap-5 xl:grid-cols-2">
+      <div className="mt-8 grid gap-5 xl:grid-cols-2 [&>*]:min-w-0">
         <form
-          className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8"
+          className="rounded-md border border-line bg-surface p-6 shadow-raised sm:p-8"
           onInput={(event) =>
             setRecipeFormValid(event.currentTarget.checkValidity())
           }
           onSubmit={saveRecipe}
         >
-          <h2 className="text-xl font-semibold">Recipe library</h2>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <h2 className="text-title-l font-semibold">Recipe library</h2>
+          <p className="mt-1 text-body-s text-ink-muted">
             Save recipes with serving-level nutrition and reusable ingredients.
           </p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 [&>*]:min-w-0">
             <input
               aria-label="Recipe name"
               className={fieldClass}
@@ -283,10 +283,12 @@ export function NutritionPage() {
             />
           </div>
           <div className="mt-4 space-y-2">
-            <p className="text-sm font-medium">Ingredients (quantity + unit)</p>
+            <p className="text-body-s font-medium">
+              Ingredients (quantity + unit)
+            </p>
             {ingredientLines.map((ingredient, index) => (
               <div
-                className="grid grid-cols-[minmax(0,1fr)_5rem_5rem] gap-2"
+                className="grid grid-cols-[minmax(0,1fr)_5rem_5rem] gap-2 [&>*]:min-w-0"
                 key={index}
               >
                 <input
@@ -337,7 +339,7 @@ export function NutritionPage() {
               </div>
             ))}
             <Button
-              className="min-h-9 px-3 text-xs"
+              className="min-h-9 px-3 text-caption"
               onPress={() =>
                 setIngredientLines((lines) => [
                   ...lines,
@@ -362,10 +364,13 @@ export function NutritionPage() {
             placeholder="Dietary notes (allergens, preferences, etc.)"
           />
           <fieldset className="mt-4">
-            <legend className="text-sm font-medium">Recipe tags</legend>
+            <legend className="text-body-s font-medium">Recipe tags</legend>
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
               {recipeTags.map((tag) => (
-                <label className="flex items-center gap-2 text-sm" key={tag}>
+                <label
+                  className="flex items-center gap-2 text-body-s"
+                  key={tag}
+                >
                   <input name="recipe_tags" type="checkbox" value={tag} />
                   {tag}
                 </label>
@@ -375,12 +380,9 @@ export function NutritionPage() {
           <Button className="mt-4" disabled={!recipeFormValid} type="submit">
             Save recipe
           </Button>
-          <ul className="mt-5 space-y-2 text-sm text-stone-600 dark:text-stone-300">
+          <ul className="mt-5 space-y-2 text-body-s text-ink-muted">
             {recipes.map((recipe) => (
-              <li
-                className="rounded-xl bg-stone-50 p-3 dark:bg-white/5"
-                key={recipe.id}
-              >
+              <li className="rounded-sm bg-surface-sunken p-3" key={recipe.id}>
                 <span className="font-semibold">{recipe.name}</span> ·{" "}
                 {recipe.servings} servings ·{" "}
                 {recipe.ingredients
@@ -395,14 +397,14 @@ export function NutritionPage() {
         </form>
         <div className="space-y-5">
           <form
-            className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8"
+            className="rounded-md border border-line bg-surface p-6 shadow-raised sm:p-8"
             onInput={(event) =>
               setMealFormValid(event.currentTarget.checkValidity())
             }
             onSubmit={logMeal}
           >
-            <h2 className="text-xl font-semibold">Log a meal</h2>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <h2 className="text-title-l font-semibold">Log a meal</h2>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 [&>*]:min-w-0">
               <select
                 aria-label="Recipe"
                 className={fieldClass}
@@ -514,18 +516,18 @@ export function NutritionPage() {
               Log meal
             </Button>
           </form>
-          <article className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8">
-            <h2 className="text-xl font-semibold">Today</h2>
+          <article className="rounded-md border border-line bg-surface p-6 shadow-raised sm:p-8">
+            <h2 className="text-title-l font-semibold">Today</h2>
             {meals.length ? (
               <ul className="mt-4 space-y-3">
                 {meals.map((meal) => (
                   <li
-                    className="flex justify-between gap-3 border-b border-stone-100 pb-3 text-sm dark:border-white/10"
+                    className="flex justify-between gap-3 border-b border-line pb-3 text-body-s"
                     key={meal.id}
                   >
                     <span>
                       {meal.name}
-                      <span className="ml-2 capitalize text-stone-500">
+                      <span className="ml-2 capitalize text-ink-muted">
                         {meal.meal_type}
                       </span>
                     </span>
@@ -536,7 +538,7 @@ export function NutritionPage() {
                 ))}
               </ul>
             ) : (
-              <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
+              <p className="mt-3 text-body-s text-ink-muted">
                 No meals logged today.
               </p>
             )}
@@ -557,7 +559,7 @@ function TargetField({
   onChange: (value: string) => void;
 }) {
   return (
-    <label className="text-sm font-medium">
+    <label className="text-body-s font-medium">
       {label}
       <input
         className={fieldClass}
@@ -572,7 +574,7 @@ function TargetField({
 }
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-stone-950";
+  "mt-2 w-full rounded-sm border border-line bg-surface px-3 py-2 text-body-s outline-none focus:border-focus";
 
 function optionalNumber(value: FormDataEntryValue | null): number | null {
   if (value === null || value === "") return null;

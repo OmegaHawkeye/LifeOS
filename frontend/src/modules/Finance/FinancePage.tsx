@@ -257,21 +257,21 @@ export function FinancePage() {
     >
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          <p className="m-0 text-overline uppercase text-ink-muted">
             Your money, in context
           </p>
           <h1
-            className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl"
+            className="m-0 mt-2 text-balance font-display text-display-m text-ink tablet:text-display-l"
             id="page-title"
           >
             Finance
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-500 dark:text-stone-400">
+          <p className="mt-3 max-w-2xl text-body text-ink-muted">
             Record a transaction in seconds and see how this month is shaping
             up.
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white p-1 dark:border-white/10 dark:bg-stone-900">
+        <div className="flex items-center gap-2 rounded-sm border border-line bg-surface p-1">
           <Button
             accessibilityLabel="Previous month"
             onPress={() => setMonth((value) => shiftMonth(value, -1))}
@@ -283,7 +283,7 @@ export function FinancePage() {
             Overview month
           </label>
           <input
-            className="w-36 border-0 bg-transparent px-1 py-2 text-center text-sm font-medium outline-none"
+            className="w-36 border-0 bg-transparent px-1 py-2 text-center text-body-s font-medium outline-none"
             id="overview-month"
             onChange={(event) => setMonth(event.currentTarget.value)}
             type="month"
@@ -301,7 +301,7 @@ export function FinancePage() {
 
       {loadError && (
         <div
-          className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-200"
+          className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-md border border-danger bg-danger-soft p-4 text-body-s text-danger"
           role="alert"
         >
           <span>
@@ -316,17 +316,17 @@ export function FinancePage() {
 
       {accounts.length === 0 && (
         <form
-          className="mt-8 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 dark:border-emerald-400/20 dark:bg-emerald-950/20 sm:p-7"
+          className="mt-8 rounded-md border border-primary bg-primary-soft p-5 sm:p-7"
           onSubmit={addAccount}
         >
-          <h2 className="text-lg font-semibold">
+          <h2 className="text-title-m font-semibold">
             Set up your first finance account
           </h2>
-          <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">
+          <p className="mt-1 text-body-s text-ink-muted">
             An account provides the currency needed for budgets and
             transactions.
           </p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_8rem_auto]">
+          <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_8rem_auto] [&>*]:min-w-0">
             <input
               aria-label="Account name"
               className={fieldClass}
@@ -360,32 +360,32 @@ export function FinancePage() {
         </form>
       )}
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.8fr)]">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(20rem,0.8fr)] [&>*]:min-w-0">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 [&>*]:min-w-0">
           {overview?.totals.length ? (
             overview.totals.map((total) => (
               <div
-                className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-6"
+                className="rounded-md border border-line bg-surface p-5 shadow-raised sm:p-6"
                 key={total.currency}
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 dark:text-stone-400">
+                <p className="text-caption font-semibold uppercase tracking-[0.12em] text-ink-muted">
                   {total.currency} · income
                 </p>
-                <p className="mt-3 text-2xl font-semibold tracking-tight">
+                <p className="mt-3 text-figure-l font-semibold tracking-tight">
                   {formatCurrency(total.income, total.currency)}
                 </p>
-                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500 dark:text-stone-400">
+                <p className="mt-5 text-caption font-semibold uppercase tracking-[0.12em] text-ink-muted">
                   Spending
                 </p>
-                <p className="mt-2 text-lg font-medium">
+                <p className="mt-2 text-title-m font-medium">
                   {formatCurrency(total.spending, total.currency)}
                 </p>
-                <div className="mt-4 border-t border-stone-100 pt-4 dark:border-white/10">
-                  <p className="text-xs font-medium text-stone-500 dark:text-stone-400">
+                <div className="mt-4 border-t border-line pt-4">
+                  <p className="text-caption font-medium text-ink-muted">
                     Net cashflow
                   </p>
                   <p
-                    className={`mt-1 text-lg font-semibold ${Number(total.net_cashflow) < 0 ? "text-orange-700 dark:text-orange-300" : "text-emerald-700 dark:text-emerald-300"}`}
+                    className={`mt-1 text-title-m font-semibold ${Number(total.net_cashflow) < 0 ? "text-ink" : "text-primary-text"}`}
                   >
                     {formatCurrency(total.net_cashflow, total.currency)}
                   </p>
@@ -393,25 +393,22 @@ export function FinancePage() {
               </div>
             ))
           ) : (
-            <div className="rounded-3xl border border-dashed border-stone-300 bg-white/70 p-6 text-sm leading-6 text-stone-500 dark:border-white/15 dark:bg-stone-900/60 dark:text-stone-400 sm:col-span-2 lg:col-span-3">
+            <div className="rounded-md border border-dashed border-line-strong bg-surface p-6 text-body text-ink-muted sm:col-span-2 lg:col-span-3">
               No cashflow recorded for this month yet. Add your first
               transaction below to start your overview.
             </div>
           )}
         </div>
 
-        <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-6">
+        <div className="rounded-md border border-line bg-surface p-5 shadow-raised sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-base font-semibold">Category breakdown</h2>
-              <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+              <h2 className="text-body font-semibold">Category breakdown</h2>
+              <p className="mt-1 text-body-s text-ink-muted">
                 Monthly activity by category
               </p>
             </div>
-            <span
-              aria-hidden="true"
-              className="text-lg text-emerald-600 dark:text-emerald-300"
-            >
+            <span aria-hidden="true" className="text-title-m text-primary-text">
               ◌
             </span>
           </div>
@@ -421,7 +418,7 @@ export function FinancePage() {
                 <li
                   key={`${item.category_id ?? "none"}-${item.type}-${item.currency}`}
                 >
-                  <div className="flex items-baseline justify-between gap-3 text-sm">
+                  <div className="flex items-baseline justify-between gap-3 text-body-s">
                     <span className="min-w-0 truncate font-medium">
                       {item.category_name}
                     </span>
@@ -429,7 +426,7 @@ export function FinancePage() {
                       {formatCurrency(item.total, item.currency)}
                     </span>
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
+                  <div className="mt-2 flex items-center justify-between text-caption text-ink-muted">
                     <span className="capitalize">{item.type}</span>
                     <span>
                       {item.transaction_count}{" "}
@@ -440,7 +437,7 @@ export function FinancePage() {
               ))}
             </ul>
           ) : (
-            <p className="mt-5 text-sm leading-6 text-stone-500 dark:text-stone-400">
+            <p className="mt-5 text-body text-ink-muted">
               Your categories will appear here as you record income and
               spending.
             </p>
@@ -459,13 +456,13 @@ export function FinancePage() {
 
       <FinanceAssetsPanel />
 
-      <div className="mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7">
+      <div className="mt-8 rounded-md border border-line bg-surface p-5 shadow-raised sm:p-7">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+            <p className="m-0 text-overline uppercase text-ink-muted">
               {editingTransaction ? "Update a record" : "Quick entry"}
             </p>
-            <h2 className="mt-1 text-xl font-semibold">
+            <h2 className="mt-1 text-title-l font-semibold">
               {editingTransaction ? "Edit transaction" : "Add a transaction"}
             </h2>
           </div>
@@ -476,16 +473,19 @@ export function FinancePage() {
           )}
         </div>
         {accounts.length === 0 ? (
-          <p className="mt-5 rounded-2xl bg-stone-100 p-4 text-sm leading-6 text-stone-600 dark:bg-white/5 dark:text-stone-300">
+          <p className="mt-5 rounded-md bg-surface-sunken p-4 text-body text-ink-muted">
             Create an account before adding transactions. Your account keeps
             every balance and currency in one place.
           </p>
         ) : (
           <form
-            className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+            className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0"
             onSubmit={saveTransaction}
           >
-            <label className="text-sm font-medium" htmlFor="transaction-type">
+            <label
+              className="text-body-s font-medium"
+              htmlFor="transaction-type"
+            >
               Type
               <select
                 className={fieldClass}
@@ -503,7 +503,10 @@ export function FinancePage() {
                 <option value="income">Income</option>
               </select>
             </label>
-            <label className="text-sm font-medium" htmlFor="transaction-amount">
+            <label
+              className="text-body-s font-medium"
+              htmlFor="transaction-amount"
+            >
               Amount
               <input
                 className={fieldClass}
@@ -521,7 +524,7 @@ export function FinancePage() {
               />
             </label>
             <label
-              className="text-sm font-medium"
+              className="text-body-s font-medium"
               htmlFor="transaction-account"
             >
               Account
@@ -543,11 +546,11 @@ export function FinancePage() {
               </select>
             </label>
             <label
-              className="text-sm font-medium"
+              className="text-body-s font-medium"
               htmlFor="transaction-category"
             >
               Category{" "}
-              <span className="font-normal text-stone-400">(optional)</span>
+              <span className="font-normal text-ink-muted">(optional)</span>
               <select
                 className={fieldClass}
                 id="transaction-category"
@@ -564,7 +567,10 @@ export function FinancePage() {
                 ))}
               </select>
             </label>
-            <label className="text-sm font-medium" htmlFor="transaction-date">
+            <label
+              className="text-body-s font-medium"
+              htmlFor="transaction-date"
+            >
               Date
               <input
                 className={fieldClass}
@@ -577,9 +583,12 @@ export function FinancePage() {
                 value={form.occurredOn}
               />
             </label>
-            <label className="text-sm font-medium" htmlFor="transaction-payee">
+            <label
+              className="text-body-s font-medium"
+              htmlFor="transaction-payee"
+            >
               Payee{" "}
-              <span className="font-normal text-stone-400">(optional)</span>
+              <span className="font-normal text-ink-muted">(optional)</span>
               <input
                 className={fieldClass}
                 id="transaction-payee"
@@ -591,11 +600,11 @@ export function FinancePage() {
               />
             </label>
             <label
-              className="text-sm font-medium"
+              className="text-body-s font-medium"
               htmlFor="transaction-description"
             >
               Note{" "}
-              <span className="font-normal text-stone-400">(optional)</span>
+              <span className="font-normal text-ink-muted">(optional)</span>
               <input
                 className={fieldClass}
                 id="transaction-description"
@@ -606,9 +615,12 @@ export function FinancePage() {
                 value={form.description}
               />
             </label>
-            <label className="text-sm font-medium" htmlFor="transaction-tags">
+            <label
+              className="text-body-s font-medium"
+              htmlFor="transaction-tags"
+            >
               Tags{" "}
-              <span className="font-normal text-stone-400">
+              <span className="font-normal text-ink-muted">
                 (comma separated)
               </span>
               <input
@@ -623,7 +635,7 @@ export function FinancePage() {
             </label>
             {saveError && (
               <p
-                className="text-sm text-red-700 dark:text-red-300 sm:col-span-2 xl:col-span-4"
+                className="text-body-s text-danger sm:col-span-2 xl:col-span-4"
                 role="alert"
               >
                 The transaction could not be saved. Check the values and try
@@ -649,7 +661,7 @@ export function FinancePage() {
                     : "Add transaction"}
               </Button>
               {!editingTransaction && (
-                <span className="text-xs text-stone-500 dark:text-stone-400">
+                <span className="text-caption text-ink-muted">
                   {form.accountId
                     ? accounts.find(
                         (account) => String(account.id) === form.accountId,
@@ -668,8 +680,8 @@ export function FinancePage() {
       <div className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold">Transactions</h2>
-            <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+            <h2 className="text-title-l font-semibold">Transactions</h2>
+            <p className="mt-1 text-body-s text-ink-muted">
               {transactions.length}{" "}
               {transactions.length === 1 ? "record" : "records"} matching your
               filters
@@ -680,9 +692,9 @@ export function FinancePage() {
           </Button>
         </div>
 
-        <div className="mt-4 grid gap-3 rounded-2xl border border-stone-200 bg-white p-4 dark:border-white/10 dark:bg-stone-900 sm:grid-cols-2 xl:grid-cols-6">
+        <div className="mt-4 grid gap-3 rounded-md border border-line bg-surface p-4 sm:grid-cols-2 xl:grid-cols-6 [&>*]:min-w-0">
           <label
-            className="text-xs font-semibold text-stone-500 dark:text-stone-400"
+            className="text-caption font-semibold text-ink-muted"
             htmlFor="filter-account"
           >
             Account
@@ -703,7 +715,7 @@ export function FinancePage() {
             </select>
           </label>
           <label
-            className="text-xs font-semibold text-stone-500 dark:text-stone-400"
+            className="text-caption font-semibold text-ink-muted"
             htmlFor="filter-category"
           >
             Category
@@ -724,7 +736,7 @@ export function FinancePage() {
             </select>
           </label>
           <label
-            className="text-xs font-semibold text-stone-500 dark:text-stone-400"
+            className="text-caption font-semibold text-ink-muted"
             htmlFor="filter-from"
           >
             From
@@ -739,7 +751,7 @@ export function FinancePage() {
             />
           </label>
           <label
-            className="text-xs font-semibold text-stone-500 dark:text-stone-400"
+            className="text-caption font-semibold text-ink-muted"
             htmlFor="filter-to"
           >
             To
@@ -754,7 +766,7 @@ export function FinancePage() {
             />
           </label>
           <label
-            className="text-xs font-semibold text-stone-500 dark:text-stone-400"
+            className="text-caption font-semibold text-ink-muted"
             htmlFor="filter-tag"
           >
             Tag
@@ -769,7 +781,7 @@ export function FinancePage() {
             />
           </label>
           <label
-            className="text-xs font-semibold text-stone-500 dark:text-stone-400"
+            className="text-caption font-semibold text-ink-muted"
             htmlFor="filter-search"
           >
             Search
@@ -788,12 +800,12 @@ export function FinancePage() {
         {isLoading ? (
           <p
             aria-live="polite"
-            className="py-10 text-center text-sm text-stone-500 dark:text-stone-400"
+            className="py-10 text-center text-body-s text-ink-muted"
           >
             Loading your transactions…
           </p>
         ) : transactions.length ? (
-          <ul className="mt-4 divide-y divide-stone-200 overflow-hidden rounded-3xl border border-stone-200 bg-white dark:divide-white/10 dark:border-white/10 dark:bg-stone-900">
+          <ul className="mt-4 divide-y divide-line overflow-hidden rounded-md border border-line bg-surface">
             {transactions.map((transaction) => (
               <TransactionRow
                 accounts={accounts}
@@ -805,9 +817,9 @@ export function FinancePage() {
             ))}
           </ul>
         ) : (
-          <div className="mt-4 rounded-3xl border border-dashed border-stone-300 bg-white/70 px-6 py-10 text-center dark:border-white/15 dark:bg-stone-900/60">
+          <div className="mt-4 rounded-md border border-dashed border-line-strong bg-surface px-6 py-10 text-center">
             <p className="font-medium">No transactions found</p>
-            <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+            <p className="mt-2 text-body-s text-ink-muted">
               {Object.values(filters).some(Boolean)
                 ? "Try adjusting your filters or clear them to see everything."
                 : "Your first entry is ready to add above."}
@@ -836,17 +848,17 @@ function TransactionRow({
     <li className="flex flex-wrap items-center gap-4 px-4 py-4 sm:px-6">
       <span
         aria-hidden="true"
-        className={`grid size-11 shrink-0 place-items-center rounded-2xl text-lg font-semibold ${transaction.type === "income" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-300/10 dark:text-emerald-200" : "bg-orange-100 text-orange-800 dark:bg-orange-300/10 dark:text-orange-200"}`}
+        className={`grid size-11 shrink-0 place-items-center rounded-md text-title-m font-semibold ${transaction.type === "income" ? "bg-primary-soft text-primary-text" : "bg-finance-soft text-finance"}`}
       >
         {transaction.type === "income" ? "↙" : "↗"}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold">
+        <p className="truncate text-body-s font-semibold">
           {transaction.description ||
             transaction.payee ||
             (transaction.type === "income" ? "Income" : "Expense")}
         </p>
-        <p className="mt-1 truncate text-xs text-stone-500 dark:text-stone-400">
+        <p className="mt-1 truncate text-caption text-ink-muted">
           {[
             transaction.payee,
             transaction.category?.name,
@@ -860,7 +872,7 @@ function TransactionRow({
           <div className="mt-2 flex flex-wrap gap-1.5">
             {transaction.tags.map((tag) => (
               <span
-                className="rounded-full bg-stone-100 px-2 py-0.5 text-[11px] text-stone-600 dark:bg-white/5 dark:text-stone-300"
+                className="rounded-full bg-surface-sunken px-2 py-0.5 text-[11px] text-ink-muted"
                 key={tag}
               >
                 {tag}
@@ -870,7 +882,7 @@ function TransactionRow({
         )}
       </div>
       <p
-        className={`shrink-0 text-sm font-semibold tabular-nums ${transaction.type === "income" ? "text-emerald-700 dark:text-emerald-300" : "text-stone-800 dark:text-stone-100"}`}
+        className={`shrink-0 text-body-s font-semibold tabular-nums ${transaction.type === "income" ? "text-primary-text" : "text-ink"}`}
       >
         {transaction.type === "income" ? "+" : "−"}
         {formatCurrency(transaction.amount, transaction.currency)}
@@ -956,6 +968,6 @@ function isCalendarDate(value: string): boolean {
 }
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-stone-300 bg-white px-3 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950";
+  "mt-2 w-full rounded-sm border border-line-strong bg-surface px-3 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";
 const filterClass =
-  "mt-1.5 w-full rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-sm font-normal text-stone-800 outline-none focus:border-emerald-500 dark:border-white/15 dark:bg-stone-950 dark:text-stone-100";
+  "mt-1.5 w-full rounded-sm border border-line bg-surface px-2.5 py-2 text-body-s font-normal text-ink outline-none focus:border-focus";

@@ -152,19 +152,19 @@ export function FinanceAssetsPanel() {
 
   return (
     <section
-      className="mt-6 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8"
+      className="mt-6 rounded-md border border-line bg-surface p-6 shadow-raised sm:p-8"
       aria-labelledby="assets-title"
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          <p className="m-0 text-overline uppercase text-ink-muted">
             The whole picture
           </p>
-          <h2 className="mt-1 text-2xl font-semibold" id="assets-title">
+          <h2 className="mt-1 text-figure-l font-semibold" id="assets-title">
             Net worth & assets
           </h2>
         </div>
-        <p className="max-w-xl text-sm text-stone-500 dark:text-stone-400">
+        <p className="max-w-xl text-body-s text-ink-muted">
           Values are grouped by currency; LifeOS does not invent exchange rates.
           When an included asset is linked to an account, that account balance
           is excluded to avoid double-counting.
@@ -172,22 +172,19 @@ export function FinanceAssetsPanel() {
       </div>
 
       {error && (
-        <p
-          className="mt-4 text-sm text-rose-700 dark:text-rose-300"
-          role="alert"
-        >
+        <p className="mt-4 text-body-s text-danger" role="alert">
           {error}
         </p>
       )}
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-        <article className="rounded-2xl bg-stone-50 p-5 dark:bg-white/5">
+      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] [&>*]:min-w-0">
+        <article className="rounded-md bg-surface-sunken p-5">
           <h3 className="font-semibold">Net worth by currency</h3>
           {netWorth?.totals.length ? (
             <ul className="mt-3 space-y-2">
               {netWorth.totals.map((total) => (
                 <li
-                  className="flex justify-between gap-3 text-lg"
+                  className="flex justify-between gap-3 text-title-m"
                   key={total.currency}
                 >
                   <span>{total.currency}</span>
@@ -198,21 +195,24 @@ export function FinanceAssetsPanel() {
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
+            <p className="mt-3 text-body-s text-ink-muted">
               Select an account or add a valued asset to start your net-worth
               view.
             </p>
           )}
 
-          <h4 className="mt-6 text-sm font-semibold">Accounts included</h4>
+          <h4 className="mt-6 text-body-s font-semibold">Accounts included</h4>
           {netWorth?.accounts.length ? (
             <ul className="mt-2 space-y-2">
               {netWorth.accounts.map((account) => (
-                <li className="flex items-start gap-3 text-sm" key={account.id}>
+                <li
+                  className="flex items-start gap-3 text-body-s"
+                  key={account.id}
+                >
                   <input
                     aria-label={`Include ${account.name} in net worth`}
                     checked={account.selected}
-                    className="mt-1 size-4 accent-emerald-500"
+                    className="mt-1 size-4 accent-primary"
                     disabled={busy}
                     onChange={() =>
                       void toggleAccount(account.id, account.selected)
@@ -221,11 +221,11 @@ export function FinanceAssetsPanel() {
                   />
                   <span>
                     <span className="font-medium">{account.name}</span>
-                    <span className="ml-2 text-stone-500 dark:text-stone-400">
+                    <span className="ml-2 text-ink-muted">
                       {money(account.balance, account.currency)}
                     </span>
                     {account.excluded_reason === "linked_asset" && (
-                      <span className="block text-xs text-stone-500 dark:text-stone-400">
+                      <span className="block text-caption text-ink-muted">
                         Excluded while linked asset values are included.
                       </span>
                     )}
@@ -234,15 +234,13 @@ export function FinanceAssetsPanel() {
               ))}
             </ul>
           ) : (
-            <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
-              No accounts yet.
-            </p>
+            <p className="mt-2 text-body-s text-ink-muted">No accounts yet.</p>
           )}
 
           {netWorth?.asset_groups.length ? (
             <>
-              <h4 className="mt-6 text-sm font-semibold">Asset groups</h4>
-              <ul className="mt-2 space-y-1 text-sm text-stone-500 dark:text-stone-400">
+              <h4 className="mt-6 text-body-s font-semibold">Asset groups</h4>
+              <ul className="mt-2 space-y-1 text-body-s text-ink-muted">
                 {netWorth.asset_groups.map((group) => (
                   <li key={`${group.asset_type}-${group.currency}`}>
                     {titleCase(group.asset_type)} · {group.asset_count} ·{" "}
@@ -255,11 +253,11 @@ export function FinanceAssetsPanel() {
         </article>
 
         <form
-          className="grid content-start gap-3 rounded-2xl bg-stone-50 p-5 dark:bg-white/5 sm:grid-cols-2"
+          className="grid content-start gap-3 rounded-md bg-surface-sunken p-5 sm:grid-cols-2 [&>*]:min-w-0"
           onSubmit={addAsset}
         >
           <h3 className="font-semibold sm:col-span-2">Add an asset</h3>
-          <label className="text-sm font-medium sm:col-span-2">
+          <label className="text-body-s font-medium sm:col-span-2">
             Name
             <input
               className={fieldClass}
@@ -270,7 +268,7 @@ export function FinanceAssetsPanel() {
               value={name}
             />
           </label>
-          <label className="text-sm font-medium">
+          <label className="text-body-s font-medium">
             Group
             <select
               className={fieldClass}
@@ -285,7 +283,7 @@ export function FinanceAssetsPanel() {
               <option value="other">Other</option>
             </select>
           </label>
-          <label className="text-sm font-medium">
+          <label className="text-body-s font-medium">
             Currency
             <input
               className={fieldClass}
@@ -308,7 +306,7 @@ export function FinanceAssetsPanel() {
               value={currency}
             />
           </label>
-          <label className="text-sm font-medium sm:col-span-2">
+          <label className="text-body-s font-medium sm:col-span-2">
             Linked account (optional)
             <select
               className={fieldClass}
@@ -325,7 +323,7 @@ export function FinanceAssetsPanel() {
                 ))}
             </select>
           </label>
-          <label className="text-sm font-medium">
+          <label className="text-body-s font-medium">
             Cost basis
             <input
               className={fieldClass}
@@ -337,7 +335,7 @@ export function FinanceAssetsPanel() {
               value={costBasis}
             />
           </label>
-          <label className="text-sm font-medium">
+          <label className="text-body-s font-medium">
             Current value
             <input
               className={fieldClass}
@@ -349,7 +347,7 @@ export function FinanceAssetsPanel() {
               value={initialValue}
             />
           </label>
-          <label className="text-sm font-medium sm:col-span-2">
+          <label className="text-body-s font-medium sm:col-span-2">
             Value date
             <input
               className={fieldClass}
@@ -377,17 +375,19 @@ export function FinanceAssetsPanel() {
       </div>
 
       <div className="mt-7 space-y-4">
-        <h3 className="text-lg font-semibold">Assets & valuation history</h3>
+        <h3 className="text-title-m font-semibold">
+          Assets & valuation history
+        </h3>
         {assets.length ? (
           assets.map((asset) => (
             <article
-              className="rounded-2xl border border-stone-200 p-5 dark:border-white/10"
+              className="rounded-md border border-line p-5"
               key={asset.id}
             >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="font-semibold">{asset.name}</p>
-                  <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                  <p className="mt-1 text-body-s text-ink-muted">
                     {titleCase(asset.asset_type)}
                     {asset.account_name
                       ? ` · held in ${asset.account_name}`
@@ -399,14 +399,14 @@ export function FinanceAssetsPanel() {
                         ? "Manual value"
                         : "Not valued yet"}
                   </p>
-                  <p className="mt-2 text-xl font-semibold">
+                  <p className="mt-2 text-title-l font-semibold">
                     {asset.current_value
                       ? money(asset.current_value, asset.currency)
                       : "No value recorded"}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <label className="flex items-center gap-2 text-sm">
+                  <label className="flex items-center gap-2 text-body-s">
                     <input
                       checked={asset.include_in_net_worth}
                       disabled={busy}
@@ -416,7 +416,7 @@ export function FinanceAssetsPanel() {
                     Include in net worth
                   </label>
                   <Button
-                    className="min-h-9 px-3 text-sm"
+                    className="min-h-9 px-3 text-body-s"
                     disabled={busy}
                     onPress={() => void archiveAsset(asset)}
                     variant="secondary"
@@ -425,7 +425,7 @@ export function FinanceAssetsPanel() {
                   </Button>
                 </div>
               </div>
-              <div className="mt-4 grid gap-4 border-t border-stone-200 pt-4 dark:border-white/10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+              <div className="mt-4 grid gap-4 border-t border-line pt-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] [&>*]:min-w-0">
                 <form
                   className="flex flex-wrap items-end gap-2"
                   onSubmit={(event) => {
@@ -433,7 +433,7 @@ export function FinanceAssetsPanel() {
                     void addValuation(asset.id);
                   }}
                 >
-                  <label className="min-w-32 flex-1 text-xs font-medium">
+                  <label className="min-w-32 flex-1 text-caption font-medium">
                     New valuation
                     <input
                       aria-label={`New value for ${asset.name}`}
@@ -459,9 +459,9 @@ export function FinanceAssetsPanel() {
                   </Button>
                 </form>
                 <div>
-                  <h4 className="text-sm font-semibold">History</h4>
+                  <h4 className="text-body-s font-semibold">History</h4>
                   {history[asset.id]?.length ? (
-                    <ul className="mt-2 space-y-1 text-sm text-stone-500 dark:text-stone-400">
+                    <ul className="mt-2 space-y-1 text-body-s text-ink-muted">
                       {history[asset.id].slice(0, 5).map((valuation) => (
                         <li
                           className="flex flex-wrap justify-between gap-2"
@@ -480,7 +480,7 @@ export function FinanceAssetsPanel() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+                    <p className="mt-2 text-body-s text-ink-muted">
                       No valuation history yet.
                     </p>
                   )}
@@ -489,7 +489,7 @@ export function FinanceAssetsPanel() {
             </article>
           ))
         ) : (
-          <p className="text-sm text-stone-500 dark:text-stone-400">
+          <p className="text-body-s text-ink-muted">
             No assets yet. You can track investments, collectibles, game items,
             property, and more.
           </p>
@@ -500,7 +500,7 @@ export function FinanceAssetsPanel() {
 }
 
 const fieldClass =
-  "mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 font-normal dark:border-white/15 dark:bg-stone-950";
+  "mt-1 block w-full rounded-sm border border-line-strong bg-surface px-3 py-2.5 font-normal";
 function today() {
   return new Date().toISOString().slice(0, 10);
 }

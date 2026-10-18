@@ -184,16 +184,16 @@ export function FitnessPage() {
       aria-labelledby="page-title"
       className="mx-auto w-full max-w-[1400px] pr-1 lg:pr-8 2xl:pr-14"
     >
-      <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+      <p className="m-0 text-overline uppercase text-ink-muted">
         Progress you can feel
       </p>
       <h1
-        className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl"
+        className="m-0 mt-2 text-balance font-display text-display-m text-ink tablet:text-display-l"
         id="page-title"
       >
         Fitness
       </h1>
-      <p className="mt-3 text-sm leading-6 text-stone-500 dark:text-stone-400">
+      <p className="mt-3 text-body text-ink-muted">
         Capture a measurement, then use the trend to decide what comes next.
       </p>
       <FitnessDashboardSummary
@@ -206,22 +206,22 @@ export function FitnessPage() {
       <FitnessProgressPhotos metrics={metrics} />
       {error && (
         <p
-          className="mt-6 rounded-xl bg-rose-50 p-4 text-sm text-rose-800 dark:bg-rose-950/30 dark:text-rose-200"
+          className="mt-6 rounded-sm bg-danger-soft p-4 text-body-s text-danger"
           role="alert"
         >
           Fitness data could not be loaded or saved.
         </p>
       )}
-      <div className="mt-8 grid gap-5 lg:grid-cols-2">
+      <div className="mt-8 grid gap-5 lg:grid-cols-2 [&>*]:min-w-0">
         <form
-          className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900"
+          className="rounded-md border border-line bg-surface p-6 shadow-raised"
           onSubmit={addMetric}
         >
-          <h2 className="text-lg font-semibold" id="body-metric-title">
+          <h2 className="text-title-m font-semibold" id="body-metric-title">
             Add body metric
           </h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-medium">
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 [&>*]:min-w-0">
+            <label className="text-body-s font-medium">
               Metric
               <select
                 className={fieldClass}
@@ -234,7 +234,7 @@ export function FitnessPage() {
                 <option value="chest">Chest</option>
               </select>
             </label>
-            <label className="text-sm font-medium">
+            <label className="text-body-s font-medium">
               Value
               <input
                 className={fieldClass}
@@ -246,11 +246,11 @@ export function FitnessPage() {
                 onChange={(event) => setValue(event.currentTarget.value)}
               />
             </label>
-            <label className="text-sm font-medium">
+            <label className="text-body-s font-medium">
               Unit
               <input className={fieldClass} readOnly value={unit} />
             </label>
-            <label className="text-sm font-medium">
+            <label className="text-body-s font-medium">
               Date
               <input
                 className={fieldClass}
@@ -260,7 +260,7 @@ export function FitnessPage() {
                 onChange={(event) => setMeasuredAt(event.currentTarget.value)}
               />
             </label>
-            <label className="text-sm font-medium sm:col-span-2">
+            <label className="text-body-s font-medium sm:col-span-2">
               Progress note
               <textarea
                 className={`${fieldClass} min-h-20 resize-y`}
@@ -278,12 +278,12 @@ export function FitnessPage() {
           </Button>
         </form>
         <form
-          className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900"
+          className="rounded-md border border-line bg-surface p-6 shadow-raised"
           onSubmit={addGoal}
         >
-          <h2 className="text-lg font-semibold">Set a fitness goal</h2>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-medium">
+          <h2 className="text-title-m font-semibold">Set a fitness goal</h2>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 [&>*]:min-w-0">
+            <label className="text-body-s font-medium">
               Target value
               <input
                 className={fieldClass}
@@ -295,7 +295,7 @@ export function FitnessPage() {
                 onChange={(event) => setGoalValue(event.currentTarget.value)}
               />
             </label>
-            <label className="text-sm font-medium">
+            <label className="text-body-s font-medium">
               Target date
               <input
                 className={fieldClass}
@@ -304,7 +304,7 @@ export function FitnessPage() {
                 onChange={(event) => setGoalDate(event.currentTarget.value)}
               />
             </label>
-            <label className="text-sm font-medium sm:col-span-2">
+            <label className="text-body-s font-medium sm:col-span-2">
               Progress note
               <textarea
                 className={`${fieldClass} min-h-20 resize-y`}
@@ -322,14 +322,14 @@ export function FitnessPage() {
           </Button>
         </form>
       </div>
-      <div className="mt-8 grid gap-5 lg:grid-cols-2">
-        <article className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900">
-          <h2 className="text-lg font-semibold">Recent measurements</h2>
+      <div className="mt-8 grid gap-5 lg:grid-cols-2 [&>*]:min-w-0">
+        <article className="rounded-md border border-line bg-surface p-6 shadow-raised">
+          <h2 className="text-title-m font-semibold">Recent measurements</h2>
           {metrics.length ? (
             <ul className="mt-4 space-y-3">
               {metrics.slice(0, 8).map((metric) => (
                 <li
-                  className="flex justify-between border-b border-stone-100 pb-3 text-sm dark:border-white/10"
+                  className="flex justify-between border-b border-line pb-3 text-body-s"
                   key={metric.id}
                 >
                   <span className="capitalize">
@@ -340,7 +340,7 @@ export function FitnessPage() {
                     {new Date(metric.measured_at).toLocaleDateString()}
                   </span>
                   {metric.notes && (
-                    <span className="basis-full text-stone-500 dark:text-stone-400">
+                    <span className="basis-full text-ink-muted">
                       {metric.notes}
                     </span>
                   )}
@@ -348,20 +348,20 @@ export function FitnessPage() {
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
+            <p className="mt-3 text-body-s text-ink-muted">
               No measurements yet. Add your first one above.
             </p>
           )}
         </article>
-        <article className="rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900">
-          <h2 className="text-lg font-semibold">Active goals</h2>
+        <article className="rounded-md border border-line bg-surface p-6 shadow-raised">
+          <h2 className="text-title-m font-semibold">Active goals</h2>
           {goals.length ? (
             <ul className="mt-4 space-y-3">
               {goals
                 .filter((goal) => goal.status === "active")
                 .map((goal) => (
                   <li
-                    className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-3 text-sm dark:border-white/10"
+                    className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3 text-body-s"
                     key={goal.id}
                   >
                     <span className="capitalize">
@@ -372,21 +372,21 @@ export function FitnessPage() {
                         {goal.target_value} {goal.unit}
                       </span>
                       <Button
-                        className="min-h-8 rounded-full px-3 py-1 text-xs"
+                        className="min-h-8 rounded-full px-3 py-1 text-caption"
                         onPress={() => beginGoalEdit(goal)}
                         variant="secondary"
                       >
                         Edit
                       </Button>
                       <Button
-                        className="min-h-8 rounded-full px-3 py-1 text-xs"
+                        className="min-h-8 rounded-full px-3 py-1 text-caption"
                         onPress={() => void updateGoalStatus(goal.id, "paused")}
                         variant="secondary"
                       >
                         Pause
                       </Button>
                       <Button
-                        className="min-h-8 rounded-full px-3 py-1 text-xs"
+                        className="min-h-8 rounded-full px-3 py-1 text-caption"
                         onPress={() =>
                           void updateGoalStatus(goal.id, "completed")
                         }
@@ -397,10 +397,10 @@ export function FitnessPage() {
                     </div>
                     {editingGoalId === goal.id && (
                       <form
-                        className="basis-full rounded-2xl bg-stone-50 p-3 dark:bg-white/5"
+                        className="basis-full rounded-md bg-surface-sunken p-3"
                         onSubmit={(event) => void saveGoalEdit(event, goal.id)}
                       >
-                        <div className="grid gap-3 sm:grid-cols-3">
+                        <div className="grid gap-3 sm:grid-cols-3 [&>*]:min-w-0">
                           <input
                             aria-label="Goal target value"
                             className={fieldClass}
@@ -452,24 +452,24 @@ export function FitnessPage() {
                 ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
+            <p className="mt-3 text-body-s text-ink-muted">
               Set a goal to make progress visible.
             </p>
           )}
         </article>
       </div>
-      <article className="mt-5 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900">
+      <article className="mt-5 rounded-md border border-line bg-surface p-6 shadow-raised">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-              Trend
-            </p>
-            <h2 className="mt-1 text-lg font-semibold">Weight direction</h2>
+            <p className="m-0 text-overline uppercase text-ink-muted">Trend</p>
+            <h2 className="mt-1 text-title-m font-semibold">
+              Weight direction
+            </h2>
           </div>
-          <div className="flex gap-2 text-xs">
+          <div className="flex gap-2 text-caption">
             {([7, 30, 90] as const).map((days) => (
               <Button
-                className="min-h-8 rounded-full px-3 py-1 text-xs"
+                className="min-h-8 rounded-full px-3 py-1 text-caption"
                 key={days}
                 onPress={() => setRange(days)}
                 selected={range === days}
@@ -482,15 +482,15 @@ export function FitnessPage() {
         </div>
         {latestWeight ? (
           <div className="mt-5 flex flex-wrap items-baseline gap-3">
-            <span className="text-3xl font-semibold">
+            <span className="text-figure-l font-semibold">
               {latestWeight.value} {latestWeight.unit}
             </span>
             {weightDelta !== null && (
               <span
                 className={
                   weightDelta <= 0
-                    ? "text-sm font-semibold text-emerald-700 dark:text-emerald-300"
-                    : "text-sm font-semibold text-orange-700 dark:text-orange-300"
+                    ? "text-body-s font-semibold text-primary-text"
+                    : "text-body-s font-semibold text-warning"
                 }
               >
                 {weightDelta > 0 ? "+" : ""}
@@ -500,7 +500,7 @@ export function FitnessPage() {
             {weightMetrics.length > 1 && (
               <svg
                 aria-label="Weight trend"
-                className="mt-4 h-20 w-full overflow-visible text-emerald-500"
+                className="mt-4 h-20 w-full overflow-visible text-primary-text"
                 role="img"
                 viewBox="0 0 300 80"
               >
@@ -516,7 +516,7 @@ export function FitnessPage() {
             )}
           </div>
         ) : (
-          <p className="mt-4 text-sm text-stone-500 dark:text-stone-400">
+          <p className="mt-4 text-body-s text-ink-muted">
             Add two weight measurements to see direction.
           </p>
         )}
@@ -526,7 +526,7 @@ export function FitnessPage() {
 }
 
 const fieldClass =
-  "mt-2 w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-stone-950";
+  "mt-2 w-full rounded-sm border border-line bg-surface px-3 py-2 text-body-s outline-none focus:border-focus";
 
 function isValidPositiveValue(value: string): boolean {
   const number = Number(value.trim().replace(",", "."));
