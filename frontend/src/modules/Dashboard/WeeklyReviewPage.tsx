@@ -183,7 +183,7 @@ function SummaryCard({
 }
 
 const fieldClass =
-  "mt-2 block w-full rounded-sm border border-line-strong bg-surface px-3 py-3 font-normal";
+  "mt-2 block w-full rounded-sm border border-line-strong bg-surface px-3 py-3 font-normal outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";
 function formatDate(date: string) {
   return new Intl.DateTimeFormat(undefined, {
     month: "short",

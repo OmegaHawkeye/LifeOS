@@ -65,6 +65,38 @@ describe("shared web design-system components", () => {
     );
   });
 
+  it("moves the segmented selection with arrow keys and keeps one tab stop", () => {
+    function Range() {
+      const [value, setValue] = useState("week");
+      return (
+        <SegmentedControl
+          label="Period"
+          onChange={setValue}
+          options={[
+            { value: "week", label: "This week" },
+            { value: "month", label: "This month" },
+            { value: "year", label: "This year" },
+          ]}
+          value={value}
+        />
+      );
+    }
+    render(<Range />);
+
+    const week = screen.getByRole("radio", { name: "This week" });
+    expect(week).toHaveAttribute("tabindex", "0");
+    expect(screen.getByRole("radio", { name: "This month" })).toHaveAttribute(
+      "tabindex",
+      "-1",
+    );
+
+    fireEvent.keyDown(week, { key: "ArrowLeft" });
+    const year = screen.getByRole("radio", { name: "This year" });
+    expect(year).toHaveAttribute("aria-checked", "true");
+    expect(year).toHaveFocus();
+    expect(year).toHaveAttribute("tabindex", "0");
+  });
+
   it("toggles a setting switch", () => {
     const onCheckedChange = vi.fn();
     render(

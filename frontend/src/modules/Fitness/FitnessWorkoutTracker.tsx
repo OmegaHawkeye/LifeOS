@@ -751,4 +751,4 @@ function formatDuration(seconds: number) {
 const panelClass =
   "mt-8 rounded-md border border-line bg-surface p-5 shadow-raised sm:p-7";
 const fieldClass =
-  "mt-1 min-h-12 w-full rounded-sm border border-line bg-surface px-3 py-2 text-body outline-none focus:border-focus";
+  "mt-1 min-h-12 w-full rounded-sm border border-line bg-surface px-3 py-2 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";

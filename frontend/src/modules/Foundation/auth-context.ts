@@ -9,6 +9,9 @@ export type AuthContextValue = {
   owner: OwnerProfile | null;
   pendingTwoFactor: TwoFactorLoginState | null;
   updateTheme: (theme: OwnerSettings["theme"]) => void;
+  /** A page-level theme that wins over the owner's theme until set to null. */
+  themeOverride: "wall" | "light" | null;
+  setThemeOverride: (override: "wall" | "light" | null) => void;
   createInitialOwner: (
     name: string,
     email: string,

@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
 import type { SegmentedControlProps } from "./SegmentedControl.types";
 
 type Thumb = { x: number; width: number };
@@ -32,6 +33,29 @@ export function SegmentedControl({
     return () => observer.disconnect();
   }, [value, options.length]);
 
+  // Radio-group keyboard pattern: one tab stop, arrows move and select.
+  const selectedIndex = Math.max(
+    0,
+    options.findIndex((option) => option.value === value),
+  );
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const last = options.length - 1;
+    const next = {
+      ArrowRight: selectedIndex === last ? 0 : selectedIndex + 1,
+      ArrowDown: selectedIndex === last ? 0 : selectedIndex + 1,
+      ArrowLeft: selectedIndex === 0 ? last : selectedIndex - 1,
+      ArrowUp: selectedIndex === 0 ? last : selectedIndex - 1,
+      Home: 0,
+      End: last,
+    }[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    onChange(options[next].value);
+    group.current
+      ?.querySelectorAll<HTMLElement>('[role="radio"]')
+      [next]?.focus();
+  };
+
   return (
     <div
       aria-label={label}
@@ -46,13 +70,15 @@ export function SegmentedControl({
           style={{ transform: `translateX(${thumb.x}px)`, width: thumb.width }}
         />
       ) : null}
-      {options.map((option) => (
+      {options.map((option, index) => (
         <button
           aria-checked={option.value === value}
-          className={`relative z-10 min-h-[38px] rounded-sm px-4 text-label text-ink-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus aria-checked:text-ink ${block ? "flex-1" : ""}`}
+          className={`relative z-10 min-h-target-min rounded-sm px-4 text-label text-ink-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus aria-checked:text-ink ${block ? "flex-1" : ""}`}
           key={option.value}
           onClick={() => onChange(option.value)}
+          onKeyDown={handleKeyDown}
           role="radio"
+          tabIndex={index === selectedIndex ? 0 : -1}
           type="button"
         >
           {option.label}

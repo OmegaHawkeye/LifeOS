@@ -353,6 +353,11 @@ test("loads the LifeOS application shell", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Today", exact: true, level: 1 }),
   ).toBeVisible();
+  // The owner masks sensitive data by default, so Today hides amounts.
+  await expect(
+    page.getByText("Sensitive values are hidden by your settings."),
+  ).toBeVisible();
+  await expect(page.getByText(/1[.,]?234[.,]56/)).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Next workout" }),
   ).toBeVisible();

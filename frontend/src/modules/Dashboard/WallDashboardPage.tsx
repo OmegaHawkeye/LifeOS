@@ -9,6 +9,7 @@ import { getNutritionDashboard } from "../Nutrition/nutrition";
 import type { NutritionDashboard } from "../Nutrition/nutrition";
 import { getRoutineOverview } from "../Routines/routines";
 import type { RoutineOverview } from "../Routines/routines";
+import { useAuth } from "../Foundation/auth-context";
 import { getOwnerSettings } from "../Foundation/settings";
 
 export function WallDashboardPage() {
@@ -18,21 +19,13 @@ export function WallDashboardPage() {
   const [data, setData] = useState<WallDashboardData | null>(null);
   const [error, setError] = useState(false);
 
-  // The wall tokens switch on the root element; put the owner's theme back on exit.
+  // The wall tokens switch on the root element; AuthProvider owns it and puts
+  // the owner's current theme back when the override is cleared.
+  const { setThemeOverride } = useAuth();
   useEffect(() => {
-    const root = document.documentElement;
-    const hadDark = root.classList.contains("dark");
-    if (lightMode) {
-      root.classList.remove("dark");
-      delete root.dataset.theme;
-    } else {
-      root.dataset.theme = "wall";
-    }
-    return () => {
-      delete root.dataset.theme;
-      root.classList.toggle("dark", hadDark);
-    };
-  }, [lightMode]);
+    setThemeOverride(lightMode ? "light" : "wall");
+  }, [lightMode, setThemeOverride]);
+  useEffect(() => () => setThemeOverride(null), [setThemeOverride]);
 
   useEffect(() => {
     const clock = window.setInterval(() => setNow(new Date()), 30_000);

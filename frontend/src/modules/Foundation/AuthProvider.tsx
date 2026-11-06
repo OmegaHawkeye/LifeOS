@@ -21,6 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loadError, setLoadError] = useState(false);
   const [setupRequired, setSetupRequired] = useState(false);
   const [theme, setTheme] = useState<OwnerSettings["theme"]>("system");
+  const [themeOverride, setThemeOverride] =
+    useState<AuthContextValue["themeOverride"]>(null);
   const [pendingTwoFactor, setPendingTwoFactor] =
     useState<AuthContextValue["pendingTwoFactor"]>(null);
 
@@ -70,10 +72,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     const media = window.matchMedia("(prefers-color-scheme: dark)");
+    // A page override (the wall display) wins over the owner's theme until it
+    // is cleared; clearing it re-applies the owner's theme as it is right now.
     const applyTheme = () => {
-      const isDark = theme === "dark" || (theme === "system" && media.matches);
+      const ownerDark =
+        theme === "dark" || (theme === "system" && media.matches);
+      const isDark = themeOverride === "light" ? false : ownerDark;
       root.classList.toggle("dark", isDark);
-      root.style.colorScheme = isDark ? "dark" : "light";
+      if (themeOverride === "wall") {
+        root.dataset.theme = "wall";
+      } else {
+        delete root.dataset.theme;
+      }
+      root.style.colorScheme =
+        themeOverride === "wall" || isDark ? "dark" : "light";
     };
 
     applyTheme();
@@ -84,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     media.addEventListener("change", applyTheme);
     return () => media.removeEventListener("change", applyTheme);
-  }, [theme]);
+  }, [theme, themeOverride]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -94,6 +106,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       owner,
       pendingTwoFactor,
       updateTheme: setTheme,
+      themeOverride,
+      setThemeOverride,
       createInitialOwner: async (name, email, password) => {
         setPendingTwoFactor(await provisionInitialOwner(name, email, password));
         setSetupRequired(false);
@@ -141,7 +155,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setPendingTwoFactor(null);
       },
     }),
-    [isLoading, loadError, setupRequired, owner, pendingTwoFactor, setTheme],
+    [
+      isLoading,
+      loadError,
+      setupRequired,
+      owner,
+      pendingTwoFactor,
+      setTheme,
+      themeOverride,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

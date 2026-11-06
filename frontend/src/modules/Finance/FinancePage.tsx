@@ -970,4 +970,4 @@ function isCalendarDate(value: string): boolean {
 const fieldClass =
   "mt-2 w-full rounded-sm border border-line-strong bg-surface px-3 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";
 const filterClass =
-  "mt-1.5 w-full rounded-sm border border-line bg-surface px-2.5 py-2 text-body-s font-normal text-ink outline-none focus:border-focus";
+  "mt-1.5 w-full rounded-sm border border-line bg-surface px-2.5 py-2 text-body-s font-normal text-ink outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";

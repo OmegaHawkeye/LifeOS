@@ -500,7 +500,7 @@ export function FinanceAssetsPanel() {
 }
 
 const fieldClass =
-  "mt-1 block w-full rounded-sm border border-line-strong bg-surface px-3 py-2.5 font-normal";
+  "mt-1 block w-full rounded-sm border border-line-strong bg-surface px-3 py-2.5 font-normal outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";
 function today() {
   return new Date().toISOString().slice(0, 10);
 }

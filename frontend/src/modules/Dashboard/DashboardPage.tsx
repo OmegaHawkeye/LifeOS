@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { AppIcon } from "@lifeos/ui/icons";
 import type { LifeOSIconName } from "@lifeos/ui/icons";
@@ -30,6 +30,17 @@ import {
 } from "../Health/health";
 import type { HealthTrendsSummary } from "../Health/health";
 import { RoutinesPanel } from "../Routines/RoutinesPanel";
+import { getOwnerSettings } from "../Foundation/settings";
+
+// Amounts stay hidden until the owner's settings say otherwise.
+const MaskMoneyContext = createContext(true);
+const MASKED = "••••";
+
+function useMoney() {
+  const masked = useContext(MaskMoneyContext);
+  return (amount: string | number, currency: string) =>
+    masked ? MASKED : formatMoney(amount, currency);
+}
 
 export function DashboardPage() {
   const navigate = useNavigate();
@@ -42,8 +53,12 @@ export function DashboardPage() {
   );
   const [nutrition, setNutrition] = useState<NutritionSnapshot | null>(null);
   const [health, setHealth] = useState<HealthTrendsSummary | null>(null);
+  const [maskMoney, setMaskMoney] = useState(true);
 
   useEffect(() => {
+    getOwnerSettings()
+      .then((settings) => setMaskMoney(settings.mask_sensitive_data_by_default))
+      .catch(() => undefined);
     getFinanceOverview(currentMonth())
       .then(setOverview)
       .catch(() => undefined);
@@ -65,60 +80,65 @@ export function DashboardPage() {
   }, []);
 
   return (
-    <section
-      aria-labelledby="page-title"
-      className="flex flex-col gap-6 tablet:gap-8"
-    >
-      <PageHead />
+    <MaskMoneyContext.Provider value={maskMoney}>
+      <section
+        aria-labelledby="page-title"
+        className="flex flex-col gap-6 tablet:gap-8"
+      >
+        <PageHead />
 
-      <div className="flex flex-col gap-6 tablet:gap-8 desktop:grid desktop:grid-cols-[minmax(0,1fr)_300px] desktop:items-start desktop:gap-x-8">
-        <aside
-          aria-label="Quick add"
-          className="flex flex-col gap-6 desktop:sticky desktop:top-10 desktop:col-start-2 desktop:row-span-3 desktop:row-start-1"
-        >
-          <DashboardSection title="Quick add">
-            <QuickAdd />
-          </DashboardSection>
-          <Link
-            className="inline-flex min-h-target-min items-center gap-2 self-start rounded-sm px-1 text-label text-primary-text underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-            to="/wall"
+        <div className="flex flex-col gap-6 tablet:gap-8 desktop:grid desktop:grid-cols-[minmax(0,1fr)_300px] desktop:items-start desktop:gap-x-8">
+          <aside
+            aria-label="Quick add"
+            className="flex flex-col gap-6 desktop:sticky desktop:top-10 desktop:col-start-2 desktop:row-span-3 desktop:row-start-1"
           >
-            <AppIcon name="today" size={18} />
-            Open wall mode
-          </Link>
-        </aside>
+            <DashboardSection title="Quick add">
+              <QuickAdd />
+            </DashboardSection>
+            <Link
+              className="inline-flex min-h-target-min items-center gap-2 self-start rounded-sm px-1 text-label text-primary-text underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+              to="/wall"
+            >
+              <AppIcon name="today" size={18} />
+              Open wall mode
+            </Link>
+          </aside>
 
-        <DashboardSection className="desktop:col-start-1" title="Signals">
-          <div className="grid gap-4 tablet:grid-cols-2 tablet:gap-6 wide:grid-cols-3">
-            <FinanceSignal
-              onOpen={() => navigate("/finance")}
-              overview={overview}
-            />
-            <NextWorkoutSignal
-              dashboard={fitnessDashboard}
-              onOpen={() => navigate("/fitness#workout-title")}
-            />
-            <BodyWeightSignal
-              fitness={fitness}
-              onLog={() => navigate("/fitness#body-metric-title")}
-            />
-            <NutritionSignal
-              nutrition={nutrition}
-              onOpen={() => navigate("/nutrition")}
-            />
-            <HealthSignal health={health} onOpen={() => navigate("/health")} />
+          <DashboardSection className="desktop:col-start-1" title="Signals">
+            <div className="grid gap-4 tablet:grid-cols-2 tablet:gap-6 wide:grid-cols-3">
+              <FinanceSignal
+                onOpen={() => navigate("/finance")}
+                overview={overview}
+              />
+              <NextWorkoutSignal
+                dashboard={fitnessDashboard}
+                onOpen={() => navigate("/fitness#workout-title")}
+              />
+              <BodyWeightSignal
+                fitness={fitness}
+                onLog={() => navigate("/fitness#body-metric-title")}
+              />
+              <NutritionSignal
+                nutrition={nutrition}
+                onOpen={() => navigate("/nutrition")}
+              />
+              <HealthSignal
+                health={health}
+                onOpen={() => navigate("/health")}
+              />
+            </div>
+          </DashboardSection>
+
+          <div className="desktop:col-start-1">
+            <RoutinesPanel />
           </div>
-        </DashboardSection>
 
-        <div className="desktop:col-start-1">
-          <RoutinesPanel />
+          <DashboardSection className="desktop:col-start-1" title="Plan ahead">
+            <FinancePlanningSummary planning={planning} />
+          </DashboardSection>
         </div>
-
-        <DashboardSection className="desktop:col-start-1" title="Plan ahead">
-          <FinancePlanningSummary planning={planning} />
-        </DashboardSection>
-      </div>
-    </section>
+      </section>
+    </MaskMoneyContext.Provider>
   );
 }
 
@@ -221,14 +241,17 @@ function FinanceSignal({
   overview: FinanceOverview | null;
 }) {
   const total = overview?.totals[0];
+  const masked = useContext(MaskMoneyContext);
 
   return (
     <SignalCard
       action="Open finance"
       detail={
-        total
-          ? "Net cashflow this month"
-          : "Record your first transaction to see this month’s cashflow."
+        !total
+          ? "Record your first transaction to see this month’s cashflow."
+          : masked
+            ? "Sensitive values are hidden by your settings."
+            : "Net cashflow this month"
       }
       enterDelayMs={0}
       eyebrow={formatMonth(new Date())}
@@ -237,7 +260,9 @@ function FinanceSignal({
       title="Cash flow"
       trend={total ? (Number(total.net_cashflow) >= 0 ? "up" : "down") : "flat"}
       value={
-        total ? formatMoney(total.net_cashflow, total.currency) : undefined
+        total && !masked
+          ? formatMoney(total.net_cashflow, total.currency)
+          : undefined
       }
     />
   );
@@ -476,6 +501,7 @@ function FinancePlanningSummary({
 }: {
   planning: FinancePlanningSnapshot | null;
 }) {
+  const money = useMoney();
   const upcomingSubscriptions = planning?.subscriptions
     .filter((subscription) => subscription.status === "active")
     .sort((left, right) =>
@@ -527,10 +553,7 @@ function FinancePlanningSummary({
                     </span>
                   </span>
                   <span className="text-body-s font-semibold tabular-nums text-ink">
-                    {formatMoney(
-                      Number(subscription.amount),
-                      subscription.currency,
-                    )}
+                    {money(Number(subscription.amount), subscription.currency)}
                   </span>
                 </li>
               ))}
@@ -562,6 +585,7 @@ function FinancePlanningSummary({
 }
 
 function BudgetMeter({ budget }: { budget: FinanceBudget }) {
+  const money = useMoney();
   const spent = Number(budget.spent);
   const target = Number(budget.target_amount);
   const remaining = Number(budget.remaining);
@@ -577,14 +601,14 @@ function BudgetMeter({ budget }: { budget: FinanceBudget }) {
       max={target > 0 ? Math.max(target, spent) : 1}
       note={
         budget.is_over_budget
-          ? `${formatMoney(Math.abs(remaining), budget.currency)} over budget`
-          : `${formatMoney(remaining, budget.currency)} left`
+          ? `${money(Math.abs(remaining), budget.currency)} over budget`
+          : `${money(remaining, budget.currency)} left`
       }
-      ofText={`of ${formatMoney(target, budget.currency)}`}
+      ofText={`of ${money(target, budget.currency)}`}
       target={target > 0 && spent > target ? target : undefined}
       tone={tone}
       value={spent}
-      valueText={formatMoney(spent, budget.currency)}
+      valueText={money(spent, budget.currency)}
     />
   );
 }

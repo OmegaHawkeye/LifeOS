@@ -20,7 +20,7 @@ export function SegmentedControl({
           <Pressable
             accessibilityRole="radio"
             accessibilityState={{ checked: selected }}
-            className={`min-h-[38px] items-center justify-center rounded-sm px-4 ${block ? "flex-1" : ""} ${selected ? "border border-line-strong bg-surface" : ""}`}
+            className={`min-h-target-min items-center justify-center rounded-sm px-4 ${block ? "flex-1" : ""} ${selected ? "border border-line-strong bg-surface" : ""}`}
             key={option.value}
             onPress={() => onChange(option.value)}
           >

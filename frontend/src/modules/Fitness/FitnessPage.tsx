@@ -526,7 +526,7 @@ export function FitnessPage() {
 }
 
 const fieldClass =
-  "mt-2 w-full rounded-sm border border-line bg-surface px-3 py-2 text-body-s outline-none focus:border-focus";
+  "mt-2 w-full rounded-sm border border-line bg-surface px-3 py-2 text-body-s outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";
 
 function isValidPositiveValue(value: string): boolean {
   const number = Number(value.trim().replace(",", "."));
