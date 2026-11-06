@@ -16,6 +16,7 @@ use App\Modules\Fitness\Http\Controllers\FitnessDashboardController;
 use App\Modules\Fitness\Http\Controllers\FitnessProgressPhotoController;
 use App\Modules\Fitness\Http\Controllers\FitnessWorkoutController;
 use App\Modules\Foundation\Http\Controllers\BackupStatusController;
+use App\Modules\Foundation\Http\Controllers\InitialOwnerSetupController;
 use App\Modules\Foundation\Http\Controllers\MobileCredentialController;
 use App\Modules\Foundation\Http\Controllers\MobilePasskeyLoginController;
 use App\Modules\Foundation\Http\Controllers\OwnerAccountController;
@@ -37,6 +38,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         'service' => 'lifeos-api',
         'status' => 'ok',
     ])->name('readiness');
+
+    Route::get('/setup/status', [InitialOwnerSetupController::class, 'show'])
+        ->name('setup.status');
+    Route::post('/setup/owner', [InitialOwnerSetupController::class, 'store'])
+        ->middleware('throttle:initial-setup')
+        ->name('setup.owner.store');
 
     Route::post('/auth/login', [SessionController::class, 'store'])
         ->middleware('throttle:login')

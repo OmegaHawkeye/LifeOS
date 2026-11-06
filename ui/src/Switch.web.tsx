@@ -1,42 +1,74 @@
-import { useId } from "react";
+import { useId, type ButtonHTMLAttributes } from "react";
 import type { SwitchProps } from "./Switch.types";
+import { switchThumbVariants, switchTrackVariants } from "./switchVariants";
+import { cn } from "./cn";
 
-// Stacked rows are separated by block padding and a hairline ([&+&] targets the next sibling row).
+type WebSwitchProps = SwitchProps &
+  Omit<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    "children" | "disabled" | "onChange" | "onClick" | "size" | "type"
+  >;
+
 export function Switch({
+  accessibilityLabel,
   checked,
-  disabled,
+  className = "",
+  disabled = false,
   hint,
   label,
-  onChange,
-}: SwitchProps) {
+  onCheckedChange,
+  size = "md",
+  ...props
+}: WebSwitchProps) {
   const id = useId();
+  const labelId = `${id}-label`;
+  const hintId = `${id}-hint`;
 
+  const control = (
+    <button
+      {...props}
+      aria-checked={checked}
+      aria-describedby={hint ? hintId : undefined}
+      aria-label={label ? undefined : accessibilityLabel}
+      aria-labelledby={label ? labelId : undefined}
+      className={cn(
+        switchTrackVariants({
+          checked,
+          className: label ? undefined : className,
+          disabled,
+          size,
+        }),
+      )}
+      disabled={disabled}
+      onClick={() => onCheckedChange(!checked)}
+      role="switch"
+      type="button"
+    >
+      <span className={cn(switchThumbVariants({ checked, size }))} />
+    </button>
+  );
+
+  if (!label) return control;
+
+  // Stacked rows are separated by block padding and a hairline ([&+&] targets the next sibling row).
   return (
-    <label
-      className="flex min-h-target-min cursor-pointer items-center justify-between gap-4 py-3 has-disabled:cursor-not-allowed [&+&]:border-t [&+&]:border-line"
-      htmlFor={id}
+    <div
+      className={cn(
+        "flex min-h-target-min items-center justify-between gap-4 py-3 [&+&]:border-t [&+&]:border-line",
+        className,
+      )}
     >
       <span className="flex flex-col">
-        <span className="text-body text-ink">{label}</span>
+        <span className="text-body text-ink" id={labelId}>
+          {label}
+        </span>
         {hint ? (
-          <span className="text-body-s text-ink-muted">{hint}</span>
+          <span className="text-body-s text-ink-muted" id={hintId}>
+            {hint}
+          </span>
         ) : null}
       </span>
-      <input
-        checked={checked}
-        className="peer sr-only"
-        disabled={disabled}
-        id={id}
-        onChange={(event) => onChange(event.target.checked)}
-        role="switch"
-        type="checkbox"
-      />
-      <span
-        aria-hidden="true"
-        className="relative h-7 w-12 shrink-0 rounded-full border border-line-strong bg-surface-sunken transition-colors duration-150 peer-checked:border-primary peer-checked:bg-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus peer-disabled:border-line motion-reduce:transition-none peer-checked:[&>span]:translate-x-5 peer-checked:[&>span]:bg-on-primary"
-      >
-        <span className="absolute top-[3px] left-[3px] size-5 rounded-full bg-ink-muted transition-transform duration-150 motion-reduce:transition-none" />
-      </span>
-    </label>
+      {control}
+    </div>
   );
 }

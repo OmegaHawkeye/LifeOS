@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@lifeos/ui/button";
+import { Switch } from "@lifeos/ui/switch";
 import { Passkeys } from "@laravel/passkeys";
 import { usePasskeyRegister } from "@laravel/passkeys/react";
 import { apiFetch, initializeCsrfProtection } from "@/api/client";
@@ -101,25 +102,14 @@ export function PasskeySecurityPanel({
           manager. LifeOS stores only the public key.
         </p>
       </div>
-      <label
-        className="flex cursor-pointer items-start gap-3 rounded-md border border-line p-4 text-body-s"
-        htmlFor="passkeys-enabled"
-      >
-        <input
+      <div className="rounded-md border border-line px-4">
+        <Switch
           checked={enabled}
-          className="mt-0.5 size-4 accent-primary"
-          id="passkeys-enabled"
-          onChange={(event) => onToggle(event.currentTarget.checked)}
-          type="checkbox"
+          hint="Disable this to keep password and two-factor sign-in as the only authentication method. Existing passkeys are not deleted."
+          label="Allow passkey sign-in"
+          onCheckedChange={onToggle}
         />
-        <span>
-          <span className="block font-medium">Allow passkey sign-in</span>
-          <span className="mt-1 block leading-5 text-ink-muted">
-            Disable this to keep password and two-factor sign-in as the only
-            authentication method. Existing passkeys are not deleted.
-          </span>
-        </span>
-      </label>
+      </div>
       <div
         className={`rounded-md border p-4 text-body-s ${originIsSecure ? "border-primary bg-primary-soft text-primary-text" : "border-warning bg-warning-soft text-warning"}`}
       >

@@ -1,24 +1,13 @@
 import type { ButtonHTMLAttributes } from "react";
 import type { ButtonProps } from "./Button.types";
+import { buttonVariants } from "./buttonVariants";
+import { cn } from "./cn";
 
 type WebButtonProps = ButtonProps &
   Omit<
     ButtonHTMLAttributes<HTMLButtonElement>,
     "children" | "disabled" | "onClick" | "type"
   >;
-
-const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary: "bg-primary text-on-primary hover:bg-primary-hover",
-  secondary:
-    "border border-line-strong bg-surface text-ink hover:bg-surface-sunken",
-  tertiary:
-    "bg-transparent text-primary-text hover:bg-primary-soft disabled:bg-transparent",
-  danger: "bg-danger text-on-danger",
-  icon: "size-target-min border border-line-strong bg-surface p-0 text-ink hover:bg-surface-sunken",
-};
-
-const selectedStyles =
-  "aria-pressed:border aria-pressed:border-primary aria-pressed:bg-primary-soft aria-pressed:text-primary-text";
 
 export function Button({
   accessibilityLabel,
@@ -28,6 +17,7 @@ export function Button({
   loading = false,
   onPress,
   selected,
+  size,
   type = "button",
   variant = "primary",
   ...props
@@ -40,7 +30,15 @@ export function Button({
       aria-label={accessibilityLabel ?? props["aria-label"]}
       aria-busy={loading || undefined}
       aria-pressed={selected}
-      className={`inline-flex items-center justify-center rounded-sm ${variant === "icon" ? "" : "min-h-target-min gap-2 px-4 text-label"} transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:border-line disabled:bg-surface-sunken disabled:text-ink-muted ${variants[variant]} ${selectedStyles} ${className}`.trim()}
+      className={cn(
+        buttonVariants({
+          className,
+          disabled: isDisabled,
+          selected: Boolean(selected),
+          size: size ?? (variant === "icon" ? "icon" : "md"),
+          variant,
+        }),
+      )}
       disabled={isDisabled}
       onClick={onPress}
       type={type}

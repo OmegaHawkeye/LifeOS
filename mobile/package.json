@@ -50,6 +50,7 @@
       "^react$": "<rootDir>/node_modules/react",
       "^react/(.*)$": "<rootDir>/node_modules/react/$1",
       "^@lifeos/ui/button$": "<rootDir>/../ui/src/Button.native.tsx",
+      "^@lifeos/ui/switch$": "<rootDir>/../ui/src/Switch.native.tsx",
       "^@lifeos/ui$": "<rootDir>/../ui/src/SummaryCard.native.tsx",
       "^@lifeos/ui/icons$": "<rootDir>/../ui/src/AppIcon.native.tsx",
       "^@lifeos/ui/tag$": "<rootDir>/../ui/src/Tag.native.tsx",

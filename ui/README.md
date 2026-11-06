@@ -6,6 +6,15 @@ Primitives keep one public API and Tailwind token vocabulary. Platform-specific
 renderers are used only where DOM elements and native views differ. Add shared
 components here instead of duplicating their visual contract in an app.
 
+## Variants with CVA
+
+Shared component variants live beside their component in a `*Variants.ts`
+file and use `class-variance-authority` (`cva` and `VariantProps`). Both the
+web and React Native renderers consume the same recipe; add variant axes there
+instead of creating platform-specific class maps. Recipes are exposed through
+`@lifeos/ui/button-variants` and `@lifeos/ui/switch-variants`. Use `cn()` from
+`@lifeos/ui/classnames` to merge recipe output with explicit utility overrides.
+
 ## Button contract
 
 Import `Button` from `@lifeos/ui/button`. Web and React Native share these
@@ -62,7 +71,25 @@ Each component has one `*.types.ts` contract with `*.web.tsx` and
 | `@lifeos/ui/signal-card`       | One dashboard summary per module: figure, trend, next step and action. Cards rise in; pass `enterDelayMs` to stagger them. |
 | `@lifeos/ui/segmented-control` | Two to four peer views or values. On web the thumb slides to the selection.                                                |
 | `@lifeos/ui/switch`            | Settings that apply immediately. Stacked rows are separated by padding and a hairline.                                     |
+| `@lifeos/ui/app-nav` | Responsive app navigation: tab bar on phones, rail on tablets, sidebar on desktop. |
+| `@lifeos/ui/tokens` | `tokenColor()` for native props that cannot take a class, such as icon colours. |
 
 Web animations respect `prefers-reduced-motion`; the native meter checks the
 system's reduce-motion setting before animating. Native module icons take
 their colour from `tokens.json` and follow light and dark only.
+
+## Switch contract
+
+Import `Switch` from `@lifeos/ui/switch`. It is a controlled switch: pass
+`checked`, `onCheckedChange`, and optionally `disabled`, `size` (`sm` or `md`),
+and `className`. Name it in one of two ways:
+
+- `label` (and optional `hint`) renders a settings row with visible text that
+  states the "on" condition, e.g. "Back up every night". The label names the
+  control and the hint describes it.
+- `accessibilityLabel` alone renders the bare control, for places that already
+  show their own text.
+
+Both platforms share the same checked, disabled, and size CVA recipes; web
+exposes `role="switch"` and native exposes the equivalent switch accessibility
+role and state.

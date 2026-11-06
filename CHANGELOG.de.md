@@ -1,3 +1,21 @@
+# 0.15.2
+
+- Umbrel gleicht abweichende Datenbank-Zugangsdaten beim Start ab, ohne Daten zu löschen.
+
+# 0.15.1
+
+- Umbrel-Ersteinrichtung funktioniert jetzt mit beschreibbarem Speicher und nachvollziehbaren Fehlerprotokollen.
+
+# 0.15.0
+
+- LifeOS lässt sich jetzt mit Docker Compose lokal installieren und auf eine ausgewählte Version aktualisieren.
+- LifeOS kann jetzt über einen Umbrel Community App Store installiert werden.
+
+# 0.14.0
+
+- Web und Mobile nutzen einheitliche Button-Varianten mit klaren Lade- und Disabled-Zuständen.
+- Formulare aktivieren Speichern erst bei gültigen Pflichtangaben.
+
 # 0.13.0
 
 - Lokale Fehlerberichte helfen bei der Diagnose und werden nur auf Wunsch exportiert.

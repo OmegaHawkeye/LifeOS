@@ -39,6 +39,10 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($key);
         });
 
+        RateLimiter::for('initial-setup', function (Request $request): Limit {
+            return Limit::perMinute(5)->by(hash('sha256', (string) $request->ip()));
+        });
+
         RateLimiter::for('two-factor', function (Request $request): Limit {
             $pendingUserId = (string) $request->session()->get('auth.pending_user_id', 'guest');
             $key = hash('sha256', $pendingUserId.'|'.$request->ip());

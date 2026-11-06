@@ -46,6 +46,15 @@
       "react-native": "./src/SegmentedControl.native.tsx",
       "default": "./src/SegmentedControl.web.tsx"
     },
+    "./button-variants": {
+      "types": "./src/buttonVariants.ts",
+      "default": "./src/buttonVariants.ts"
+    },
+    "./switch-variants": {
+      "types": "./src/switchVariants.ts",
+      "default": "./src/switchVariants.ts"
+    },
+    "./classnames": "./src/cn.ts",
     "./switch": {
       "types": "./src/Switch.types.ts",
       "react-native": "./src/Switch.native.tsx",
@@ -64,8 +73,8 @@
   "peerDependencies": {
     "@types/react": ">=19",
     "react": ">=19",
-    "react-native-svg": ">=15",
-    "react-native": ">=0.86"
+    "react-native": ">=0.86",
+    "react-native-svg": ">=15"
   },
   "peerDependenciesMeta": {
     "react-native": {
@@ -74,5 +83,9 @@
     "react-native-svg": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "tailwind-merge": "^3.7.0"
   }
 }

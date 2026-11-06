@@ -58,21 +58,19 @@ describe("shared native design-system components", () => {
   });
 
   it("toggles a setting switch", async () => {
-    const onChange = jest.fn();
+    const onCheckedChange = jest.fn();
     await render(
       <Switch
         checked={false}
         label="Back up every night"
-        onChange={onChange}
+        onCheckedChange={onCheckedChange}
       />,
     );
 
-    fireEvent(
-      screen.getByLabelText("Back up every night"),
-      "valueChange",
-      true,
+    fireEvent.press(
+      screen.getByRole("switch", { name: "Back up every night" }),
     );
-    expect(onChange).toHaveBeenCalledWith(true);
+    expect(onCheckedChange).toHaveBeenCalledWith(true);
   });
 
   it("renders a signal card with its next action", async () => {

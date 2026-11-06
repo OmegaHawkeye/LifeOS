@@ -66,20 +66,20 @@ describe("shared web design-system components", () => {
   });
 
   it("toggles a setting switch", () => {
-    const onChange = vi.fn();
+    const onCheckedChange = vi.fn();
     render(
       <Switch
         checked={false}
         hint="02:00 to the NAS"
         label="Back up every night"
-        onChange={onChange}
+        onCheckedChange={onCheckedChange}
       />,
     );
 
     fireEvent.click(
       screen.getByRole("switch", { name: /Back up every night/ }),
     );
-    expect(onChange).toHaveBeenCalledWith(true);
+    expect(onCheckedChange).toHaveBeenCalledWith(true);
   });
 
   it("renders a signal card with its next action", () => {

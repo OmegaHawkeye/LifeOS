@@ -5,9 +5,15 @@ import type { OwnerSettings } from "./settings";
 export type AuthContextValue = {
   isLoading: boolean;
   loadError: boolean;
+  setupRequired: boolean;
   owner: OwnerProfile | null;
   pendingTwoFactor: TwoFactorLoginState | null;
   updateTheme: (theme: OwnerSettings["theme"]) => void;
+  createInitialOwner: (
+    name: string,
+    email: string,
+    password: string,
+  ) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   verifyTwoFactor: (code: string) => Promise<void>;
   refreshOwner: () => Promise<void>;

@@ -6,6 +6,50 @@ export type OwnerProfile =
 export type TwoFactorLoginState =
   paths["/auth/login"]["post"]["responses"][202]["content"]["application/json"]["data"];
 
+export async function isInitialOwnerSetupRequired(): Promise<boolean> {
+  const { data, response } = await apiClient.GET("/setup/status");
+
+  if (!response.ok || !data) {
+    throw new Error("LifeOS could not check its initial setup status.");
+  }
+
+  return data.data.required;
+}
+
+export async function createInitialOwner(
+  name: string,
+  email: string,
+  password: string,
+): Promise<TwoFactorLoginState> {
+  await initializeCsrfProtection();
+  const { data, response } = await apiClient.POST("/setup/owner", {
+    body: {
+      name,
+      email,
+      password,
+      password_confirmation: password,
+    },
+  });
+
+  if (response.status === 409) {
+    throw new Error("An owner account already exists. Please sign in instead.");
+  }
+
+  if (response.status === 422) {
+    throw new Error("Check the email and password details and try again.");
+  }
+
+  if (response.status === 429) {
+    throw new Error("Too many setup attempts. Wait a moment and try again.");
+  }
+
+  if (response.status !== 202 || !data) {
+    throw new Error("LifeOS could not create the owner account.");
+  }
+
+  return data.data;
+}
+
 export async function getCurrentOwner(): Promise<OwnerProfile | null> {
   const { data, response } = await apiClient.GET("/me");
 

@@ -13,6 +13,7 @@ describe("shared native Button", () => {
     const button = screen.getByRole("button", { name: "Save changes" });
     expect(button).toBeDisabled();
     expect(button.props.className).toContain("bg-surface-sunken");
+    expect(button.props.className).not.toMatch(/(?:^|\s)bg-primary(?:\s|$)/);
     fireEvent.press(button);
     expect(onPress).not.toHaveBeenCalled();
   });
@@ -27,5 +28,6 @@ describe("shared native Button", () => {
     const button = screen.getByRole("button", { name: "Saving" });
     expect(button).toBeDisabled();
     expect(button.props.accessibilityState.busy).toBe(true);
+    expect(button.props.className).toContain("flex-row");
   });
 });

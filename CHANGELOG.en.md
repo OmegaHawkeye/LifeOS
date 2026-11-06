@@ -1,3 +1,21 @@
+# 0.15.2
+
+- Umbrel now reconciles stale database credentials on startup without deleting data.
+
+# 0.15.1
+
+- Umbrel first-run setup now has writable storage and traceable server errors.
+
+# 0.15.0
+
+- LifeOS can now be installed locally and updated to a selected release with Docker Compose.
+- LifeOS can now be installed from a community app store on umbrelOS.
+
+# 0.14.0
+
+- Web and mobile now share button variants with clear loading and disabled states.
+- Forms enable submission only when required fields are valid.
+
 # 0.13.0
 
 - Local error reports help diagnose issues and are exported only on request.

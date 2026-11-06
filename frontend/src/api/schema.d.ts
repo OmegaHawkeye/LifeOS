@@ -1487,6 +1487,40 @@ export interface paths {
         patch: operations["updateOwnerSettings"];
         trace?: never;
     };
+    "/setup/owner": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Provision the first owner and begin required authenticator setup */
+        post: operations["createInitialOwner"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/setup/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Check whether the first owner must be provisioned */
+        get: operations["getInitialOwnerSetupStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1693,6 +1727,15 @@ export interface components {
             kind: string;
             metadata?: Record<string, never>;
             name: string;
+        };
+        CreateInitialOwnerRequest: {
+            /** Format: email */
+            email: string;
+            name: string;
+            /** Format: password */
+            password: string;
+            /** Format: password */
+            password_confirmation: string;
         };
         CreateRoutineRequest: {
             days_of_week?: number[];
@@ -2324,6 +2367,12 @@ export interface components {
         HealthTrendsSummaryResponse: {
             data: components["schemas"]["HealthTrendsSummary"];
         };
+        InitialOwnerSetupStatusResponse: {
+            data: {
+                /** @description True only when no owner account has been provisioned. */
+                required: boolean;
+            };
+        };
         LogFitnessWorkoutSetRequest: {
             duration_seconds?: number | null;
             notes?: string | null;
@@ -2813,7 +2862,7 @@ export interface components {
         };
         TwoFactorLoginResponse: {
             data: {
-                /** @description Base32 authenticator secret, returned only during authenticated first-time setup. */
+                /** @description Base32 authenticator secret, returned only during a pending first-time authenticator setup. */
                 secret: string;
                 /** @constant */
                 status: "setup_required";
@@ -7137,6 +7186,73 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    createInitialOwner: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInitialOwnerRequest"];
+            };
+        };
+        responses: {
+            /** @description The owner was created and must finish first-time authenticator setup before signing in. */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TwoFactorLoginResponse"];
+                };
+            };
+            /** @description An owner account already exists. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description The initial owner fields are invalid. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Too many setup attempts. */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getInitialOwnerSetupStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Only reports whether an owner account exists; contains no account details. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InitialOwnerSetupStatusResponse"];
                 };
             };
         };

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Mockery;
@@ -35,6 +36,17 @@ class RequestDiagnosticsTest extends TestCase
         $response
             ->assertUnauthorized()
             ->assertHeader('X-Correlation-ID');
+    }
+
+    public function test_framework_exception_log_context_includes_the_request_correlation_id(): void
+    {
+        $correlationId = '5a739fd4-7959-40fd-ae84-9cb3fdf3d0e2';
+        $this->app['request']->attributes->set('correlation_id', $correlationId);
+
+        $context = $this->app->make(Handler::class)
+            ->contextForException(new RuntimeException('internal test detail'));
+
+        $this->assertSame($correlationId, $context['correlation_id']);
     }
 
     public function test_api_failures_include_a_safe_correlation_id_and_log_no_exception_message(): void

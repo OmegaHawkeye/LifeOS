@@ -1,0 +1,123 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: lifeos-lifeos_lifeos_1
+      APP_PORT: 8080
+      PROXY_AUTH_ADD: "false"
+
+  storage-init:
+    image: ghcr.io/omegahawkeye/lifeos:0.15.2
+    user: "0:0"
+    init: true
+    restart: "no"
+    entrypoint: ["/usr/local/bin/lifeos-prepare-umbrel-storage"]
+    volumes:
+      - ${APP_DATA_DIR}/data/storage:/app/storage
+      - ${APP_DATA_DIR}/data/backups:/backups
+
+  lifeos:
+    image: ghcr.io/omegahawkeye/lifeos:0.15.2
+    user: "1000:1000"
+    init: true
+    restart: on-failure
+    stop_grace_period: 1m
+    depends_on:
+      postgres:
+        condition: service_healthy
+      storage-init:
+        condition: service_completed_successfully
+    environment: &lifeos-environment
+      APP_NAME: LifeOS
+      APP_ENV: production
+      APP_KEY: "base64:${APP_LIFEOS_APP_KEY:?LifeOS app key was not derived by Umbrel}"
+      APP_DEBUG: "false"
+      LOG_CHANNEL: stderr
+      APP_URL: "http://${DEVICE_DOMAIN_NAME}:8890"
+      XDG_CONFIG_HOME: /tmp/lifeos-caddy/config
+      XDG_DATA_HOME: /tmp/lifeos-caddy/data
+      APP_TIMEZONE: Europe/Vienna
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: lifeos
+      DB_USERNAME: lifeos
+      DB_PASSWORD: ${APP_LIFEOS_DB_PASSWORD:?LifeOS database password was not derived by Umbrel}
+      SESSION_DRIVER: database
+      SESSION_ENCRYPT: "true"
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      FILESYSTEM_DISK: local
+      LIFEOS_BACKUP_DIRECTORY: /backups
+      LIFEOS_BACKUP_RETENTION_DAYS: "30"
+      LIFEOS_MOBILE_ACCESS_TOKEN_MINUTES: "15"
+      LIFEOS_MOBILE_REFRESH_TOKEN_DAYS: "30"
+      LIFEOS_BACKUP_KEY_PATH: /app/storage/app/private/backup-recovery.key
+      LIFEOS_BACKUP_STATUS_PATH: /app/storage/app/private/backup-status.json
+    volumes:
+      - ${APP_DATA_DIR}/data/storage:/app/storage
+      - ${APP_DATA_DIR}/data/backups:/backups
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://127.0.0.1:8080/api/v1/readiness >/dev/null || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+
+  postgres:
+    image: postgres:18-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      POSTGRES_DB: lifeos
+      POSTGRES_USER: lifeos
+      POSTGRES_PASSWORD: ${APP_LIFEOS_DB_PASSWORD:?LifeOS database password was not derived by Umbrel}
+    volumes:
+      - ${APP_DATA_DIR}/data/postgres:/var/lib/postgresql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          db_host="$$(hostname -i)";
+          if PGPASSWORD="$$POSTGRES_PASSWORD" psql --no-password --host="$$db_host"
+          --username="$$POSTGRES_USER" --dbname="$$POSTGRES_DB"
+          --command='SELECT 1' >/dev/null 2>&1; then exit 0; fi;
+          if ! psql --no-password --username="$$POSTGRES_USER"
+          --dbname="$$POSTGRES_DB" --command='SELECT 1' >/dev/null 2>&1;
+          then exit 1; fi;
+          printf '%s\n%s\n' "$$POSTGRES_PASSWORD" "$$POSTGRES_PASSWORD" |
+          psql --no-password --username="$$POSTGRES_USER"
+          --dbname="$$POSTGRES_DB" --no-psqlrc --set=ON_ERROR_STOP=1
+          --command="\password $$POSTGRES_USER" >/dev/null 2>&1
+          && PGPASSWORD="$$POSTGRES_PASSWORD" psql --no-password
+          --host="$$db_host" --username="$$POSTGRES_USER"
+          --dbname="$$POSTGRES_DB" --command='SELECT 1' >/dev/null 2>&1
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  scheduler:
+    image: ghcr.io/omegahawkeye/lifeos:0.15.2
+    user: "1000:1000"
+    init: true
+    restart: on-failure
+    stop_grace_period: 1m
+    healthcheck:
+      disable: true
+    entrypoint: ["php"]
+    command: ["artisan", "schedule:work"]
+    environment: *lifeos-environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+      lifeos:
+        condition: service_healthy
+    volumes:
+      - ${APP_DATA_DIR}/data/storage:/app/storage
+      - ${APP_DATA_DIR}/data/backups:/backups

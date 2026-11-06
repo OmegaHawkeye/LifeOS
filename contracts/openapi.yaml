@@ -18,6 +18,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Readiness"
+  /setup/status:
+    get:
+      operationId: getInitialOwnerSetupStatus
+      summary: Check whether the first owner must be provisioned
+      tags: [Foundation]
+      responses:
+        "200":
+          description: Only reports whether an owner account exists; contains no account details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InitialOwnerSetupStatusResponse"
+  /setup/owner:
+    post:
+      operationId: createInitialOwner
+      summary: Provision the first owner and begin required authenticator setup
+      tags: [Foundation]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInitialOwnerRequest"
+      responses:
+        "202":
+          description: The owner was created and must finish first-time authenticator setup before signing in.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TwoFactorLoginResponse"
+        "409":
+          description: An owner account already exists.
+        "422":
+          description: The initial owner fields are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Too many setup attempts.
   /me:
     get:
       operationId: getOwnerProfile
@@ -192,7 +232,8 @@ paths:
           description: The self-hosted LifeOS web origin to open for WebAuthn.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/MobilePasskeyLoginUrlResponse" }
+              schema:
+                { $ref: "#/components/schemas/MobilePasskeyLoginUrlResponse" }
         "422": { description: State or PKCE challenge is invalid. }
         "429": { description: Too many passkey attempts. }
   /mobile/passkeys/prepare:
@@ -206,7 +247,10 @@ paths:
           application/json:
             schema: { $ref: "#/components/schemas/PasskeyStateRequest" }
       responses:
-        "200": { description: The browser session is ready for the passkey ceremony. }
+        "200":
+          {
+            description: The browser session is ready for the passkey ceremony.,
+          }
         "422": { description: The state is unknown or expired. }
   /mobile/passkeys/complete:
     post:
@@ -224,9 +268,14 @@ paths:
           description: The app callback URL containing a one-time code and matching state.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/MobilePasskeyCallbackResponse" }
+              schema:
+                { $ref: "#/components/schemas/MobilePasskeyCallbackResponse" }
         "401": { description: The browser session is not authenticated. }
-        "422": { description: A verified passkey session is required, or the state is expired. }
+        "422":
+          {
+            description: A verified passkey session is required,
+            or the state is expired.,
+          }
   /mobile/passkeys/exchange:
     post:
       operationId: exchangeMobilePasskeyCode
@@ -236,14 +285,21 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/MobilePasskeyExchangeRequest" }
+            schema:
+              { $ref: "#/components/schemas/MobilePasskeyExchangeRequest" }
       responses:
         "200":
           description: The native app's short-lived access token and rotating refresh token.
           content:
             application/json:
               schema: { $ref: "#/components/schemas/MobileCredentialsResponse" }
-        "422": { description: The code is invalid, expired, replayed, or has the wrong PKCE verifier. }
+        "422":
+          {
+            description: The code is invalid,
+            expired,
+            replayed,
+            or has the wrong PKCE verifier.,
+          }
         "429": { description: Too many passkey attempts. }
   /mobile/passkeys/management/redeem:
     post:
@@ -254,10 +310,15 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/PasskeyManagementRedeemRequest" }
+            schema:
+              { $ref: "#/components/schemas/PasskeyManagementRedeemRequest" }
       responses:
-        "200": { description: The browser session is authenticated for passkey management. }
-        "422": { description: The handoff is invalid, expired, or already used. }
+        "200":
+          {
+            description: The browser session is authenticated for passkey management.,
+          }
+        "422":
+          { description: The handoff is invalid, expired, or already used. }
   /auth/two-factor/confirm:
     post:
       operationId: confirmOwnerTwoFactorSetup
@@ -444,7 +505,8 @@ paths:
           description: A same-server browser URL with a fragment-only one-time token.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/PasskeyManagementUrlResponse" }
+              schema:
+                { $ref: "#/components/schemas/PasskeyManagementUrlResponse" }
         "401": { description: The request is not authenticated. }
   /security/passkeys/{passkey}:
     delete:
@@ -2750,6 +2812,39 @@ components:
         status:
           type: string
           const: ok
+    InitialOwnerSetupStatusResponse:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [required]
+          properties:
+            required:
+              type: boolean
+              description: True only when no owner account has been provisioned.
+    CreateInitialOwnerRequest:
+      type: object
+      additionalProperties: false
+      required: [name, email, password, password_confirmation]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          format: password
+          minLength: 12
+        password_confirmation:
+          type: string
+          format: password
     OwnerProfileResponse:
       type: object
       additionalProperties: false
@@ -2886,28 +2981,40 @@ components:
       additionalProperties: false
       required: [state, code_challenge]
       properties:
-        state: { type: string, pattern: '^[A-Za-z0-9_-]{43}$' }
-        code_challenge: { type: string, pattern: '^[A-Za-z0-9_-]{43}$' }
+        state: { type: string, pattern: "^[A-Za-z0-9_-]{43}$" }
+        code_challenge: { type: string, pattern: "^[A-Za-z0-9_-]{43}$" }
     PasskeyStateRequest:
       type: object
       additionalProperties: false
       required: [state]
       properties:
-        state: { type: string, pattern: '^[A-Za-z0-9_-]{43}$' }
+        state: { type: string, pattern: "^[A-Za-z0-9_-]{43}$" }
     MobilePasskeyExchangeRequest:
       type: object
       additionalProperties: false
       required: [state, code, code_verifier]
       properties:
-        state: { type: string, pattern: '^[A-Za-z0-9_-]{43}$' }
+        state: { type: string, pattern: "^[A-Za-z0-9_-]{43}$" }
         code: { type: string, minLength: 64, maxLength: 64 }
-        code_verifier: { type: string, minLength: 43, maxLength: 128, pattern: '^[A-Za-z0-9._~-]+$' }
+        code_verifier:
+          {
+            type: string,
+            minLength: 43,
+            maxLength: 128,
+            pattern: "^[A-Za-z0-9._~-]+$",
+          }
     PasskeyManagementRedeemRequest:
       type: object
       additionalProperties: false
       required: [token]
       properties:
-        token: { type: string, minLength: 64, maxLength: 64, pattern: '^[A-Za-z0-9]+$' }
+        token:
+          {
+            type: string,
+            minLength: 64,
+            maxLength: 64,
+            pattern: "^[A-Za-z0-9]+$",
+          }
     MobilePasskeyLoginUrlResponse:
       type: object
       required: [data]
@@ -3022,7 +3129,7 @@ components:
                   const: setup_required
                 secret:
                   type: string
-                  description: Base32 authenticator secret, returned only during authenticated first-time setup.
+                  description: Base32 authenticator secret, returned only during a pending first-time authenticator setup.
             - type: object
               additionalProperties: false
               required: [status]

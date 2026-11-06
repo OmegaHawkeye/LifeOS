@@ -1,41 +1,55 @@
-import {
-  Switch as NativeSwitch,
-  Text,
-  useColorScheme,
-  View,
-} from "react-native";
-import { tokenColor } from "./nativeTokens";
+import { Pressable, Text, View } from "react-native";
 import type { SwitchProps } from "./Switch.types";
+import { switchThumbVariants, switchTrackVariants } from "./switchVariants";
+import { cn } from "./cn";
 
 export function Switch({
+  accessibilityLabel,
   checked,
-  disabled,
+  className = "",
+  disabled = false,
   hint,
   label,
-  onChange,
+  onCheckedChange,
+  size = "md",
 }: SwitchProps) {
-  const scheme = useColorScheme() === "dark" ? "dark" : "light";
+  const control = (
+    <Pressable
+      accessibilityHint={hint}
+      accessibilityLabel={accessibilityLabel ?? label}
+      accessibilityRole="switch"
+      accessibilityState={{ checked, disabled }}
+      className={cn(
+        switchTrackVariants({
+          checked,
+          className: label ? undefined : className,
+          disabled,
+          size,
+        }),
+      )}
+      disabled={disabled}
+      onPress={() => onCheckedChange(!checked)}
+    >
+      <View className={cn(switchThumbVariants({ checked, size }))} />
+    </Pressable>
+  );
+
+  if (!label) return control;
 
   return (
-    <View className="min-h-target-min flex-row items-center justify-between gap-4 border-b border-line py-3">
+    <View
+      className={cn(
+        "min-h-target-min flex-row items-center justify-between gap-4 border-b border-line py-3",
+        className,
+      )}
+    >
       <View className="flex-1">
         <Text className="text-body text-ink">{label}</Text>
         {hint ? (
           <Text className="text-body-s text-ink-muted">{hint}</Text>
         ) : null}
       </View>
-      <NativeSwitch
-        accessibilityLabel={label}
-        disabled={disabled}
-        ios_backgroundColor={tokenColor("surface-sunken", scheme)}
-        onValueChange={onChange}
-        thumbColor={tokenColor(checked ? "on-primary" : "ink-muted", scheme)}
-        trackColor={{
-          false: tokenColor("surface-sunken", scheme),
-          true: tokenColor("primary", scheme),
-        }}
-        value={checked}
-      />
+      {control}
     </View>
   );
 }

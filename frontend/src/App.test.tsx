@@ -14,7 +14,9 @@ import App from "./App";
 import {
   completeTwoFactorChallenge,
   confirmTwoFactorSetup,
+  createInitialOwner,
   getCurrentOwner,
+  isInitialOwnerSetupRequired,
   signIn,
   signOut,
 } from "./modules/Foundation/auth";
@@ -26,6 +28,8 @@ import {
 
 vi.mock("./modules/Foundation/auth", () => ({
   getCurrentOwner: vi.fn(),
+  isInitialOwnerSetupRequired: vi.fn(),
+  createInitialOwner: vi.fn(),
   completeTwoFactorChallenge: vi.fn(),
   confirmTwoFactorSetup: vi.fn(),
   signIn: vi.fn(),
@@ -87,6 +91,11 @@ describe("LifeOS authenticated app shell", () => {
       })),
     });
     vi.mocked(getCurrentOwner).mockResolvedValue(null);
+    vi.mocked(isInitialOwnerSetupRequired).mockResolvedValue(false);
+    vi.mocked(createInitialOwner).mockResolvedValue({
+      status: "setup_required",
+      secret: "TESTBASE32SECRET",
+    });
     vi.mocked(signIn).mockResolvedValue({
       status: "setup_required",
       secret: "TESTBASE32SECRET",
@@ -118,6 +127,45 @@ describe("LifeOS authenticated app shell", () => {
     expect(
       screen.queryByRole("heading", { name: "Finance" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("routes a fresh installation through owner creation and required 2FA setup", async () => {
+    const user = userEvent.setup();
+    window.history.replaceState({}, "", "/finance");
+    vi.mocked(isInitialOwnerSetupRequired).mockResolvedValue(true);
+    vi.mocked(createInitialOwner).mockResolvedValue({
+      status: "setup_required",
+      secret: "FIRST_RUN_SECRET",
+    });
+    render(<App />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Set up your owner account" }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole("heading", { name: "Finance" }),
+    ).not.toBeInTheDocument();
+
+    await user.type(screen.getByLabelText("Name"), "Julian");
+    await user.type(screen.getByLabelText("Email"), "owner@example.test");
+    await user.type(
+      screen.getByLabelText("Password"),
+      "a considerably safer password",
+    );
+    await user.type(
+      screen.getByLabelText("Confirm password"),
+      "a considerably safer password",
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Create owner account" }),
+    );
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Set up two-factor authentication",
+      }),
+    ).toBeVisible();
+    expect(screen.getByText("FIRST_RUN_SECRET")).toBeVisible();
   });
 
   it("lets the owner enter the shell and save persistent settings", async () => {
