@@ -1,3 +1,8 @@
+# 0.16.0
+
+- LifeOS hat im Web und auf iOS ein neues Erscheinungsbild mit überarbeitetem hellem und dunklem Design sowie einem eigenen Design für die Wandanzeige.
+- Die Seite „Heute“ fasst alle Bereiche in Übersichtskarten zusammen, und die Navigation passt sich an Smartphone, Tablet und Desktop an.
+
 # 0.15.2
 
 - Umbrel gleicht abweichende Datenbank-Zugangsdaten beim Start ab, ohne Daten zu löschen.
