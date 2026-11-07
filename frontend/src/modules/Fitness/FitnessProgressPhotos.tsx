@@ -282,7 +282,12 @@ export function FitnessProgressPhotos({
               onChange={(event) => setReviewNotes(event.currentTarget.value)}
             />
           </label>
-          <Button disabled={saving} loading={saving} type="submit">
+          <Button
+            className="mt-4"
+            disabled={saving}
+            loading={saving}
+            type="submit"
+          >
             Save monthly review
           </Button>
         </form>
@@ -377,7 +382,7 @@ export function FitnessProgressPhotos({
             />
           </label>
           <Button
-            className="w-full"
+            className="mt-4 w-full"
             disabled={saving || !photoFile || !photoDate}
             loading={saving}
             type="submit"

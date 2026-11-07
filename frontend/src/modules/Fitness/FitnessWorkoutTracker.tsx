@@ -537,6 +537,7 @@ export function FitnessWorkoutTracker({
                 />
               </label>
               <Button
+                className="mt-4"
                 disabled={saving}
                 loading={saving}
                 type="submit"
@@ -668,7 +669,7 @@ export function FitnessWorkoutTracker({
                 </div>
               </fieldset>
               <Button
-                className="w-full"
+                className="mt-4 w-full"
                 disabled={saving || !selectedExercises.length}
                 loading={saving}
                 type="submit"
