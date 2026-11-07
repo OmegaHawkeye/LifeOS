@@ -223,7 +223,7 @@ export function LoginPage() {
               <label className="block text-body-s font-medium" htmlFor="email">
                 Email
                 <input
-                  autoComplete="username"
+                  autoComplete="username webauthn"
                   className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus"
                   id="email"
                   name="email"
