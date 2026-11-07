@@ -21,7 +21,7 @@ class FitnessApiTest extends TestCase
             'metric_type' => 'weight',
             'value' => 82.4,
             'unit' => 'kg',
-            'measured_at' => '2026-09-17T07:00:00Z',
+            'measured_at' => now()->subDays(2)->toIso8601ZuluString(),
             'notes' => 'Morning measurement',
         ])->assertCreated()
             ->assertJsonPath('data.metric_type', 'weight')
