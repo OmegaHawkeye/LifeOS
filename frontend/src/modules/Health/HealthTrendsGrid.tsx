@@ -33,20 +33,20 @@ export function HealthTrendsGrid({
           summary?.trends.filter((trend) => trend.sample_type === type) ?? [];
         return (
           <article
-            className="rounded-2xl bg-stone-50 p-4 dark:bg-white/5 sm:p-5"
+            className="rounded-md border border-line bg-surface p-4 shadow-raised sm:p-5"
             key={type}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="font-semibold">{label}</h3>
+                <h3 className="m-0 text-title-s text-ink">{label}</h3>
                 {summary && (
-                  <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                  <p className="mt-1 text-caption text-ink-muted">
                     {formatDate(summary.from)} – {formatDate(summary.to)}
                   </p>
                 )}
               </div>
               {metrics.length > 0 && (
-                <span className="rounded-full bg-white px-2.5 py-1 text-xs text-stone-500 dark:bg-white/10 dark:text-stone-300">
+                <span className="rounded-xs bg-health-soft px-2 py-0.5 text-caption font-semibold text-health">
                   {metrics.reduce(
                     (count, metric) =>
                       count +
@@ -60,14 +60,11 @@ export function HealthTrendsGrid({
             </div>
 
             {loading ? (
-              <p className="mt-5 text-sm text-stone-500" role="status">
+              <p className="mt-5 text-body-s text-ink-muted" role="status">
                 Loading trend…
               </p>
             ) : error ? (
-              <p
-                className="mt-5 text-sm text-stone-500 dark:text-stone-400"
-                role="alert"
-              >
+              <p className="mt-5 text-body-s text-ink-muted" role="alert">
                 This health trend is temporarily unavailable.
               </p>
             ) : metrics.length > 0 ? (
@@ -75,11 +72,11 @@ export function HealthTrendsGrid({
                 {metrics.map((trend) => (
                   <div key={`${trend.sample_type}:${trend.unit}`}>
                     <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                      <p className="text-2xl font-semibold">
+                      <p className="m-0 text-figure-l tabular-nums text-ink">
                         {formatHealthTrendValue(trend.total)}{" "}
                         {healthTrendUnit(type, trend.unit || unit)}
                       </p>
-                      <p className="text-sm text-stone-500 dark:text-stone-400">
+                      <p className="text-body-s text-ink-muted">
                         {trend.direction === "steady"
                           ? "Steady"
                           : `${capitalize(trend.direction)} ${formatHealthTrendChange(trend.change)} ${healthTrendUnit(type, trend.unit || unit)}`}
@@ -89,12 +86,12 @@ export function HealthTrendsGrid({
                       label={`${label} daily trend`}
                       points={trend.points.slice(-14)}
                     />
-                    <p className="mt-2 text-xs text-stone-500 dark:text-stone-400">
+                    <p className="mt-2 text-caption text-ink-muted">
                       Manual {trend.source_counts.manual} · Imported{" "}
                       {trend.source_counts.imported}
                     </p>
                     {!compact && (
-                      <details className="mt-2 text-xs text-stone-500 dark:text-stone-400">
+                      <details className="mt-2 text-caption text-ink-muted">
                         <summary className="cursor-pointer">Sources</summary>
                         <ul className="mt-2 space-y-1 pl-4">
                           {trend.source_counts.sources.map((source) => (
@@ -109,7 +106,7 @@ export function HealthTrendsGrid({
                 ))}
               </div>
             ) : (
-              <p className="mt-5 text-sm leading-6 text-stone-500 dark:text-stone-400">
+              <p className="mt-5 text-body text-ink-muted">
                 Nothing recorded in this range. Manual entries and connected
                 health imports will appear here.
               </p>
@@ -132,7 +129,7 @@ function TrendBars({
 
   if (points.length === 0) {
     return (
-      <p className="mt-3 text-xs text-stone-500">No daily trend points.</p>
+      <p className="mt-3 text-caption text-ink-muted">No daily trend points.</p>
     );
   }
 
@@ -151,11 +148,11 @@ function TrendBars({
           >
             <span
               aria-label={`${formatDate(point.date)}: ${point.value}`}
-              className="w-full rounded-t-sm bg-emerald-400 dark:bg-emerald-500"
+              className="w-full origin-bottom animate-rise rounded-t-xs bg-health motion-reduce:animate-none"
               role="img"
               style={{ height: `${height}%` }}
             />
-            <span className="text-[9px] text-stone-400">
+            <span className="text-[10px] tabular-nums text-ink-muted">
               {new Date(`${point.date}T12:00:00Z`).getUTCDate()}
             </span>
           </li>

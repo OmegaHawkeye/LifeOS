@@ -1,0 +1,80 @@
+/* Generated from ui/tokens.json by ui/scripts/generate-theme.mjs. Do not edit. Web: `.dark` on the root for Dark, data-theme="wall" for the wall display. */
+
+@custom-variant wall (&:where([data-theme="wall"], [data-theme="wall"] *));
+
+@layer theme {
+  :root {
+    @variant dark {
+      --color-canvas: #0f1412;
+      --color-surface: #171d1a;
+      --color-surface-sunken: #0a0e0c;
+      --color-line: #27302c;
+      --color-line-strong: #66726b;
+      --color-ink: #e7ece9;
+      --color-ink-muted: #9da9a2;
+      --color-primary: #6fcca6;
+      --color-primary-hover: #8ad8b8;
+      --color-on-primary: #0a2219;
+      --color-primary-soft: #16362b;
+      --color-primary-text: #7fd6b2;
+      --color-marigold: #f0ad2e;
+      --color-on-marigold: #2a1d00;
+      --color-focus: #7ea8ff;
+      --color-danger: #ff8a7d;
+      --color-on-danger: #2a0805;
+      --color-danger-soft: #3d1714;
+      --color-warning: #f2b65a;
+      --color-warning-soft: #382707;
+      --color-finance: #8db3f0;
+      --color-finance-soft: #172540;
+      --color-fitness: #f29468;
+      --color-fitness-soft: #3b1c0e;
+      --color-nutrition: #adc55e;
+      --color-nutrition-soft: #232e0e;
+      --color-health: #f08cb4;
+      --color-health-soft: #3b1426;
+      --color-routines: #bba4ec;
+      --color-routines-soft: #261d3d;
+      --color-scrim: #000000a6;
+      --color-link: #7fd6b2;
+      --shadow-raised: none;
+      --shadow-overlay: 0 12px 32px #00000080;
+    }
+    @variant wall {
+      --color-canvas: #000000;
+      --color-surface: #0e0f0d;
+      --color-surface-sunken: #000000;
+      --color-line: #24261f;
+      --color-line-strong: #5f6357;
+      --color-ink: #f2ede2;
+      --color-ink-muted: #a39d90;
+      --color-primary: #7fcfa9;
+      --color-primary-hover: #95dab9;
+      --color-on-primary: #06150f;
+      --color-primary-soft: #12271e;
+      --color-primary-text: #86d6b0;
+      --color-marigold: #e9a73a;
+      --color-on-marigold: #1f1500;
+      --color-focus: #86aeff;
+      --color-danger: #ff9283;
+      --color-on-danger: #2a0805;
+      --color-danger-soft: #2e110e;
+      --color-warning: #eab45e;
+      --color-warning-soft: #2a1d06;
+      --color-finance: #93b6ee;
+      --color-finance-soft: #111c30;
+      --color-fitness: #ee9a72;
+      --color-fitness-soft: #2c150b;
+      --color-nutrition: #b2c86a;
+      --color-nutrition-soft: #1a220b;
+      --color-health: #ee93b7;
+      --color-health-soft: #2c0f1c;
+      --color-routines: #bea9ea;
+      --color-routines-soft: #1c162d;
+      --color-scrim: #000000bf;
+      --color-link: #86d6b0;
+      --shadow-raised: none;
+      --shadow-overlay: 0 12px 32px #000000cc;
+    }
+  }
+}

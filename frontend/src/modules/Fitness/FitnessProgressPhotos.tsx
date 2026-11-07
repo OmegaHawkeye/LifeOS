@@ -232,16 +232,19 @@ export function FitnessProgressPhotos({
   return (
     <section
       aria-labelledby="progress-photos-title"
-      className="mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7"
+      className="mt-8 rounded-md border border-line bg-surface p-5 shadow-raised sm:p-7"
     >
       <div>
-        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+        <p className="m-0 text-overline uppercase text-ink-muted">
           Your progress, privately
         </p>
-        <h2 className="mt-1 text-2xl font-semibold" id="progress-photos-title">
+        <h2
+          className="mt-1 text-figure-l font-semibold"
+          id="progress-photos-title"
+        >
           Progress photos
         </h2>
-        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+        <p className="mt-1 text-body-s text-ink-muted">
           Private to your account. Photos stay here until you delete them;
           automatic expiry is off. Photo files are not yet included in a data
           export.
@@ -250,7 +253,7 @@ export function FitnessProgressPhotos({
 
       {error && (
         <p
-          className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
+          className="mt-4 rounded-sm bg-danger-soft p-3 text-body-s text-danger"
           role="alert"
         >
           {error}
@@ -260,16 +263,16 @@ export function FitnessProgressPhotos({
       {review?.is_due && (
         <form
           aria-label="Monthly milestone review"
-          className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-900 dark:bg-emerald-950/20"
+          className="mt-5 rounded-md border border-primary bg-primary-soft p-4"
           onSubmit={(event) => void saveReview(event)}
         >
           <h3 className="font-semibold">Your {reviewMonth} progress review</h3>
-          <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">
+          <p className="mt-1 text-body-s text-ink-muted">
             You have {review.photo_count} progress photo
             {review.photo_count === 1 ? "" : "s"} this month. What changed, and
             what would you like to focus on next?
           </p>
-          <label className="mt-3 block text-sm font-medium">
+          <label className="mt-3 block text-body-s font-medium">
             Monthly reflection
             <textarea
               className={fieldClass}
@@ -279,28 +282,30 @@ export function FitnessProgressPhotos({
               onChange={(event) => setReviewNotes(event.currentTarget.value)}
             />
           </label>
-          <Button disabled={saving} loading={saving} type="submit">
+          <Button
+            className="mt-4"
+            disabled={saving}
+            loading={saving}
+            type="submit"
+          >
             Save monthly review
           </Button>
         </form>
       )}
       {review && !review.is_due && review.reviewed_at && (
-        <p
-          className="mt-4 text-sm text-emerald-700 dark:text-emerald-300"
-          role="status"
-        >
+        <p className="mt-4 text-body-s text-primary-text" role="status">
           Monthly review saved for {review.month}.
         </p>
       )}
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+      <div className="mt-5 grid gap-5 lg:grid-cols-2 [&>*]:min-w-0">
         <form
           aria-label="Add progress photo"
-          className="rounded-2xl border border-stone-200 p-4 dark:border-white/10 sm:p-5"
+          className="rounded-md border border-line p-4 sm:p-5"
           onSubmit={(event) => void submitPhoto(event)}
         >
           <h3 className="font-semibold">Add a progress photo</h3>
-          <label className="mt-3 block text-sm font-medium">
+          <label className="mt-3 block text-body-s font-medium">
             Photo
             <input
               accept="image/jpeg,image/png,image/webp"
@@ -312,7 +317,7 @@ export function FitnessProgressPhotos({
               type="file"
             />
           </label>
-          <label className="mt-3 block text-sm font-medium">
+          <label className="mt-3 block text-body-s font-medium">
             Date
             <input
               className={fieldClass}
@@ -323,7 +328,7 @@ export function FitnessProgressPhotos({
               value={photoDate}
             />
           </label>
-          <label className="mt-3 block text-sm font-medium">
+          <label className="mt-3 block text-body-s font-medium">
             Angle
             <select
               className={fieldClass}
@@ -337,7 +342,7 @@ export function FitnessProgressPhotos({
               <option value="other">Other</option>
             </select>
           </label>
-          <label className="mt-3 block text-sm font-medium">
+          <label className="mt-3 block text-body-s font-medium">
             Body metric (optional)
             <select
               className={fieldClass}
@@ -354,7 +359,7 @@ export function FitnessProgressPhotos({
               ))}
             </select>
           </label>
-          <label className="mt-3 block text-sm font-medium">
+          <label className="mt-3 block text-body-s font-medium">
             Tags (comma separated)
             <input
               className={fieldClass}
@@ -365,7 +370,7 @@ export function FitnessProgressPhotos({
               value={tags}
             />
           </label>
-          <label className="mt-3 block text-sm font-medium">
+          <label className="mt-3 block text-body-s font-medium">
             Notes
             <textarea
               className={fieldClass}
@@ -377,7 +382,7 @@ export function FitnessProgressPhotos({
             />
           </label>
           <Button
-            className="w-full"
+            className="mt-4 w-full"
             disabled={saving || !photoFile || !photoDate}
             loading={saving}
             type="submit"
@@ -386,12 +391,12 @@ export function FitnessProgressPhotos({
           </Button>
         </form>
 
-        <div className="rounded-2xl bg-stone-50 p-4 dark:bg-white/5 sm:p-5">
+        <div className="rounded-md bg-surface-sunken p-4 sm:p-5">
           <h3 className="font-semibold">Compare two dates</h3>
           {photos.length >= 2 ? (
             <>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <label className="text-sm font-medium">
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 [&>*]:min-w-0">
+                <label className="text-body-s font-medium">
                   Earlier photo
                   <select
                     className={fieldClass}
@@ -407,7 +412,7 @@ export function FitnessProgressPhotos({
                     ))}
                   </select>
                 </label>
-                <label className="text-sm font-medium">
+                <label className="text-body-s font-medium">
                   Later photo
                   <select
                     className={fieldClass}
@@ -425,35 +430,35 @@ export function FitnessProgressPhotos({
                 </label>
               </div>
               {beforePhotoId === afterPhotoId ? (
-                <p className="mt-4 text-sm text-stone-500">
+                <p className="mt-4 text-body-s text-ink-muted">
                   Choose two different photos to compare.
                 </p>
               ) : !comparisonDatesAreOrdered ? (
-                <p className="mt-4 text-sm text-stone-500" role="status">
+                <p className="mt-4 text-body-s text-ink-muted" role="status">
                   Choose an earlier calendar date first and a later date second.
                 </p>
               ) : (
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 [&>*]:min-w-0">
                   {[beforePhoto, afterPhoto].map((photo) =>
                     photo ? (
                       <figure className="min-w-0" key={photo.id}>
                         {previewUrls[photo.id] ? (
                           <img
                             alt={`${photo.angle ?? "Progress"} progress photo from ${photo.photo_date}`}
-                            className="aspect-[3/4] w-full rounded-xl bg-stone-200 object-cover dark:bg-stone-800"
+                            className="aspect-[3/4] w-full rounded-sm bg-surface-sunken object-cover"
                             src={previewUrls[photo.id]}
                           />
                         ) : (
                           <div
                             aria-label="Loading private photo"
-                            className="aspect-[3/4] animate-pulse rounded-xl bg-stone-200 dark:bg-stone-800"
+                            className="aspect-[3/4] animate-pulse rounded-sm bg-surface-sunken"
                             role="status"
                           />
                         )}
-                        <figcaption className="mt-2 text-sm font-medium">
+                        <figcaption className="mt-2 text-body-s font-medium">
                           {photo.photo_date} · {photo.angle ?? "Photo"}
                           {photo.tags.length > 0 && (
-                            <span className="block text-xs font-normal text-stone-500">
+                            <span className="block text-caption font-normal text-ink-muted">
                               {photo.tags.join(" · ")}
                             </span>
                           )}
@@ -465,7 +470,7 @@ export function FitnessProgressPhotos({
               )}
             </>
           ) : (
-            <p className="mt-3 text-sm text-stone-500">
+            <p className="mt-3 text-body-s text-ink-muted">
               Add at least two progress photos to compare different dates.
             </p>
           )}
@@ -475,44 +480,44 @@ export function FitnessProgressPhotos({
       <div className="mt-6">
         <h3 className="font-semibold">Your photo history</h3>
         {loading ? (
-          <p className="mt-3 text-sm text-stone-500" role="status">
+          <p className="mt-3 text-body-s text-ink-muted" role="status">
             Loading private photos…
           </p>
         ) : photos.length === 0 ? (
-          <p className="mt-3 rounded-xl bg-stone-50 p-4 text-sm text-stone-500 dark:bg-white/5">
+          <p className="mt-3 rounded-sm bg-surface-sunken p-4 text-body-s text-ink-muted">
             No progress photos yet.
           </p>
         ) : (
-          <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 [&>*]:min-w-0">
             {photos.map((photo) => (
               <li
-                className="min-w-0 rounded-xl border border-stone-200 p-3 dark:border-white/10"
+                className="min-w-0 rounded-sm border border-line p-3"
                 key={photo.id}
               >
                 {previewUrls[photo.id] ? (
                   <img
                     alt={`${photo.angle ?? "Progress"} progress photo from ${photo.photo_date}`}
-                    className="aspect-[3/4] w-full rounded-lg bg-stone-100 object-cover dark:bg-stone-800"
+                    className="aspect-[3/4] w-full rounded-sm bg-surface-sunken object-cover"
                     src={previewUrls[photo.id]}
                   />
                 ) : (
                   <div
                     aria-label="Loading private photo"
-                    className="aspect-[3/4] animate-pulse rounded-lg bg-stone-100 dark:bg-stone-800"
+                    className="aspect-[3/4] animate-pulse rounded-sm bg-surface-sunken"
                     role="status"
                   />
                 )}
                 <div className="mt-2 flex items-start justify-between gap-2">
-                  <p className="text-sm font-medium">
+                  <p className="text-body-s font-medium">
                     {photo.photo_date} · {photo.angle ?? "Photo"}
                     {photo.body_metric && (
-                      <span className="block text-xs font-normal text-stone-500">
+                      <span className="block text-caption font-normal text-ink-muted">
                         {photo.body_metric.value} {photo.body_metric.unit}
                       </span>
                     )}
                   </p>
                   <Button
-                    className="min-h-9 px-3 text-sm"
+                    className="min-h-9 px-3 text-body-s"
                     disabled={saving}
                     onPress={() => void deletePhoto(photo)}
                     variant="danger"
@@ -521,7 +526,7 @@ export function FitnessProgressPhotos({
                   </Button>
                 </div>
                 {photo.notes && (
-                  <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+                  <p className="mt-2 text-body-s text-ink-muted">
                     {photo.notes}
                   </p>
                 )}
@@ -540,4 +545,4 @@ function currentMonth() {
 }
 
 const fieldClass =
-  "mt-1 min-h-12 w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-base outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-stone-950";
+  "mt-1 min-h-12 w-full rounded-sm border border-line bg-surface px-3 py-2 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";

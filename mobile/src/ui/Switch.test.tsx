@@ -40,7 +40,7 @@ describe("shared native Switch", () => {
       checked: true,
     });
     expect(control).toBeDisabled();
-    expect(control.props.className).toContain("bg-lifeos-accent");
+    expect(control.props.className).toContain("bg-primary");
     expect(control.props.className).toContain("h-5");
     fireEvent.press(control);
     expect(onCheckedChange).not.toHaveBeenCalled();

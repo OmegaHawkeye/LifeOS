@@ -98,7 +98,9 @@ test("sets up the initial owner and requires authenticator confirmation", async 
   await page.getByLabel("6-digit authenticator code").fill("123456");
   await page.getByRole("button", { name: "Confirm authenticator" }).click();
 
-  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Today", exact: true, level: 1 }),
+  ).toBeVisible();
   expect(createdOwner).toEqual({
     name: "Julian",
     email: "owner@example.test",

@@ -131,34 +131,37 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
   return (
     <ScrollView
       className="flex-1"
-      contentContainerClassName="mx-auto w-full max-w-[1120px] gap-3 px-5 pb-12 pt-8 md:px-9 md:pt-10"
+      contentContainerClassName="mx-auto w-full max-w-content gap-3 px-4 pb-10 pt-6 tablet:px-6 tablet:pt-8 desktop:px-8"
     >
-      <Text className="text-sm font-semibold text-lifeos-accent-dark">
+      <Text className="text-overline uppercase text-ink-muted">
         Progress you can feel
       </Text>
-      <Text className="text-[38px] font-bold tracking-[-0.7px] text-lifeos-primary">
+      <Text
+        accessibilityRole="header"
+        className="text-display-m text-ink tablet:text-display-l"
+      >
         Fitness
       </Text>
-      <Text className="mb-3 text-[15px] leading-[22px] text-lifeos-muted">
+      <Text className="mb-3 text-body text-ink-muted">
         Your training and body progress, stored on your LifeOS server.
       </Text>
 
       {state.status === "loading" ? (
         <View
           accessibilityLabel="Loading fitness overview"
-          className="min-h-[180px] items-center justify-center gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-6"
+          className="min-h-[180px] items-center justify-center gap-3 rounded-md border border-line bg-surface p-6"
         >
           <ActivityIndicator size="large" />
-          <Text className="text-sm text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             Loading your fitness data…
           </Text>
         </View>
       ) : state.status === "error" ? (
-        <View className="min-h-[180px] items-center justify-center gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-6">
-          <Text className="text-center text-lg font-bold text-lifeos-primary">
+        <View className="min-h-[180px] items-center justify-center gap-3 rounded-md border border-line bg-surface p-6">
+          <Text className="text-center text-title-m font-semibold text-ink">
             Fitness data is unavailable
           </Text>
-          <Text className="text-center text-sm leading-[21px] text-lifeos-muted">
+          <Text className="text-center text-body-s text-ink-muted">
             Check your connection to your LifeOS server and try again.
           </Text>
           <ActionButton label="Try again" onPress={() => void reload()} />
@@ -212,11 +215,11 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
             </View>
           </View>
 
-          <View className="mt-2 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-            <Text className="text-xl font-bold text-lifeos-primary">
+          <View className="mt-2 rounded-md border border-line bg-surface p-5 tablet:p-6">
+            <Text className="text-title-l font-semibold text-ink">
               Record a body metric
             </Text>
-            <Text className="mt-2 text-sm leading-[21px] text-lifeos-muted">
+            <Text className="mt-2 text-body-s text-ink-muted">
               Add a measurement to keep your progress history up to date.
             </Text>
 
@@ -238,7 +241,7 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
                 <Field label="Value" className="min-w-[140px] flex-1">
                   <TextInput
                     accessibilityLabel="Metric value"
-                    className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-base text-lifeos-primary"
+                    className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-body text-ink"
                     keyboardType="decimal-pad"
                     onChangeText={setValue}
                     placeholder="0.0"
@@ -246,10 +249,10 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
                   />
                 </Field>
                 <Field label="Unit" className="w-24">
-                  <View className="min-h-12 justify-center rounded-xl border border-lifeos-border bg-lifeos-background px-4">
+                  <View className="min-h-12 justify-center rounded-sm border border-line bg-canvas px-4">
                     <Text
                       accessibilityLabel="Metric unit"
-                      className="text-base text-lifeos-primary"
+                      className="text-body text-ink"
                     >
                       {unit}
                     </Text>
@@ -258,7 +261,7 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
                 <Field label="Date" className="min-w-[160px] flex-1">
                   <TextInput
                     accessibilityLabel="Metric date"
-                    className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-base text-lifeos-primary"
+                    className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-body text-ink"
                     onChangeText={setDate}
                     placeholder="YYYY-MM-DD"
                     value={date}
@@ -269,7 +272,7 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
               <Field label="Notes">
                 <TextInput
                   accessibilityLabel="Metric notes"
-                  className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 py-3 text-base text-lifeos-primary"
+                  className="min-h-12 rounded-sm border border-line bg-canvas px-4 py-3 text-body text-ink"
                   onChangeText={setNotes}
                   placeholder="Optional"
                   value={notes}
@@ -279,7 +282,7 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
               {saveError ? (
                 <Text
                   accessibilityRole="alert"
-                  className="text-sm text-red-700"
+                  className="text-body-s text-danger"
                 >
                   Your metric could not be saved. Check the value and try again.
                 </Text>
@@ -298,18 +301,18 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
             </View>
           </View>
 
-          <View className="rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-            <Text className="text-xl font-bold text-lifeos-primary">
+          <View className="rounded-md border border-line bg-surface p-5 tablet:p-6">
+            <Text className="text-title-l font-semibold text-ink">
               Set a fitness goal
             </Text>
-            <Text className="mt-2 text-sm leading-[21px] text-lifeos-muted">
+            <Text className="mt-2 text-body-s text-ink-muted">
               Track a target alongside your body measurements.
             </Text>
             <View className="mt-5 gap-4">
               <Field label={`Target (${unit})`}>
                 <TextInput
                   accessibilityLabel="Goal target"
-                  className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-base text-lifeos-primary"
+                  className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-body text-ink"
                   keyboardType="decimal-pad"
                   onChangeText={setGoalTarget}
                   placeholder="Target value"
@@ -319,7 +322,7 @@ export function FitnessScreen({ service }: FitnessScreenProps) {
               <Field label="Target date">
                 <TextInput
                   accessibilityLabel="Goal target date"
-                  className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-base text-lifeos-primary"
+                  className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-body text-ink"
                   onChangeText={setGoalDate}
                   placeholder="YYYY-MM-DD (optional)"
                   value={goalDate}
@@ -350,7 +353,7 @@ function Field({
 }) {
   return (
     <View className={`gap-2 ${className}`}>
-      <Text className="text-sm font-semibold text-lifeos-primary">{label}</Text>
+      <Text className="text-body-s font-semibold text-ink">{label}</Text>
       {children}
     </View>
   );

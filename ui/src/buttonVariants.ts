@@ -1,89 +1,75 @@
 import { cva, type VariantProps } from "class-variance-authority";
 
+// Variant order matters: `selected` and then `disabled` come last so their
+// classes win the tailwind-merge pass in `cn`.
 export const buttonVariants = cva(
-  "inline-flex flex-row items-center justify-center gap-2 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lifeos-accent-dark disabled:cursor-not-allowed",
+  "inline-flex flex-row items-center justify-center gap-2 rounded-sm transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-not-allowed",
   {
     variants: {
       variant: {
         primary:
-          "bg-lifeos-accent text-lifeos-accent-ink hover:bg-lifeos-accent-dark active:bg-lifeos-accent-dark disabled:bg-stone-300 disabled:text-stone-600 dark:disabled:bg-stone-700 dark:disabled:text-stone-300",
+          "bg-primary text-on-primary hover:bg-primary-hover active:bg-primary-hover",
         secondary:
-          "border border-lifeos-border bg-lifeos-surface text-lifeos-primary hover:bg-lifeos-background active:bg-stone-100 disabled:bg-stone-200 disabled:text-stone-500 dark:border-white/15 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800 dark:active:bg-stone-800 dark:disabled:bg-stone-700 dark:disabled:text-stone-400",
+          "border border-line-strong bg-surface text-ink hover:bg-surface-sunken active:bg-surface-sunken",
         tertiary:
-          "bg-transparent text-lifeos-primary hover:bg-lifeos-background active:bg-stone-100 disabled:bg-stone-100 disabled:text-stone-500 dark:text-stone-100 dark:hover:bg-white/10 dark:active:bg-white/10 dark:disabled:bg-stone-800 dark:disabled:text-stone-400",
-        danger:
-          "bg-red-700 text-white hover:bg-red-800 active:bg-red-900 disabled:bg-stone-300 disabled:text-stone-600 dark:disabled:bg-stone-700 dark:disabled:text-stone-300",
-        icon: "border border-lifeos-border bg-lifeos-surface text-lifeos-primary hover:bg-lifeos-background disabled:bg-stone-200 disabled:text-stone-500 dark:border-white/15 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800 dark:disabled:bg-stone-700 dark:disabled:text-stone-400",
+          "bg-transparent text-primary-text hover:bg-primary-soft active:bg-primary-soft",
+        danger: "bg-danger text-on-danger hover:opacity-90 active:opacity-80",
+        icon: "border border-line-strong bg-surface text-ink hover:bg-surface-sunken active:bg-surface-sunken",
       },
       size: {
-        sm: "min-h-9 rounded-lg px-3 py-1.5 text-sm",
-        md: "min-h-11 rounded-xl px-4 py-2 text-sm",
-        lg: "min-h-12 rounded-xl px-5 py-3 text-base",
-        icon: "size-11 rounded-lg p-0",
+        sm: "min-h-9 px-3 text-label",
+        md: "min-h-target-min px-4 text-label",
+        lg: "min-h-target-touch px-5 text-label",
+        icon: "size-target-min p-0",
+      },
+      selected: {
+        true: "border border-primary bg-primary-soft text-primary-text hover:bg-primary-soft",
+        false: "",
       },
       disabled: {
-        true: "cursor-not-allowed",
+        true: "cursor-not-allowed border-line bg-surface-sunken text-ink-muted hover:bg-surface-sunken hover:opacity-100 active:bg-surface-sunken active:opacity-100",
         false: "",
       },
     },
     defaultVariants: {
       variant: "primary",
       size: "md",
+      selected: false,
       disabled: false,
     },
     compoundVariants: [
       { variant: "icon", size: "sm", className: "size-9 p-0" },
-      { variant: "icon", size: "lg", className: "size-12 p-0" },
-      {
-        variant: "primary",
-        disabled: true,
-        className:
-          "bg-stone-300 text-stone-600 dark:bg-stone-700 dark:text-stone-300",
-      },
-      {
-        variant: "secondary",
-        disabled: true,
-        className:
-          "bg-stone-200 text-stone-500 dark:bg-stone-700 dark:text-stone-400",
-      },
+      { variant: "icon", size: "lg", className: "size-target-touch p-0" },
       {
         variant: "tertiary",
         disabled: true,
-        className:
-          "bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400",
-      },
-      {
-        variant: "danger",
-        disabled: true,
-        className:
-          "bg-stone-300 text-stone-600 dark:bg-stone-700 dark:text-stone-300",
-      },
-      {
-        variant: "icon",
-        disabled: true,
-        className:
-          "bg-stone-200 text-stone-500 dark:bg-stone-700 dark:text-stone-400",
+        className: "bg-transparent hover:bg-transparent active:bg-transparent",
       },
     ],
   },
 );
 
-export const buttonLabelVariants = cva("text-sm font-semibold", {
+export const buttonLabelVariants = cva("text-label", {
   variants: {
     variant: {
-      primary: "text-lifeos-accent-ink",
-      secondary: "text-lifeos-primary",
-      tertiary: "text-lifeos-primary dark:text-stone-100",
-      danger: "text-white",
-      icon: "text-lifeos-primary",
+      primary: "text-on-primary",
+      secondary: "text-ink",
+      tertiary: "text-primary-text",
+      danger: "text-on-danger",
+      icon: "text-ink",
+    },
+    selected: {
+      true: "text-primary-text",
+      false: "",
     },
     disabled: {
-      true: "text-stone-500 dark:text-stone-400",
+      true: "text-ink-muted",
       false: "",
     },
   },
   defaultVariants: {
     variant: "primary",
+    selected: false,
     disabled: false,
   },
 });

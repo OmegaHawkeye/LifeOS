@@ -288,13 +288,13 @@ export function FitnessWorkoutTracker({
     <section aria-labelledby="workout-title" className={panelClass}>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          <p className="m-0 text-overline uppercase text-ink-muted">
             Train at your pace
           </p>
-          <h2 className="mt-1 text-2xl font-semibold" id="workout-title">
+          <h2 className="mt-1 text-figure-l font-semibold" id="workout-title">
             Workouts
           </h2>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <p className="mt-1 text-body-s text-ink-muted">
             Reusable plans, quick logging, and last-session context.
           </p>
         </div>
@@ -302,24 +302,24 @@ export function FitnessWorkoutTracker({
 
       {error && (
         <p
-          className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
+          className="mt-4 rounded-sm bg-danger-soft p-3 text-body-s text-danger"
           role="alert"
         >
           {error}
         </p>
       )}
       {loading ? (
-        <p className="mt-5 text-sm text-stone-500" role="status">
+        <p className="mt-5 text-body-s text-ink-muted" role="status">
           Loading workouts…
         </p>
       ) : activeSession ? (
-        <article className="mt-5 rounded-2xl border border-emerald-300 bg-emerald-50/50 p-4 dark:border-emerald-900 dark:bg-emerald-950/20 sm:p-5">
+        <article className="mt-5 rounded-md border border-primary bg-primary-soft p-4 sm:p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-200">
+              <p className="text-caption font-semibold uppercase tracking-wide text-primary-text">
                 Workout in progress
               </p>
-              <h3 className="mt-1 text-xl font-semibold">
+              <h3 className="mt-1 text-title-l font-semibold">
                 {activeSession.name}
               </h3>
             </div>
@@ -338,15 +338,12 @@ export function FitnessWorkoutTracker({
 
           <div className="mt-4 space-y-4">
             {activeSession.exercises.map((item) => (
-              <article
-                className="rounded-2xl bg-white p-4 dark:bg-stone-900"
-                key={item.id}
-              >
+              <article className="rounded-md bg-surface p-4" key={item.id}>
                 <h4 className="font-semibold">{item.exercise_name}</h4>
                 {(item.target_sets ||
                   item.target_reps ||
                   item.target_weight) && (
-                  <p className="mt-1 text-xs text-stone-500">
+                  <p className="mt-1 text-caption text-ink-muted">
                     Target: {item.target_sets ? `${item.target_sets} sets` : ""}
                     {item.target_reps ? ` · ${item.target_reps} reps` : ""}
                     {item.target_weight
@@ -359,7 +356,7 @@ export function FitnessWorkoutTracker({
                   weightUnit={weightUnit}
                 />
                 {item.sets.length > 0 && (
-                  <ol className="mt-3 space-y-1 text-sm text-stone-600 dark:text-stone-300">
+                  <ol className="mt-3 space-y-1 text-body-s text-ink-muted">
                     {item.sets.map((set) => (
                       <li key={set.id}>
                         Set {set.set_number}:{" "}
@@ -376,10 +373,10 @@ export function FitnessWorkoutTracker({
                   </ol>
                 )}
                 <form
-                  className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+                  className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 [&>*]:min-w-0"
                   onSubmit={(event) => void logSet(event, item)}
                 >
-                  <label className="text-xs font-medium text-stone-600 dark:text-stone-300">
+                  <label className="text-caption font-medium text-ink-muted">
                     Reps
                     <input
                       className={fieldClass}
@@ -390,7 +387,7 @@ export function FitnessWorkoutTracker({
                       type="number"
                     />
                   </label>
-                  <label className="text-xs font-medium text-stone-600 dark:text-stone-300">
+                  <label className="text-caption font-medium text-ink-muted">
                     Load ({weightUnit})
                     <input
                       className={fieldClass}
@@ -401,7 +398,7 @@ export function FitnessWorkoutTracker({
                       type="number"
                     />
                   </label>
-                  <label className="text-xs font-medium text-stone-600 dark:text-stone-300">
+                  <label className="text-caption font-medium text-ink-muted">
                     RPE
                     <input
                       className={fieldClass}
@@ -413,7 +410,7 @@ export function FitnessWorkoutTracker({
                       type="number"
                     />
                   </label>
-                  <label className="text-xs font-medium text-stone-600 dark:text-stone-300">
+                  <label className="text-caption font-medium text-ink-muted">
                     Time (sec)
                     <input
                       className={fieldClass}
@@ -424,7 +421,7 @@ export function FitnessWorkoutTracker({
                       type="number"
                     />
                   </label>
-                  <label className="text-xs font-medium text-stone-600 dark:text-stone-300 sm:col-span-2 lg:col-span-4">
+                  <label className="text-caption font-medium text-ink-muted sm:col-span-2 lg:col-span-4">
                     Set note
                     <input
                       className={fieldClass}
@@ -445,7 +442,7 @@ export function FitnessWorkoutTracker({
             ))}
           </div>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+          <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto] [&>*]:min-w-0">
             <form
               className="flex gap-2"
               onSubmit={(event) => void addExerciseToSession(event)}
@@ -478,19 +475,19 @@ export function FitnessWorkoutTracker({
           </div>
         </article>
       ) : (
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          <article className="rounded-2xl bg-stone-50 p-4 dark:bg-white/5 sm:p-5">
+        <div className="mt-5 grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
+          <article className="rounded-md bg-surface-sunken p-4 sm:p-5">
             <h3 className="font-semibold">Start from a template</h3>
             {templates.length ? (
               <ul className="mt-3 space-y-3">
                 {templates.map((template) => (
                   <li
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white p-3 dark:bg-stone-900"
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-sm bg-surface p-3"
                     key={template.id}
                   >
                     <div>
                       <p className="font-medium">{template.name}</p>
-                      <p className="mt-1 text-xs text-stone-500">
+                      <p className="mt-1 text-caption text-ink-muted">
                         {template.exercises
                           .map((item) => item.exercise.name)
                           .join(" · ")}
@@ -513,15 +510,15 @@ export function FitnessWorkoutTracker({
                 ))}
               </ul>
             ) : (
-              <p className="mt-3 text-sm text-stone-500">
+              <p className="mt-3 text-body-s text-ink-muted">
                 Create a reusable workout plan below.
               </p>
             )}
             <form
-              className="mt-5 border-t border-stone-200 pt-4 dark:border-white/10"
+              className="mt-5 border-t border-line pt-4"
               onSubmit={(event) => void startAdHoc(event)}
             >
-              <label className="text-sm font-medium">
+              <label className="text-body-s font-medium">
                 Ad-hoc session
                 <input
                   className={fieldClass}
@@ -531,7 +528,7 @@ export function FitnessWorkoutTracker({
                   onChange={(event) => setAdHocName(event.currentTarget.value)}
                 />
               </label>
-              <label className="mt-3 block text-sm font-medium">
+              <label className="mt-3 block text-body-s font-medium">
                 Session note
                 <input
                   className={fieldClass}
@@ -540,6 +537,7 @@ export function FitnessWorkoutTracker({
                 />
               </label>
               <Button
+                className="mt-4"
                 disabled={saving}
                 loading={saving}
                 type="submit"
@@ -552,7 +550,7 @@ export function FitnessWorkoutTracker({
 
           <div className="space-y-4">
             <form
-              className="rounded-2xl border border-stone-200 p-4 dark:border-white/10 sm:p-5"
+              className="rounded-md border border-line p-4 sm:p-5"
               onSubmit={(event) => void createExercise(event)}
             >
               <h3 className="font-semibold">Exercise library</h3>
@@ -577,17 +575,17 @@ export function FitnessWorkoutTracker({
                   Add
                 </Button>
               </div>
-              <p className="mt-2 text-xs text-stone-500">
+              <p className="mt-2 text-caption text-ink-muted">
                 {exercises.length} exercises available to your plans.
               </p>
             </form>
 
             <form
-              className="rounded-2xl border border-stone-200 p-4 dark:border-white/10 sm:p-5"
+              className="rounded-md border border-line p-4 sm:p-5"
               onSubmit={(event) => void createTemplate(event)}
             >
               <h3 className="font-semibold">Create reusable template</h3>
-              <label className="mt-3 block text-sm font-medium">
+              <label className="mt-3 block text-body-s font-medium">
                 Template name
                 <input
                   className={fieldClass}
@@ -599,7 +597,7 @@ export function FitnessWorkoutTracker({
                   }
                 />
               </label>
-              <label className="mt-3 block text-sm font-medium">
+              <label className="mt-3 block text-body-s font-medium">
                 Template note
                 <input
                   className={fieldClass}
@@ -610,7 +608,7 @@ export function FitnessWorkoutTracker({
                 />
               </label>
               <fieldset className="mt-4">
-                <legend className="text-xs font-medium text-stone-500">
+                <legend className="text-caption font-medium text-ink-muted">
                   Repeat on (optional)
                 </legend>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -618,7 +616,7 @@ export function FitnessWorkoutTracker({
                     const dayNumber = index + 1;
                     return (
                       <label
-                        className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-stone-200 px-3 text-sm dark:border-white/10"
+                        className="inline-flex min-h-10 items-center gap-2 rounded-sm border border-line px-3 text-body-s"
                         key={day}
                       >
                         <input
@@ -639,14 +637,14 @@ export function FitnessWorkoutTracker({
                 </div>
               </fieldset>
               <fieldset className="mt-4">
-                <legend className="text-xs font-medium text-stone-500">
+                <legend className="text-caption font-medium text-ink-muted">
                   Exercises · 3 sets of 8–10 reps by default
                 </legend>
-                <div className="mt-2 max-h-40 space-y-1 overflow-y-auto rounded-xl bg-stone-50 p-2 dark:bg-white/5">
+                <div className="mt-2 max-h-40 space-y-1 overflow-y-auto rounded-sm bg-surface-sunken p-2">
                   {exercises.length ? (
                     exercises.map((exercise) => (
                       <label
-                        className="flex min-h-11 items-center gap-3 rounded-lg px-2 text-sm"
+                        className="flex min-h-11 items-center gap-3 rounded-sm px-2 text-body-s"
                         key={exercise.id}
                       >
                         <input
@@ -664,14 +662,14 @@ export function FitnessWorkoutTracker({
                       </label>
                     ))
                   ) : (
-                    <p className="p-2 text-sm text-stone-500">
+                    <p className="p-2 text-body-s text-ink-muted">
                       Add an exercise first.
                     </p>
                   )}
                 </div>
               </fieldset>
               <Button
-                className="w-full"
+                className="mt-4 w-full"
                 disabled={saving || !selectedExercises.length}
                 loading={saving}
                 type="submit"
@@ -685,15 +683,15 @@ export function FitnessWorkoutTracker({
 
       {!activeSession &&
         sessions.some((session) => session.status === "completed") && (
-          <article className="mt-5 rounded-2xl border border-stone-200 p-4 dark:border-white/10 sm:p-5">
+          <article className="mt-5 rounded-md border border-line p-4 sm:p-5">
             <h3 className="font-semibold">Recent workouts</h3>
-            <ul className="mt-3 space-y-2 text-sm">
+            <ul className="mt-3 space-y-2 text-body-s">
               {sessions
                 .filter((session) => session.status === "completed")
                 .slice(0, 3)
                 .map((session) => (
                   <li
-                    className="flex flex-wrap justify-between gap-2 border-t border-stone-100 pt-2 dark:border-white/10"
+                    className="flex flex-wrap justify-between gap-2 border-t border-line pt-2"
                     key={session.id}
                   >
                     <span>
@@ -702,7 +700,7 @@ export function FitnessWorkoutTracker({
                         .map((item) => item.exercise_name)
                         .join(", ")}
                     </span>
-                    <span className="text-stone-500">
+                    <span className="text-ink-muted">
                       {session.duration_minutes ?? 0} min ·{" "}
                       {new Date(session.started_at).toLocaleDateString()}
                     </span>
@@ -724,13 +722,13 @@ function RecentPerformance({
 }) {
   if (!performance?.session) {
     return (
-      <p className="mt-1 text-xs text-stone-500">
+      <p className="mt-1 text-caption text-ink-muted">
         No previous completed sets yet.
       </p>
     );
   }
   return (
-    <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+    <p className="mt-1 text-caption text-ink-muted">
       Last time (
       {new Date(performance.session.completed_at).toLocaleDateString()}):{" "}
       {performance.sets
@@ -752,6 +750,6 @@ function formatDuration(seconds: number) {
 }
 
 const panelClass =
-  "mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7";
+  "mt-8 rounded-md border border-line bg-surface p-5 shadow-raised sm:p-7";
 const fieldClass =
-  "mt-1 min-h-12 w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-base outline-none focus:border-emerald-500 dark:border-white/10 dark:bg-stone-950";
+  "mt-1 min-h-12 w-full rounded-sm border border-line bg-surface px-3 py-2 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";

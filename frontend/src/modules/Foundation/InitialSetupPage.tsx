@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { LogoMark } from "@lifeos/ui/app-nav";
 import { Button } from "@lifeos/ui/button";
 import { useAuth } from "./auth-context";
 
@@ -39,34 +40,29 @@ export function InitialSetupPage() {
   }
 
   return (
-    <main className="grid min-h-svh place-items-center bg-stone-100 px-5 py-12 text-stone-950 dark:bg-stone-950 dark:text-stone-100">
-      <section className="w-full max-w-md rounded-3xl border border-stone-200 bg-white p-7 shadow-xl shadow-stone-900/5 dark:border-white/10 dark:bg-stone-900 sm:p-9">
+    <main className="grid min-h-svh place-items-center bg-canvas px-5 py-12 text-ink">
+      <section className="w-full max-w-md rounded-md border border-line bg-surface p-7 shadow-overlay sm:p-9">
         <div className="mb-9 flex items-center gap-3">
-          <span
-            aria-hidden="true"
-            className="grid size-10 place-items-center rounded-2xl bg-emerald-400 text-sm font-bold text-stone-950"
-          >
-            L
-          </span>
-          <span className="text-lg font-semibold tracking-tight">LifeOS</span>
+          <LogoMark size={40} />
+          <span className="text-title-m text-ink">LifeOS</span>
         </div>
-        <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+        <p className="m-0 text-overline uppercase text-ink-muted">
           Your private home dashboard
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+        <h1 className="m-0 mt-2 text-balance font-display text-display-m text-ink">
           Set up your owner account
         </h1>
-        <p className="mt-3 text-sm leading-6 text-stone-500 dark:text-stone-400">
+        <p className="mt-3 text-body text-ink-muted">
           Create the single owner account for this LifeOS installation. Your
           personal data stays on this server.
         </p>
 
         <form className="mt-8 space-y-5" onSubmit={submit}>
-          <label className="block text-sm font-medium" htmlFor="owner-name">
+          <label className="block text-body-s font-medium" htmlFor="owner-name">
             Name
             <input
               autoComplete="name"
-              className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950"
+              className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus"
               id="owner-name"
               name="name"
               onChange={(event) => setName(event.currentTarget.value)}
@@ -74,11 +70,14 @@ export function InitialSetupPage() {
               value={name}
             />
           </label>
-          <label className="block text-sm font-medium" htmlFor="owner-email">
+          <label
+            className="block text-body-s font-medium"
+            htmlFor="owner-email"
+          >
             Email
             <input
               autoComplete="username"
-              className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950"
+              className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus"
               id="owner-email"
               name="email"
               onChange={(event) => setEmail(event.currentTarget.value)}
@@ -89,14 +88,14 @@ export function InitialSetupPage() {
           </label>
           <div>
             <label
-              className="block text-sm font-medium"
+              className="block text-body-s font-medium"
               htmlFor="owner-password"
             >
               Password
             </label>
             <input
               autoComplete="new-password"
-              className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950"
+              className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus"
               id="owner-password"
               aria-describedby="owner-password-hint"
               minLength={12}
@@ -108,19 +107,19 @@ export function InitialSetupPage() {
             />
             <span
               id="owner-password-hint"
-              className="mt-1 block text-xs font-normal text-stone-500 dark:text-stone-400"
+              className="mt-1 block text-caption font-normal text-ink-muted"
             >
               Use at least 12 characters.
             </span>
           </div>
           <label
-            className="block text-sm font-medium"
+            className="block text-body-s font-medium"
             htmlFor="owner-password-confirmation"
           >
             Confirm password
             <input
               autoComplete="new-password"
-              className="mt-2 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 dark:border-white/15 dark:bg-stone-950"
+              className="mt-2 w-full rounded-sm border border-line-strong bg-surface px-4 py-3 text-body outline-none transition focus:border-focus focus:ring-4 focus:ring-focus"
               id="owner-password-confirmation"
               name="password_confirmation"
               onChange={(event) =>
@@ -133,7 +132,7 @@ export function InitialSetupPage() {
           </label>
           {error && (
             <p
-              className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800 dark:bg-red-950/50 dark:text-red-200"
+              className="rounded-sm bg-danger-soft px-4 py-3 text-body-s text-danger"
               role="alert"
             >
               {error}

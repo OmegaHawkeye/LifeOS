@@ -49,16 +49,16 @@ export function WeeklyReviewPage() {
       aria-labelledby="page-title"
       className="mx-auto w-full max-w-5xl pr-1 lg:pr-8"
     >
-      <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+      <p className="m-0 text-overline uppercase text-ink-muted">
         Close the loop
       </p>
       <h1
-        className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl"
+        className="m-0 mt-2 text-balance font-display text-display-m text-ink tablet:text-display-l"
         id="page-title"
       >
         Weekly review
       </h1>
-      <p className="mt-3 text-sm leading-6 text-stone-500 dark:text-stone-400">
+      <p className="mt-3 text-body text-ink-muted">
         A calm look back across finance, fitness, and nutrition, followed by one
         focus for the week ahead.
       </p>
@@ -69,7 +69,7 @@ export function WeeklyReviewPage() {
       )}
       {error && (
         <p
-          className="mt-6 rounded-xl bg-rose-50 p-4 text-sm text-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
+          className="mt-6 rounded-sm bg-danger-soft p-4 text-body-s text-danger"
           role="alert"
         >
           {error}
@@ -77,7 +77,7 @@ export function WeeklyReviewPage() {
       )}
       {summary && (
         <>
-          <p className="mt-6 text-sm font-medium">
+          <p className="mt-6 text-body-s font-medium">
             {formatDate(summary.week_start)} – {formatDate(summary.week_end)}
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
@@ -115,10 +115,13 @@ export function WeeklyReviewPage() {
             </SummaryCard>
           </div>
           <form
-            className="mt-5 space-y-5 rounded-3xl border border-stone-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-8"
+            className="mt-5 space-y-5 rounded-md border border-line bg-surface p-6 shadow-raised sm:p-8"
             onSubmit={submit}
           >
-            <label className="block text-sm font-medium" htmlFor="weekly-notes">
+            <label
+              className="block text-body-s font-medium"
+              htmlFor="weekly-notes"
+            >
               What went well, and what would you change?
               <textarea
                 className={fieldClass}
@@ -129,7 +132,10 @@ export function WeeklyReviewPage() {
                 value={notes}
               />
             </label>
-            <label className="block text-sm font-medium" htmlFor="weekly-focus">
+            <label
+              className="block text-body-s font-medium"
+              htmlFor="weekly-focus"
+            >
               One focus for next week
               <textarea
                 className={fieldClass}
@@ -142,17 +148,14 @@ export function WeeklyReviewPage() {
             </label>
             <div className="flex flex-wrap items-center gap-4">
               <button
-                className="rounded-xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-stone-950 disabled:cursor-wait disabled:opacity-60"
+                className="rounded-sm bg-primary px-5 py-3 text-body-s font-semibold text-on-primary disabled:cursor-wait disabled:opacity-60"
                 disabled={saving}
                 type="submit"
               >
                 {saving ? "Saving…" : "Save weekly review"}
               </button>
               {saved && (
-                <p
-                  className="text-sm text-emerald-700 dark:text-emerald-300"
-                  role="status"
-                >
+                <p className="text-body-s text-primary-text" role="status">
                   Review saved.
                 </p>
               )}
@@ -172,15 +175,15 @@ function SummaryCard({
   children: ReactNode;
 }) {
   return (
-    <article className="rounded-2xl border border-stone-200 bg-white p-5 text-sm leading-6 dark:border-white/10 dark:bg-stone-900">
-      <h2 className="mb-2 text-base font-semibold">{title}</h2>
-      <div className="text-stone-500 dark:text-stone-400">{children}</div>
+    <article className="rounded-md border border-line bg-surface p-5 text-body-s leading-6">
+      <h2 className="mb-2 text-body font-semibold">{title}</h2>
+      <div className="text-ink-muted">{children}</div>
     </article>
   );
 }
 
 const fieldClass =
-  "mt-2 block w-full rounded-xl border border-stone-300 bg-white px-3 py-3 font-normal dark:border-white/15 dark:bg-stone-950";
+  "mt-2 block w-full rounded-sm border border-line-strong bg-surface px-3 py-3 font-normal outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";
 function formatDate(date: string) {
   return new Intl.DateTimeFormat(undefined, {
     month: "short",

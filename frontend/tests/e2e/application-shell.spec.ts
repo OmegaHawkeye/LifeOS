@@ -350,7 +350,14 @@ test("loads the LifeOS application shell", async ({ page }) => {
   await expect(page.getByText("TESTBASE32SECRET")).toBeVisible();
   await page.getByLabel("6-digit authenticator code").fill("123456");
   await page.getByRole("button", { name: "Confirm authenticator" }).click();
-  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Today", exact: true, level: 1 }),
+  ).toBeVisible();
+  // The owner masks sensitive data by default, so Today hides amounts.
+  await expect(
+    page.getByText("Sensitive values are hidden by your settings."),
+  ).toBeVisible();
+  await expect(page.getByText(/1[.,]?234[.,]56/)).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Next workout" }),
   ).toBeVisible();
@@ -372,13 +379,15 @@ test("loads the LifeOS application shell", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Add body metric" }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await page.getByRole("link", { name: "Today", exact: true }).click();
   await page.getByRole("link", { name: "Start a workout" }).click();
   await expect(page.getByRole("heading", { name: "Workouts" })).toBeVisible();
-  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await page.getByRole("link", { name: "Today", exact: true }).click();
   await page.getByRole("link", { name: "Plan a meal" }).click();
-  await expect(page.getByRole("heading", { name: "Nutrition" })).toBeVisible();
-  await page.getByRole("link", { name: "Dashboard", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Nutrition", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Today", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Health · last 7 days" }),
   ).toBeVisible();
@@ -425,8 +434,10 @@ test("loads the LifeOS application shell", async ({ page }) => {
   await expect(
     page.getByRole("navigation", { name: "Primary navigation" }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Dashboard" }).click();
-  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await page.getByRole("link", { name: "Today", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Today", exact: true, level: 1 }),
+  ).toBeVisible();
   await page.getByRole("link", { name: "Open wall mode" }).click();
   await expect(page.getByText("LifeOS · Today")).toBeVisible();
   await expect(page.getByText("Monthly cashflow hidden")).toBeVisible();
@@ -452,10 +463,12 @@ test("loads the LifeOS application shell", async ({ page }) => {
     await expect(
       page.getByRole("heading", { name: "Today's focus" }),
     ).toBeVisible();
-    await expect(page.locator("#wall-title")).toHaveCSS("font-size", "72px");
+    await expect(page.locator("#wall-title")).toHaveCSS("font-size", "64px");
   }
   await page.getByRole("link", { name: "Exit display mode" }).click();
-  await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Today", exact: true, level: 1 }),
+  ).toBeVisible();
   await page.getByRole("link", { name: "Open weekly review" }).click();
   await expect(
     page.getByRole("heading", { name: "Weekly review" }),

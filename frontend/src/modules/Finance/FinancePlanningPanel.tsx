@@ -158,24 +158,24 @@ export function FinancePlanningPanel({
   return (
     <section
       aria-labelledby="planning-title"
-      className="mt-8 rounded-3xl border border-stone-200 bg-white p-5 pr-8 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7 sm:pr-10 lg:pr-16"
+      className="mt-8 rounded-md border border-line bg-surface p-5 pr-8 shadow-raised sm:p-7 sm:pr-10 lg:pr-16"
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          <p className="m-0 text-overline uppercase text-ink-muted">
             Plan ahead
           </p>
-          <h2 className="mt-1 text-xl font-semibold" id="planning-title">
+          <h2 className="mt-1 text-title-l font-semibold" id="planning-title">
             Budgets, subscriptions & goals
           </h2>
         </div>
-        <p className="text-sm text-stone-500 dark:text-stone-400">
+        <p className="text-body-s text-ink-muted">
           Monthly budgets · upcoming renewals · savings pace
         </p>
       </div>
       {error && (
         <p
-          className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-800 dark:bg-rose-950/40 dark:text-rose-200"
+          className="mt-4 rounded-sm bg-danger-soft p-3 text-body-s text-danger"
           role="alert"
         >
           Planning data could not be saved or loaded. Please try again.
@@ -184,11 +184,11 @@ export function FinancePlanningPanel({
       {alerts.length > 0 && (
         <div
           aria-label="Actionable finance reminders"
-          className="mt-5 grid gap-2 sm:grid-cols-2"
+          className="mt-5 grid gap-2 sm:grid-cols-2 [&>*]:min-w-0"
         >
           {alerts.map((alert) => (
             <p
-              className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:bg-amber-950/30 dark:text-amber-100"
+              className="rounded-sm bg-warning-soft px-4 py-3 text-body-s text-warning"
               key={alert}
             >
               {alert}
@@ -197,12 +197,12 @@ export function FinancePlanningPanel({
         </div>
       )}
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
         <div className="md:col-span-2 xl:col-span-1">
           <h3 className="font-semibold">Monthly budgets</h3>
           {expenseCategories.length === 0 ? (
-            <div className="mt-3 rounded-xl bg-stone-50 p-3 dark:bg-white/5">
-              <p className="text-xs text-stone-500 dark:text-stone-400">
+            <div className="mt-3 rounded-sm bg-surface-sunken p-3">
+              <p className="text-caption text-ink-muted">
                 Create an expense category first.
               </p>
               <div className="mt-2 flex gap-2">
@@ -227,13 +227,13 @@ export function FinancePlanningPanel({
               </div>
             </div>
           ) : accounts.length === 0 ? (
-            <p className="mt-3 rounded-xl bg-stone-50 p-3 text-xs text-stone-500 dark:bg-white/5 dark:text-stone-400">
+            <p className="mt-3 rounded-sm bg-surface-sunken p-3 text-caption text-ink-muted">
               Create a finance account first. Its currency will be available for
               budgets.
             </p>
           ) : (
             <form
-              className="mt-3 grid gap-2"
+              className="mt-3 grid gap-2 [&>*]:min-w-0"
               onSubmit={(event) =>
                 void submit(event, async (form) =>
                   createFinanceBudget({
@@ -257,7 +257,7 @@ export function FinancePlanningPanel({
                   </option>
                 ))}
               </select>
-              <div className="flex gap-2">
+              <div className="flex gap-2 [&>*]:min-w-0 [&>*]:flex-1">
                 <select
                   aria-label="Budget currency"
                   className={fieldClass}
@@ -286,25 +286,22 @@ export function FinancePlanningPanel({
           )}
           <ul className="mt-4 space-y-3">
             {budgets.map((budget) => (
-              <li
-                className="rounded-xl bg-stone-50 p-3 dark:bg-white/5"
-                key={budget.id}
-              >
-                <div className="flex justify-between gap-3 text-sm">
+              <li className="rounded-sm bg-surface-sunken p-3" key={budget.id}>
+                <div className="flex justify-between gap-3 text-body-s">
                   <span className="font-medium">{budget.category_name}</span>
                   <span>
                     {budget.currency} {budget.spent} / {budget.target_amount}
                   </span>
                 </div>
                 <p
-                  className={`mt-1 text-xs ${budget.is_over_budget ? "text-rose-700 dark:text-rose-300" : "text-stone-500 dark:text-stone-400"}`}
+                  className={`mt-1 text-caption ${budget.is_over_budget ? "text-danger" : "text-ink-muted"}`}
                 >
                   {budget.is_over_budget
                     ? `Over by ${formatMoney(Math.abs(Number(budget.remaining)), budget.currency)}`
                     : `${formatMoney(Number(budget.remaining), budget.currency)} remaining`}
                 </p>
                 <Button
-                  className="mt-2 min-h-9 px-3 text-xs"
+                  className="mt-2 min-h-9 px-3 text-caption"
                   onPress={() =>
                     void deleteFinanceBudget(budget.id)
                       .then(reload)
@@ -322,7 +319,7 @@ export function FinancePlanningPanel({
         <div>
           <h3 className="font-semibold">Subscriptions</h3>
           <form
-            className="mt-3 grid gap-2"
+            className="mt-3 grid gap-2 [&>*]:min-w-0"
             onSubmit={(event) =>
               void submit(event, async (form) =>
                 createFinanceSubscription({
@@ -344,7 +341,7 @@ export function FinancePlanningPanel({
               placeholder="Name"
               required
             />
-            <div className="flex gap-2">
+            <div className="flex gap-2 [&>*]:min-w-0 [&>*]:flex-1">
               <input
                 aria-label="Subscription amount"
                 className={fieldClass}
@@ -395,10 +392,10 @@ export function FinancePlanningPanel({
           <ul className="mt-4 space-y-3">
             {subscriptions.map((subscription) => (
               <li
-                className="rounded-xl bg-stone-50 p-3 dark:bg-white/5"
+                className="rounded-sm bg-surface-sunken p-3"
                 key={subscription.id}
               >
-                <div className="flex justify-between gap-3 text-sm">
+                <div className="flex justify-between gap-3 text-body-s">
                   <span className="font-medium">{subscription.name}</span>
                   <span>
                     {formatMoney(
@@ -408,13 +405,13 @@ export function FinancePlanningPanel({
                     · {subscription.billing_cycle}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                <p className="mt-1 text-caption text-ink-muted">
                   Renews {subscription.next_renewal_on} · {subscription.status}
                 </p>
                 <div className="mt-2 flex gap-3">
                   {subscription.status !== "canceled" && (
                     <Button
-                      className="min-h-9 px-3 text-xs"
+                      className="min-h-9 px-3 text-caption"
                       onPress={() =>
                         void updateFinanceSubscription(subscription.id, {
                           status:
@@ -432,7 +429,7 @@ export function FinancePlanningPanel({
                   )}
                   {subscription.status !== "canceled" && (
                     <Button
-                      className="min-h-9 px-3 text-xs"
+                      className="min-h-9 px-3 text-caption"
                       onPress={() =>
                         void updateFinanceSubscription(subscription.id, {
                           status: "canceled",
@@ -454,7 +451,7 @@ export function FinancePlanningPanel({
         <div>
           <h3 className="font-semibold">Savings goals</h3>
           <form
-            className="mt-3 grid gap-2"
+            className="mt-3 grid gap-2 [&>*]:min-w-0"
             onSubmit={(event) =>
               void submit(event, async (form) =>
                 createFinanceSavingsGoal({
@@ -475,7 +472,7 @@ export function FinancePlanningPanel({
               placeholder="Goal name"
               required
             />
-            <div className="flex gap-2">
+            <div className="flex gap-2 [&>*]:min-w-0 [&>*]:flex-1">
               <input
                 aria-label="Goal target amount"
                 className={fieldClass}
@@ -496,7 +493,7 @@ export function FinancePlanningPanel({
                 type="number"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 [&>*]:min-w-0 [&>*]:flex-1">
               <select
                 aria-label="Goal currency"
                 className={fieldClass}
@@ -525,21 +522,18 @@ export function FinancePlanningPanel({
           </form>
           <ul className="mt-4 space-y-3">
             {goals.map((goal) => (
-              <li
-                className="rounded-xl bg-stone-50 p-3 dark:bg-white/5"
-                key={goal.id}
-              >
-                <div className="flex justify-between gap-3 text-sm">
+              <li className="rounded-sm bg-surface-sunken p-3" key={goal.id}>
+                <div className="flex justify-between gap-3 text-body-s">
                   <span className="font-medium">{goal.name}</span>
                   <span>{goal.progress_percent}%</span>
                 </div>
                 <progress
                   aria-label={`${goal.name} progress`}
-                  className="mt-2 h-2 w-full accent-emerald-600"
+                  className="mt-2 h-2 w-full accent-primary"
                   max="100"
                   value={goal.progress_percent}
                 />
-                <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                <p className="mt-1 text-caption text-ink-muted">
                   {formatMoney(Number(goal.current_amount), goal.currency)} of{" "}
                   {formatMoney(Number(goal.target_amount), goal.currency)} ·{" "}
                   {formatMoney(
@@ -549,7 +543,7 @@ export function FinancePlanningPanel({
                   /month · due {goal.target_date}
                 </p>
                 <Button
-                  className="mt-2 min-h-9 px-3 text-xs"
+                  className="mt-2 min-h-9 px-3 text-caption"
                   onPress={() =>
                     void deleteFinanceSavingsGoal(goal.id)
                       .then(reload)
@@ -585,4 +579,4 @@ function daysUntil(date: string): number {
 }
 
 const fieldClass =
-  "min-w-0 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm dark:border-white/10 dark:bg-stone-950";
+  "min-w-0 rounded-sm border border-line bg-surface px-3 py-2 text-body-s outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";

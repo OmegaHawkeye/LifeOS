@@ -10,6 +10,8 @@ export default defineConfig({
     allowedHosts: [".local", ".ts.net"],
   },
   resolve: {
+    // @lifeos/ui has its own node_modules; one React instance keeps its hooks working.
+    dedupe: ["react", "react-dom"],
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },

@@ -196,13 +196,13 @@ describe("LifeOS authenticated app shell", () => {
     );
 
     expect(
-      await screen.findByRole("heading", { name: "Dashboard" }),
+      await screen.findByRole("heading", { name: "Today", level: 1 }),
     ).toBeVisible();
     const navigation = screen.getByRole("navigation", {
       name: "Primary navigation",
     });
     for (const label of [
-      "Dashboard",
+      "Today",
       "Finance",
       "Fitness",
       "Nutrition",

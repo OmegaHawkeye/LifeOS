@@ -57,11 +57,11 @@ export function NutritionDashboardSummary() {
   if (!dashboard) {
     return (
       <section aria-labelledby="nutrition-review-title" className={panelClass}>
-        <h2 className="text-xl font-semibold" id="nutrition-review-title">
+        <h2 className="text-title-l font-semibold" id="nutrition-review-title">
           Nutrition dashboard
         </h2>
         <p
-          className="mt-3 text-sm text-stone-500"
+          className="mt-3 text-body-s text-ink-muted"
           role={error ? "alert" : "status"}
         >
           {error
@@ -76,16 +76,16 @@ export function NutritionDashboardSummary() {
     <section aria-labelledby="nutrition-review-title" className={panelClass}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          <p className="m-0 text-overline uppercase text-ink-muted">
             Check in, not judge
           </p>
           <h2
-            className="mt-1 text-2xl font-semibold"
+            className="mt-1 text-figure-l font-semibold"
             id="nutrition-review-title"
           >
             Nutrition dashboard
           </h2>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <p className="mt-1 text-body-s text-ink-muted">
             Today and this week · {dashboard.week_start} – {dashboard.week_end}
           </p>
         </div>
@@ -96,17 +96,14 @@ export function NutritionDashboardSummary() {
 
       {error && (
         <p
-          className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-800 dark:bg-rose-950/50 dark:text-rose-200"
+          className="mt-4 rounded-sm bg-danger-soft p-3 text-body-s text-danger"
           role="alert"
         >
           The weekly review could not be refreshed. Try again.
         </p>
       )}
       {notice && (
-        <p
-          className="mt-4 text-sm text-emerald-700 dark:text-emerald-300"
-          role="status"
-        >
+        <p className="mt-4 text-body-s text-primary-text" role="status">
           {notice}{" "}
           <a className="underline" href="#meal-plan-title">
             Open the plan to fine-tune it.
@@ -114,11 +111,11 @@ export function NutritionDashboardSummary() {
         </p>
       )}
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
-        <article className="rounded-2xl bg-stone-50 p-4 dark:bg-white/5 sm:p-5">
+      <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)] [&>*]:min-w-0">
+        <article className="rounded-md bg-surface-sunken p-4 sm:p-5">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="font-semibold">Today · {dashboard.today.date}</h3>
-            <p className="text-xs text-stone-500">
+            <p className="text-caption text-ink-muted">
               {dashboard.today.planned_meal_count} planned ·{" "}
               {dashboard.today.eaten_meal_count} logged
             </p>
@@ -127,17 +124,17 @@ export function NutritionDashboardSummary() {
             <ul className="mt-3 space-y-2">
               {dashboard.today.plan.map((meal) => (
                 <li
-                  className="flex flex-wrap items-center justify-between gap-2 text-sm"
+                  className="flex flex-wrap items-center justify-between gap-2 text-body-s"
                   key={meal.id}
                 >
                   <span>
                     <span className="font-medium">{meal.recipe_name}</span>
-                    <span className="ml-2 text-stone-500">
+                    <span className="ml-2 text-ink-muted">
                       {meal.meal_slot}
                     </span>
                   </span>
                   <span
-                    className={`rounded-full px-2 py-1 text-xs capitalize ${meal.status === "skipped" || meal.status === "replaced" ? "bg-stone-200 text-stone-600 dark:bg-white/10 dark:text-stone-300" : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200"}`}
+                    className={`rounded-full px-2 py-1 text-caption capitalize ${meal.status === "skipped" || meal.status === "replaced" ? "bg-surface-sunken text-ink-muted" : "bg-nutrition-soft text-nutrition"}`}
                   >
                     {meal.status}
                   </span>
@@ -145,23 +142,23 @@ export function NutritionDashboardSummary() {
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-stone-500">
+            <p className="mt-3 text-body-s text-ink-muted">
               Nothing planned for today yet.
             </p>
           )}
-          <p className="mt-4 border-t border-stone-200 pt-3 text-xs text-stone-500 dark:border-white/10 dark:text-stone-400">
+          <p className="mt-4 border-t border-line pt-3 text-caption text-ink-muted">
             Logged: {display(dashboard.today.eaten.calories)} kcal ·{" "}
             {display(dashboard.today.eaten.protein_grams)} g protein
           </p>
         </article>
 
-        <article className="rounded-2xl border border-stone-200 p-4 dark:border-white/10 sm:p-5">
+        <article className="rounded-md border border-line p-4 sm:p-5">
           <h3 className="font-semibold">Weekly progress</h3>
-          <p className="mt-1 text-xs text-stone-500">
+          <p className="mt-1 text-caption text-ink-muted">
             Planned vs logged meals · {dashboard.week.planned_meal_count}{" "}
             planned · {dashboard.week.eaten_meal_count} logged
           </p>
-          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 [&>*]:min-w-0">
             {nutrients.map(([key, label, unit]) => (
               <MetricSummary
                 key={key}
@@ -176,19 +173,19 @@ export function NutritionDashboardSummary() {
         </article>
       </div>
 
-      <article className="mt-4 rounded-2xl border border-stone-200 p-4 dark:border-white/10 sm:p-5">
+      <article className="mt-4 rounded-md border border-line p-4 sm:p-5">
         <h3 className="font-semibold">Daily rhythm</h3>
-        <div className="mt-3 divide-y divide-stone-100 dark:divide-white/10">
+        <div className="mt-3 divide-y divide-line">
           {dashboard.week.daily.map((day) => (
             <div
-              className="grid gap-1 py-2 text-xs sm:grid-cols-[7rem_1fr_1fr] sm:items-center"
+              className="grid gap-1 py-2 text-caption sm:grid-cols-[7rem_1fr_1fr] sm:items-center [&>*]:min-w-0"
               key={day.date}
             >
               <span className="font-medium">{dayLabel(day.date)}</span>
-              <span className="text-stone-500">
+              <span className="text-ink-muted">
                 Plan {compactTotals(day.planned)}
               </span>
-              <span className="text-stone-500">
+              <span className="text-ink-muted">
                 Logged {compactTotals(day.eaten)}
               </span>
             </div>
@@ -196,21 +193,21 @@ export function NutritionDashboardSummary() {
         </div>
       </article>
 
-      <article className="mt-4 grid gap-5 rounded-2xl bg-emerald-50/60 p-4 dark:bg-emerald-950/20 sm:grid-cols-2 sm:p-5">
+      <article className="mt-4 grid gap-5 rounded-md bg-primary-soft p-4 sm:grid-cols-2 sm:p-5 [&>*]:min-w-0">
         <div>
           <h3 className="font-semibold">Weekly review</h3>
-          <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">
+          <p className="mt-1 text-body-s text-ink-muted">
             {dashboard.review.reusable_meals.length
               ? `Reusable meals: ${dashboard.review.reusable_meals.map((meal) => `${meal.recipe_name} (${meal.planned_count}×)`).join(", ")}.`
               : "No repeated meals this week yet; your favorites can become next week's starting point."}
           </p>
-          <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+          <p className="mt-2 text-body-s text-ink-muted">
             Planning gaps:{" "}
             {dashboard.review.planning_gaps.length
               ? dashboard.review.planning_gaps.map(dayLabel).join(", ")
               : "Every day has a planned meal."}
           </p>
-          <p className="mt-2 text-xs text-stone-500 dark:text-stone-400">
+          <p className="mt-2 text-caption text-ink-muted">
             {dashboard.week.status_counts.skipped +
               dashboard.week.status_counts.replaced >
             0
@@ -218,7 +215,7 @@ export function NutritionDashboardSummary() {
               : "No skipped or replaced meals this week."}
           </p>
         </div>
-        <div className="space-y-2 text-sm">
+        <div className="space-y-2 text-body-s">
           <p>
             Prep still to do:{" "}
             <span className="font-semibold">
@@ -243,12 +240,12 @@ export function NutritionDashboardSummary() {
                 : "Use this week to plan next week"}
             </Button>
           ) : dashboard.review.next_week.has_plan ? (
-            <p className="text-xs text-stone-500">
+            <p className="text-caption text-ink-muted">
               Next week already has a plan. Add or adjust it in the meal
               planner.
             </p>
           ) : (
-            <p className="text-xs text-stone-500">
+            <p className="text-caption text-ink-muted">
               Add meals to this week before creating a reusable next-week plan.
             </p>
           )}
@@ -279,24 +276,24 @@ function MetricSummary({
 
   return (
     <div>
-      <p className="text-xs font-medium text-stone-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold">
+      <p className="text-caption font-medium text-ink-muted">{label}</p>
+      <p className="mt-1 text-body-s font-semibold">
         {display(eaten)} / {weeklyTarget === null ? "—" : display(weeklyTarget)}{" "}
         {unit}
       </p>
-      <p className="text-[11px] text-stone-500">
+      <p className="text-[11px] text-ink-muted">
         Planned {display(planned)} {unit}
       </p>
       {weeklyTarget !== null && progress !== null && (
         <div
           aria-label={`${label} weekly target progress`}
-          className="mt-1 h-1.5 overflow-hidden rounded-full bg-stone-200 dark:bg-white/10"
+          className="mt-1 h-1.5 overflow-hidden rounded-full bg-surface-sunken"
           role="progressbar"
           aria-valuemax={100}
           aria-valuenow={Math.round(progress)}
         >
           <div
-            className="h-full rounded-full bg-emerald-500"
+            className="h-full rounded-full bg-primary"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -336,6 +333,6 @@ function compactTotals(totals: NutritionDashboard["week"]["planned"]) {
 }
 
 const panelClass =
-  "mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7";
+  "mt-8 rounded-md border border-line bg-surface p-5 shadow-raised sm:p-7";
 const linkClass =
-  "text-sm font-semibold text-emerald-700 underline underline-offset-4 dark:text-emerald-300";
+  "text-body-s font-semibold text-primary-text underline underline-offset-4";

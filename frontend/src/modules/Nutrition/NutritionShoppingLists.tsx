@@ -160,22 +160,25 @@ export function NutritionShoppingLists() {
   return (
     <section
       aria-labelledby="shopping-list-title"
-      className="mt-8 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-stone-900 sm:p-7"
+      className="mt-8 rounded-md border border-line bg-surface p-5 shadow-raised sm:p-7"
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+          <p className="m-0 text-overline uppercase text-ink-muted">
             Take it to the store
           </p>
-          <h2 className="mt-1 text-2xl font-semibold" id="shopping-list-title">
+          <h2
+            className="mt-1 text-figure-l font-semibold"
+            id="shopping-list-title"
+          >
             Shopping lists
           </h2>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <p className="mt-1 text-body-s text-ink-muted">
             Combine matching ingredients across your planned meals.
           </p>
         </div>
         {lists.length > 0 && (
-          <label className="min-w-52 text-sm font-medium">
+          <label className="min-w-52 text-body-s font-medium">
             Saved list
             <select
               aria-label="Saved shopping list"
@@ -195,7 +198,7 @@ export function NutritionShoppingLists() {
 
       {error && (
         <p
-          className="mt-5 rounded-xl bg-rose-50 p-3 text-sm text-rose-800 dark:bg-rose-950/50 dark:text-rose-200"
+          className="mt-5 rounded-sm bg-danger-soft p-3 text-body-s text-danger"
           role="alert"
         >
           Shopping list could not be loaded or saved.
@@ -203,10 +206,10 @@ export function NutritionShoppingLists() {
       )}
 
       <form
-        className="mt-5 grid gap-3 rounded-2xl bg-stone-50 p-4 dark:bg-white/5 sm:grid-cols-2 lg:grid-cols-4"
+        className="mt-5 grid gap-3 rounded-md bg-surface-sunken p-4 sm:grid-cols-2 lg:grid-cols-4 [&>*]:min-w-0"
         onSubmit={generateList}
       >
-        <label className="text-xs font-medium">
+        <label className="text-caption font-medium">
           List name
           <input
             className={fieldClass}
@@ -214,7 +217,7 @@ export function NutritionShoppingLists() {
             name="list_name"
           />
         </label>
-        <label className="text-xs font-medium">
+        <label className="text-caption font-medium">
           From
           <input
             className={fieldClass}
@@ -224,7 +227,7 @@ export function NutritionShoppingLists() {
             type="date"
           />
         </label>
-        <label className="text-xs font-medium">
+        <label className="text-caption font-medium">
           Through
           <input
             className={fieldClass}
@@ -240,14 +243,14 @@ export function NutritionShoppingLists() {
       </form>
 
       {loading ? (
-        <p className="mt-5 text-sm text-stone-500" role="status">
+        <p className="mt-5 text-body-s text-ink-muted" role="status">
           Loading shopping lists…
         </p>
       ) : activeList ? (
         <>
           <div className="mt-5 flex flex-wrap items-baseline justify-between gap-2">
-            <h3 className="text-lg font-semibold">{activeList.name}</h3>
-            <p className="text-xs text-stone-500">
+            <h3 className="text-title-m font-semibold">{activeList.name}</h3>
+            <p className="text-caption text-ink-muted">
               {activeList.start_date} – {activeList.end_date} ·{" "}
               {activeList.items.filter((item) => item.is_checked).length}/
               {activeList.items.length} checked
@@ -255,7 +258,7 @@ export function NutritionShoppingLists() {
           </div>
           {activeList.unavailable_recipe_count > 0 && (
             <p
-              className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-100"
+              className="mt-3 rounded-sm bg-warning-soft p-3 text-body-s text-warning"
               role="status"
             >
               {activeList.unavailable_recipe_count} planned meal
@@ -264,7 +267,7 @@ export function NutritionShoppingLists() {
             </p>
           )}
           {activeList.items.length ? (
-            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>*]:min-w-0">
               {storeSections.map(([sectionId, sectionLabel]) => {
                 const items = activeList.items.filter(
                   (item) => item.store_section === sectionId,
@@ -273,19 +276,19 @@ export function NutritionShoppingLists() {
                 return (
                   <section
                     aria-label={sectionLabel}
-                    className="rounded-2xl border border-stone-200 p-4 dark:border-white/10"
+                    className="rounded-md border border-line p-4"
                     key={sectionId}
                   >
                     <h4 className="font-semibold">
                       {sectionLabel}{" "}
-                      <span className="text-xs font-normal text-stone-500">
+                      <span className="text-caption font-normal text-ink-muted">
                         {items.length}
                       </span>
                     </h4>
                     <ul className="mt-3 space-y-3">
                       {items.map((item) => (
                         <li
-                          className="border-t border-stone-100 pt-3 first:border-0 first:pt-0 dark:border-white/10"
+                          className="border-t border-line pt-3 first:border-0 first:pt-0"
                           key={item.id}
                         >
                           {editingId === item.id ? (
@@ -352,27 +355,27 @@ export function NutritionShoppingLists() {
                               <input
                                 aria-label={`Pick up ${item.name}`}
                                 checked={item.is_checked}
-                                className="mt-1 size-4 accent-emerald-600"
+                                className="mt-1 size-4 accent-primary"
                                 onChange={() => void toggleChecked(item)}
                                 type="checkbox"
                               />
                               <div className="min-w-0 flex-1">
                                 <p
-                                  className={`break-words text-sm font-medium ${item.is_checked ? "text-stone-400 line-through" : ""}`}
+                                  className={`break-words text-body-s font-medium ${item.is_checked ? "text-ink-muted line-through" : ""}`}
                                 >
                                   {item.name}
                                 </p>
-                                <p className="mt-0.5 text-xs text-stone-500">
+                                <p className="mt-0.5 text-caption text-ink-muted">
                                   {item.quantity ?? "—"} {item.unit ?? ""}
                                 </p>
                                 {item.quantity_warning && (
-                                  <p className="mt-1 text-xs text-amber-800 dark:text-amber-200">
+                                  <p className="mt-1 text-caption text-warning">
                                     This ingredient has incompatible or missing
                                     units; quantities were kept separate.
                                   </p>
                                 )}
                                 {item.is_manual && (
-                                  <span className="text-[10px] text-stone-400">
+                                  <span className="text-[10px] text-ink-muted">
                                     Manual
                                   </span>
                                 )}
@@ -380,7 +383,7 @@ export function NutritionShoppingLists() {
                               <div className="flex shrink-0 gap-1">
                                 <Button
                                   accessibilityLabel={`Edit ${item.name}`}
-                                  className="min-h-9 rounded-md px-2 text-xs"
+                                  className="min-h-9 rounded-md px-2 text-caption"
                                   onPress={() => setEditingId(item.id)}
                                   variant="secondary"
                                 >
@@ -388,7 +391,7 @@ export function NutritionShoppingLists() {
                                 </Button>
                                 <Button
                                   accessibilityLabel={`Remove ${item.name}`}
-                                  className="min-h-9 rounded-md px-2 text-xs"
+                                  className="min-h-9 rounded-md px-2 text-caption"
                                   onPress={() => void removeItem(item.id)}
                                   variant="danger"
                                 >
@@ -405,14 +408,14 @@ export function NutritionShoppingLists() {
               })}
             </div>
           ) : (
-            <p className="mt-4 rounded-xl border border-dashed border-stone-300 p-5 text-sm text-stone-500">
+            <p className="mt-4 rounded-sm border border-dashed border-line-strong p-5 text-body-s text-ink-muted">
               No ingredients were found for this date range. You can still add
               items manually.
             </p>
           )}
 
           <form
-            className="mt-5 grid gap-2 rounded-2xl border border-stone-200 p-4 dark:border-white/10 sm:grid-cols-2 lg:grid-cols-5"
+            className="mt-5 grid gap-2 rounded-md border border-line p-4 sm:grid-cols-2 lg:grid-cols-5 [&>*]:min-w-0"
             onSubmit={addManualItem}
           >
             <h4 className="font-semibold sm:col-span-2 lg:col-span-5">
@@ -458,7 +461,7 @@ export function NutritionShoppingLists() {
           </form>
         </>
       ) : !loading ? (
-        <p className="mt-5 rounded-xl border border-dashed border-stone-300 p-5 text-sm text-stone-500">
+        <p className="mt-5 rounded-sm border border-dashed border-line-strong p-5 text-body-s text-ink-muted">
           Generate a list for a date range with planned meals, or start with a
           manual list by generating an empty range.
         </p>
@@ -525,4 +528,4 @@ function dateString(date: Date) {
 }
 
 const fieldClass =
-  "mt-1 w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm dark:border-white/10 dark:bg-stone-950";
+  "mt-1 w-full rounded-sm border border-line bg-surface px-3 py-2 text-body-s outline-none transition focus:border-focus focus:ring-4 focus:ring-focus";

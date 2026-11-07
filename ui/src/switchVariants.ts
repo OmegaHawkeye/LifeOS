@@ -1,20 +1,20 @@
 import { cva, type VariantProps } from "class-variance-authority";
 
 export const switchTrackVariants = cva(
-  "relative inline-flex shrink-0 items-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lifeos-accent-dark",
+  "relative inline-flex shrink-0 items-center rounded-full border p-0.5 transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-reduce:transition-none",
   {
     variants: {
       checked: {
-        true: "bg-lifeos-accent",
-        false: "bg-stone-300 dark:bg-stone-700",
+        true: "border-primary bg-primary",
+        false: "border-line-strong bg-surface-sunken",
       },
       disabled: {
         true: "cursor-not-allowed opacity-60",
         false: "cursor-pointer",
       },
       size: {
-        sm: "h-5 w-9 p-0.5",
-        md: "h-6 w-11 p-0.5",
+        sm: "h-5 w-9",
+        md: "h-7 w-12",
       },
     },
     defaultVariants: {
@@ -26,15 +26,15 @@ export const switchTrackVariants = cva(
 );
 
 export const switchThumbVariants = cva(
-  "pointer-events-none block rounded-full bg-white shadow transition-transform",
+  "pointer-events-none block rounded-full transition-transform duration-150 motion-reduce:transition-none",
   {
     variants: {
       checked: {
-        true: "",
-        false: "translate-x-0",
+        true: "bg-on-primary",
+        false: "translate-x-0 bg-ink-muted",
       },
       size: {
-        sm: "size-4",
+        sm: "size-3.5",
         md: "size-5",
       },
     },

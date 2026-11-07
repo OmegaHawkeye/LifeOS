@@ -42,7 +42,7 @@ describe("native Today dashboard", () => {
       <TodayDashboardScreen service={service} onNavigate={onNavigate} />,
     );
 
-    expect(await screen.findByText("Your day, in context")).toBeTruthy();
+    expect(await screen.findByRole("header", { name: "Today" })).toBeTruthy();
     expect(
       screen.getByText("Sensitive values are hidden by your settings."),
     ).toBeTruthy();
@@ -112,7 +112,7 @@ describe("native Today dashboard", () => {
       await screen.findByRole("button", { name: "Try again" }),
     );
 
-    expect(await screen.findByText("Your day, in context")).toBeTruthy();
+    expect(await screen.findByRole("header", { name: "Today" })).toBeTruthy();
     expect(service.loadTodaySnapshot).toHaveBeenCalledTimes(2);
   });
 });

@@ -1,92 +1,87 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { AppNav, LogoMark } from "@lifeos/ui/app-nav";
+import type { AppNavItem } from "@lifeos/ui/app-nav";
 import { Button } from "@lifeos/ui/button";
-import { AppIcon } from "@lifeos/ui/icons";
 import type { ReactNode } from "react";
 import { useAuth } from "./auth-context";
 
-const navigation = [
-  { to: "/dashboard", label: "Dashboard", shortLabel: "Today", icon: "today" },
-  { to: "/finance", label: "Finance", shortLabel: "Finance", icon: "finance" },
-  { to: "/fitness", label: "Fitness", shortLabel: "Fitness", icon: "fitness" },
+const navigation: readonly AppNavItem[] = [
+  { id: "dashboard", href: "/dashboard", label: "Today", icon: "today" },
+  { id: "finance", href: "/finance", label: "Finance", icon: "finance" },
+  { id: "fitness", href: "/fitness", label: "Fitness", icon: "fitness" },
   {
-    to: "/nutrition",
+    id: "nutrition",
+    href: "/nutrition",
     label: "Nutrition",
-    shortLabel: "Nutrition",
+    shortLabel: "Food",
     icon: "nutrition",
   },
-  { to: "/health", label: "Health", shortLabel: "Health", icon: "health" },
+  { id: "health", href: "/health", label: "Health", icon: "health" },
   {
-    to: "/settings",
+    id: "settings",
+    href: "/settings",
     label: "Settings",
-    shortLabel: "Settings",
     icon: "settings",
+    hideOnPhone: true,
   },
-] as const;
+];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { owner, signOut } = useAuth();
+  const { pathname } = useLocation();
+  const current =
+    navigation.find((item) => item.href && pathname.startsWith(item.href))
+      ?.id ?? "dashboard";
+  const handleSignOut = () => void signOut().catch(() => undefined);
 
   return (
-    <div className="min-h-svh bg-stone-100 text-stone-950 dark:bg-stone-950 dark:text-stone-100">
-      <header className="sticky top-0 z-20 border-b border-stone-200 bg-white/90 px-4 backdrop-blur dark:border-white/10 dark:bg-stone-950/90 sm:px-6">
-        <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-4">
+    <div className="@container min-h-svh bg-canvas text-ink tablet:flex">
+      <AppNav
+        current={current}
+        items={navigation}
+        onSignOut={handleSignOut}
+        owner={owner?.name}
+        renderLink={({ children, className, item }) => (
+          <NavLink
+            aria-label={item.label}
+            className={className}
+            end
+            to={item.href ?? "/dashboard"}
+          >
+            {children}
+          </NavLink>
+        )}
+      />
+
+      <div className="min-w-0 flex-1">
+        <header className="flex items-center justify-between gap-3 border-b border-line bg-surface px-4 py-2 tablet:hidden">
           <Link
             aria-label="LifeOS home"
-            className="flex shrink-0 items-center gap-3"
+            className="flex min-h-target-min items-center gap-3 text-title-s text-ink no-underline"
             to="/dashboard"
           >
-            <span
-              aria-hidden="true"
-              className="grid size-9 place-items-center rounded-xl bg-emerald-400 text-sm font-bold text-stone-950"
-            >
-              L
-            </span>
-            <span className="text-base font-semibold tracking-tight">
-              LifeOS
-            </span>
+            <LogoMark size={28} />
+            LifeOS
           </Link>
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="hidden max-w-40 truncate text-sm text-stone-500 dark:text-stone-400 sm:block">
-              {owner?.name}
-            </span>
-            <Button
-              className="min-h-10 px-3 text-sm"
-              onPress={() => void signOut().catch(() => undefined)}
-              variant="tertiary"
-            >
-              Sign out
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto flex max-w-[1600px] md:min-h-[calc(100svh-4rem)]">
-        <nav
-          aria-label="Primary navigation"
-          className="fixed inset-x-0 bottom-0 z-30 flex gap-1 overflow-x-auto border-t border-stone-200 bg-white px-2 pb-[env(safe-area-inset-bottom)] pt-2 dark:border-white/10 dark:bg-stone-950 md:sticky md:top-16 md:h-[calc(100svh-4rem)] md:w-56 md:shrink-0 md:flex-col md:gap-1 md:overflow-y-auto md:border-r md:border-t-0 md:bg-transparent md:px-4 md:py-8 md:pt-8 dark:md:bg-transparent"
-        >
-          {navigation.map((item) => (
-            <NavLink
-              key={item.to}
-              aria-label={item.label}
-              className={({ isActive }) =>
-                `flex min-w-[68px] flex-1 flex-col items-center gap-1 rounded-xl px-2 py-2 text-[10px] font-medium transition md:min-w-0 md:flex-initial md:grow-0 md:flex-row md:gap-3 md:px-3 md:py-3 md:text-sm ${isActive ? "bg-emerald-400/15 text-emerald-800 dark:text-emerald-200" : "text-stone-500 hover:bg-stone-200/70 dark:text-stone-400 dark:hover:bg-white/5"}`
-              }
-              end
-              to={item.to}
+          <div className="flex items-center gap-1">
+            <Link
+              aria-label={`Settings for ${owner?.name ?? "your account"}`}
+              className="grid size-target-min place-items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+              to="/settings"
             >
               <span
                 aria-hidden="true"
-                className="grid size-6 place-items-center md:size-7"
-                data-testid={`navigation-icon-${item.icon}`}
+                className="grid size-8 place-items-center rounded-full bg-primary-soft text-label text-primary-text"
               >
-                <AppIcon name={item.icon} size={20} />
+                {owner?.name.charAt(0).toUpperCase()}
               </span>
-              <span className="whitespace-nowrap">{item.shortLabel}</span>
-            </NavLink>
-          ))}
-        </nav>
-        <main className="min-w-0 flex-1 px-5 pb-28 pt-8 sm:px-8 md:px-10 md:pb-12 md:pt-10 md:pr-14 2xl:pr-20">
+            </Link>
+            <Button onPress={handleSignOut} variant="tertiary">
+              Sign out
+            </Button>
+          </div>
+        </header>
+        <main className="mx-auto w-full max-w-content px-4 pb-28 pt-6 tablet:px-6 tablet:pb-12 tablet:pt-8 desktop:px-8 desktop:pt-10">
           {children}
         </main>
       </div>

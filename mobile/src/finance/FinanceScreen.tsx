@@ -155,46 +155,49 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
   return (
     <ScrollView
       className="flex-1"
-      contentContainerClassName="mx-auto w-full max-w-[1120px] gap-3 px-5 pb-12 pt-8 md:px-9 md:pt-10"
+      contentContainerClassName="mx-auto w-full max-w-content gap-3 px-4 pb-10 pt-6 tablet:px-6 tablet:pt-8 desktop:px-8"
     >
-      <Text className="text-sm font-semibold text-lifeos-accent-dark">
+      <Text className="text-overline uppercase text-ink-muted">
         Your money, in context
       </Text>
-      <Text className="text-[38px] font-bold tracking-[-0.7px] text-lifeos-primary">
+      <Text
+        accessibilityRole="header"
+        className="text-display-m text-ink tablet:text-display-l"
+      >
         Finance
       </Text>
-      <Text className="mb-2 text-[15px] leading-[22px] text-lifeos-muted">
+      <Text className="mb-2 text-body text-ink-muted">
         Your accounts and activity stay on your LifeOS server.
       </Text>
 
       {state.status === "loading" ? (
         <View
           accessibilityLabel="Loading finance data"
-          className="min-h-[180px] items-center justify-center gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-6"
+          className="min-h-[180px] items-center justify-center gap-3 rounded-md border border-line bg-surface p-6"
         >
           <ActivityIndicator size="large" />
-          <Text className="text-sm text-lifeos-muted">
+          <Text className="text-body-s text-ink-muted">
             Loading your finances…
           </Text>
         </View>
       ) : state.status === "error" ? (
-        <View className="min-h-[180px] items-center justify-center gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-6">
-          <Text className="text-center text-lg font-bold text-lifeos-primary">
+        <View className="min-h-[180px] items-center justify-center gap-3 rounded-md border border-line bg-surface p-6">
+          <Text className="text-center text-title-m font-semibold text-ink">
             Finance data is unavailable
           </Text>
-          <Text className="text-center text-sm leading-[21px] text-lifeos-muted">
+          <Text className="text-center text-body-s text-ink-muted">
             Check your connection to your LifeOS server and try again.
           </Text>
           <ActionButton label="Try again" onPress={() => void reload()} />
         </View>
       ) : (
         <>
-          <View className="flex-row items-center rounded-[18px] border border-lifeos-border bg-lifeos-surface p-3">
+          <View className="flex-row items-center rounded-md border border-line bg-surface p-3">
             <MonthNavigationButton
               direction="previous"
               onPress={() => setMonth((value) => shiftMonth(value, -1))}
             />
-            <Text className="flex-1 text-center font-semibold text-lifeos-primary">
+            <Text className="flex-1 text-center font-semibold text-ink">
               {formatMonth(month)}
             </Text>
             <MonthNavigationButton
@@ -204,21 +207,21 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
           </View>
 
           {state.snapshot.accounts.length === 0 ? (
-            <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-              <Text className="text-xl font-bold text-lifeos-primary">
+            <View className="gap-3 rounded-md border border-line bg-surface p-5 tablet:p-6">
+              <Text className="text-title-l font-semibold text-ink">
                 Create your first account
               </Text>
-              <Text className="text-sm leading-[21px] text-lifeos-muted">
+              <Text className="text-body-s text-ink-muted">
                 Add a local account before recording transactions. Its currency
                 comes from your LifeOS settings.
               </Text>
               <TextInput
                 accessibilityLabel="Account name"
-                className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+                className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
                 maxLength={100}
                 onChangeText={setAccountName}
                 placeholder="e.g. Current account"
-                placeholderTextColor="#758078"
+                placeholderTextColorClassName="accent-ink-muted"
                 value={accountName}
               />
               <ActionButton
@@ -232,11 +235,11 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
             <>
               <View className="flex-row flex-wrap gap-3">
                 {state.snapshot.overview.totals.length === 0 ? (
-                  <View className="min-h-[140px] flex-1 justify-center rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5">
-                    <Text className="text-base font-bold text-lifeos-primary">
+                  <View className="min-h-[140px] flex-1 justify-center rounded-md border border-line bg-surface p-5">
+                    <Text className="text-body font-semibold text-ink">
                       No cashflow recorded
                     </Text>
-                    <Text className="mt-2 text-sm leading-[21px] text-lifeos-muted">
+                    <Text className="mt-2 text-body-s text-ink-muted">
                       Add your first income or expense to see this month take
                       shape.
                     </Text>
@@ -245,19 +248,19 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                   state.snapshot.overview.totals.map((total) => (
                     <View
                       key={total.currency}
-                      className="min-h-[140px] flex-1 justify-center rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5"
+                      className="min-h-[140px] flex-1 justify-center rounded-md border border-line bg-surface p-5"
                     >
-                      <Text className="text-sm text-lifeos-muted">
+                      <Text className="text-body-s text-ink-muted">
                         {total.currency} · monthly cashflow
                       </Text>
-                      <Text className="mt-2 text-2xl font-bold text-lifeos-primary">
+                      <Text className="mt-2 text-figure-l font-semibold text-ink">
                         {money(
                           total.net_cashflow,
                           total.currency,
                           state.snapshot.maskSensitiveData,
                         )}
                       </Text>
-                      <Text className="mt-2 text-sm text-lifeos-muted">
+                      <Text className="mt-2 text-body-s text-ink-muted">
                         In{" "}
                         {money(
                           total.income,
@@ -276,8 +279,8 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                 )}
               </View>
 
-              <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-                <Text className="text-xl font-bold text-lifeos-primary">
+              <View className="gap-3 rounded-md border border-line bg-surface p-5 tablet:p-6">
+                <Text className="text-title-l font-semibold text-ink">
                   Record a transaction
                 </Text>
                 <View className="flex-row gap-2">
@@ -292,7 +295,7 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                     onPress={() => setType("income")}
                   />
                 </View>
-                <Text className="text-sm font-semibold text-lifeos-primary">
+                <Text className="text-body-s font-semibold text-ink">
                   Account
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
@@ -305,7 +308,7 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                     />
                   ))}
                 </View>
-                <Text className="text-sm font-semibold text-lifeos-primary">
+                <Text className="text-body-s font-semibold text-ink">
                   Category
                 </Text>
                 <View className="flex-row flex-wrap gap-2">
@@ -326,35 +329,35 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                     (category) =>
                       category.type === type && !category.is_archived,
                   ).length === 0 ? (
-                    <Text className="text-sm text-lifeos-muted">
+                    <Text className="text-body-s text-ink-muted">
                       No {type} categories yet.
                     </Text>
                   ) : null}
                 </View>
                 <TextInput
                   accessibilityLabel="Transaction amount"
-                  className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+                  className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
                   keyboardType="decimal-pad"
                   onChangeText={setAmount}
                   placeholder="Amount"
-                  placeholderTextColor="#758078"
+                  placeholderTextColorClassName="accent-ink-muted"
                   value={amount}
                 />
                 <TextInput
                   accessibilityLabel="Transaction description"
-                  className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+                  className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
                   maxLength={255}
                   onChangeText={setDescription}
                   placeholder="Description (optional)"
-                  placeholderTextColor="#758078"
+                  placeholderTextColorClassName="accent-ink-muted"
                   value={description}
                 />
                 <TextInput
                   accessibilityLabel="Transaction date"
-                  className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+                  className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
                   onChangeText={setOccurredOn}
                   placeholder="YYYY-MM-DD"
-                  placeholderTextColor="#758078"
+                  placeholderTextColorClassName="accent-ink-muted"
                   value={occurredOn}
                 />
                 <ActionButton
@@ -370,31 +373,31 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                 />
               </View>
 
-              <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-                <Text className="text-xl font-bold text-lifeos-primary">
+              <View className="gap-3 rounded-md border border-line bg-surface p-5 tablet:p-6">
+                <Text className="text-title-l font-semibold text-ink">
                   Transactions
                 </Text>
                 {state.snapshot.transactions.length === 0 ? (
-                  <Text className="text-sm leading-[21px] text-lifeos-muted">
+                  <Text className="text-body-s text-ink-muted">
                     No transactions for this month yet.
                   </Text>
                 ) : (
                   state.snapshot.transactions.map((transaction) => (
                     <View
                       key={transaction.id}
-                      className="flex-row items-center justify-between gap-4 border-t border-lifeos-border py-3"
+                      className="flex-row items-center justify-between gap-4 border-t border-line py-3"
                     >
                       <View className="min-w-0 flex-1">
                         <Text
                           numberOfLines={1}
-                          className="font-semibold text-lifeos-primary"
+                          className="font-semibold text-ink"
                         >
                           {transaction.description ||
                             (transaction.type === "income"
                               ? "Income"
                               : "Expense")}
                         </Text>
-                        <Text className="mt-1 text-sm text-lifeos-muted">
+                        <Text className="mt-1 text-body-s text-ink-muted">
                           {dateLabel(transaction.occurred_at)} ·{" "}
                           {accountNameFor(
                             transaction.account_id,
@@ -403,7 +406,7 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
                         </Text>
                       </View>
                       <Text
-                        className={`font-bold ${transaction.type === "income" ? "text-lifeos-accent-dark" : "text-lifeos-primary"}`}
+                        className={`font-semibold ${transaction.type === "income" ? "text-primary-text" : "text-ink"}`}
                       >
                         {transaction.type === "income" ? "+" : "−"}
                         {money(
@@ -419,19 +422,17 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
             </>
           )}
 
-          <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-            <Text className="text-xl font-bold text-lifeos-primary">
+          <View className="gap-3 rounded-md border border-line bg-surface p-5 tablet:p-6">
+            <Text className="text-title-l font-semibold text-ink">
               Accounts
             </Text>
             {state.snapshot.accounts.map((account) => (
               <View
                 key={account.id}
-                className="flex-row justify-between gap-4 border-t border-lifeos-border py-3"
+                className="flex-row justify-between gap-4 border-t border-line py-3"
               >
-                <Text className="font-medium text-lifeos-primary">
-                  {account.name}
-                </Text>
-                <Text className="font-semibold text-lifeos-primary">
+                <Text className="font-medium text-ink">{account.name}</Text>
+                <Text className="font-semibold text-ink">
                   {money(
                     account.balance,
                     account.currency,
@@ -442,11 +443,11 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
             ))}
             <TextInput
               accessibilityLabel="Account name"
-              className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+              className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
               maxLength={100}
               onChangeText={setAccountName}
               placeholder="New account name"
-              placeholderTextColor="#758078"
+              placeholderTextColorClassName="accent-ink-muted"
               value={accountName}
             />
             <ActionButton
@@ -457,11 +458,11 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
             />
           </View>
 
-          <View className="gap-3 rounded-[21px] border border-lifeos-border bg-lifeos-surface p-5 md:p-7">
-            <Text className="text-xl font-bold text-lifeos-primary">
+          <View className="gap-3 rounded-md border border-line bg-surface p-5 tablet:p-6">
+            <Text className="text-title-l font-semibold text-ink">
               Categories
             </Text>
-            <Text className="text-sm leading-[21px] text-lifeos-muted">
+            <Text className="text-body-s text-ink-muted">
               Create reusable income and expense categories for your
               transactions.
             </Text>
@@ -479,11 +480,11 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
             </View>
             <TextInput
               accessibilityLabel="Category name"
-              className="min-h-12 rounded-xl border border-lifeos-border bg-lifeos-background px-4 text-lifeos-primary"
+              className="min-h-12 rounded-sm border border-line bg-canvas px-4 text-ink"
               maxLength={100}
               onChangeText={setCategoryName}
               placeholder="e.g. Groceries"
-              placeholderTextColor="#758078"
+              placeholderTextColorClassName="accent-ink-muted"
               value={categoryName}
             />
             <ActionButton
@@ -499,7 +500,7 @@ export function FinanceScreen({ service }: FinanceScreenProps) {
       {formError ? (
         <Text
           accessibilityRole="alert"
-          className="rounded-xl bg-red-50 p-4 text-sm text-red-800"
+          className="rounded-sm bg-danger-soft p-4 text-body-s text-danger"
         >
           {formError}
         </Text>
@@ -524,10 +525,7 @@ function MonthNavigationButton({
       onPress={onPress}
       variant="icon"
     >
-      <Text
-        className="text-2xl font-medium leading-[28px] text-lifeos-primary"
-        accessible={false}
-      >
+      <Text className="text-figure-l font-medium text-ink" accessible={false}>
         {isPrevious ? "‹" : "›"}
       </Text>
     </Button>

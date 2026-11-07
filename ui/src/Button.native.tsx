@@ -15,6 +15,7 @@ export function Button({
   variant = "primary",
 }: ButtonProps) {
   const isDisabled = disabled || loading;
+  const isSelected = Boolean(selected);
 
   return (
     <Pressable
@@ -25,21 +26,28 @@ export function Button({
         disabled: isDisabled,
         ...(selected === undefined ? {} : { selected }),
       }}
-      className={`${cn(
+      className={cn(
         buttonVariants({
           className,
           disabled: isDisabled,
+          selected: isSelected,
           size: size ?? (variant === "icon" ? "icon" : "md"),
           variant,
         }),
-      )} ${isDisabled ? "" : "active:opacity-80"}`.trim()}
+      )}
       disabled={isDisabled}
       onPress={onPress}
     >
       {loading ? <ActivityIndicator size="small" /> : null}
       {typeof children === "string" || typeof children === "number" ? (
         <Text
-          className={cn(buttonLabelVariants({ disabled: isDisabled, variant }))}
+          className={cn(
+            buttonLabelVariants({
+              disabled: isDisabled,
+              selected: isSelected,
+              variant,
+            }),
+          )}
         >
           {children}
         </Text>

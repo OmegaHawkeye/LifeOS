@@ -1,0 +1,169 @@
+/* Generated from ui/tokens.json by ui/scripts/generate-theme.mjs. Do not edit. Native (Uniwind): light, dark and wall themes, and embedded font families. */
+
+@layer theme {
+  :root {
+    @variant light {
+      --color-canvas: #f3f4f1;
+      --color-surface: #ffffff;
+      --color-surface-sunken: #e8ebe6;
+      --color-line: #dadfd8;
+      --color-line-strong: #848d86;
+      --color-ink: #17201c;
+      --color-ink-muted: #525c56;
+      --color-primary: #1d5c49;
+      --color-primary-hover: #164a3b;
+      --color-on-primary: #ffffff;
+      --color-primary-soft: #dcebe3;
+      --color-primary-text: #1a5341;
+      --color-marigold: #f0ad2e;
+      --color-on-marigold: #2a1d00;
+      --color-focus: #2b63d9;
+      --color-danger: #b3261e;
+      --color-on-danger: #ffffff;
+      --color-danger-soft: #fbe4e1;
+      --color-warning: #8a5300;
+      --color-warning-soft: #fbefd6;
+      --color-finance: #2f5fa8;
+      --color-finance-soft: #e2eaf7;
+      --color-fitness: #a84312;
+      --color-fitness-soft: #fbe6db;
+      --color-nutrition: #55701a;
+      --color-nutrition-soft: #e9f0d6;
+      --color-health: #ad2f63;
+      --color-health-soft: #f8e1ea;
+      --color-routines: #6a4ca6;
+      --color-routines-soft: #ece6f7;
+      --color-scrim: #17201c80;
+      --color-link: #1a5341;
+      --shadow-raised: 0 1px 2px #17201c14, 0 1px 1px #17201c0a;
+      --shadow-overlay: 0 12px 32px #17201c29, 0 2px 6px #17201c14;
+    }
+    @variant dark {
+      --color-canvas: #0f1412;
+      --color-surface: #171d1a;
+      --color-surface-sunken: #0a0e0c;
+      --color-line: #27302c;
+      --color-line-strong: #66726b;
+      --color-ink: #e7ece9;
+      --color-ink-muted: #9da9a2;
+      --color-primary: #6fcca6;
+      --color-primary-hover: #8ad8b8;
+      --color-on-primary: #0a2219;
+      --color-primary-soft: #16362b;
+      --color-primary-text: #7fd6b2;
+      --color-marigold: #f0ad2e;
+      --color-on-marigold: #2a1d00;
+      --color-focus: #7ea8ff;
+      --color-danger: #ff8a7d;
+      --color-on-danger: #2a0805;
+      --color-danger-soft: #3d1714;
+      --color-warning: #f2b65a;
+      --color-warning-soft: #382707;
+      --color-finance: #8db3f0;
+      --color-finance-soft: #172540;
+      --color-fitness: #f29468;
+      --color-fitness-soft: #3b1c0e;
+      --color-nutrition: #adc55e;
+      --color-nutrition-soft: #232e0e;
+      --color-health: #f08cb4;
+      --color-health-soft: #3b1426;
+      --color-routines: #bba4ec;
+      --color-routines-soft: #261d3d;
+      --color-scrim: #000000a6;
+      --color-link: #7fd6b2;
+      --shadow-raised: none;
+      --shadow-overlay: 0 12px 32px #00000080;
+    }
+    @variant wall {
+      --color-canvas: #000000;
+      --color-surface: #0e0f0d;
+      --color-surface-sunken: #000000;
+      --color-line: #24261f;
+      --color-line-strong: #5f6357;
+      --color-ink: #f2ede2;
+      --color-ink-muted: #a39d90;
+      --color-primary: #7fcfa9;
+      --color-primary-hover: #95dab9;
+      --color-on-primary: #06150f;
+      --color-primary-soft: #12271e;
+      --color-primary-text: #86d6b0;
+      --color-marigold: #e9a73a;
+      --color-on-marigold: #1f1500;
+      --color-focus: #86aeff;
+      --color-danger: #ff9283;
+      --color-on-danger: #2a0805;
+      --color-danger-soft: #2e110e;
+      --color-warning: #eab45e;
+      --color-warning-soft: #2a1d06;
+      --color-finance: #93b6ee;
+      --color-finance-soft: #111c30;
+      --color-fitness: #ee9a72;
+      --color-fitness-soft: #2c150b;
+      --color-nutrition: #b2c86a;
+      --color-nutrition-soft: #1a220b;
+      --color-health: #ee93b7;
+      --color-health-soft: #2c0f1c;
+      --color-routines: #bea9ea;
+      --color-routines-soft: #1c162d;
+      --color-scrim: #000000bf;
+      --color-link: #86d6b0;
+      --shadow-raised: none;
+      --shadow-overlay: 0 12px 32px #000000cc;
+    }
+  }
+}
+
+@theme {
+  --font-display: "Newsreader";
+  --font-sans: "Instrument Sans";
+  --font-mono: "IBM Plex Mono";
+}
+
+@utility text-display-xl {
+  font-family: "Newsreader";
+}
+@utility text-display-l {
+  font-family: "Newsreader";
+}
+@utility text-display-m {
+  font-family: "Newsreader";
+}
+@utility text-title-l {
+  font-family: "Instrument Sans";
+}
+@utility text-title-m {
+  font-family: "Instrument Sans";
+}
+@utility text-title-s {
+  font-family: "Instrument Sans";
+}
+@utility text-body-l {
+  font-family: "Instrument Sans";
+}
+@utility text-body {
+  font-family: "Instrument Sans";
+}
+@utility text-body-s {
+  font-family: "Instrument Sans";
+}
+@utility text-label {
+  font-family: "Instrument Sans";
+}
+@utility text-caption {
+  font-family: "Instrument Sans";
+}
+@utility text-overline {
+  font-family: "Instrument Sans";
+}
+@utility text-figure-xl {
+  font-family: "Instrument Sans";
+}
+@utility text-figure-l {
+  font-family: "Instrument Sans";
+}
+@utility text-figure-m {
+  font-family: "Instrument Sans";
+}
+@utility text-unit {
+  font-family: "IBM Plex Mono";
+}

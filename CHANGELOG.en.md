@@ -1,3 +1,8 @@
+# 0.16.0
+
+- LifeOS has a new look on web and iOS, with refreshed light and dark themes and a wall display theme.
+- The Today page brings every area together in summary cards, and navigation adapts to phone, tablet and desktop.
+
 # 0.15.2
 
 - Umbrel now reconciles stale database credentials on startup without deleting data.

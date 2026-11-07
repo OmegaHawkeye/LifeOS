@@ -24,10 +24,11 @@ describe("shared web switch and CVA recipes", () => {
       size: "sm",
     });
 
-    expect(primary).toContain("bg-lifeos-accent");
-    expect(disabledDanger).toContain("disabled:bg-stone-300");
-    expect(disabledPrimary).toContain("bg-stone-300");
-    expect(disabledCheckedSmallSwitch).toContain("bg-lifeos-accent");
+    expect(primary).toContain("bg-primary");
+    expect(disabledDanger).toContain("bg-surface-sunken");
+    expect(disabledPrimary).toContain("bg-surface-sunken");
+    expect(disabledPrimary).not.toMatch(/(?:^|\s)bg-primary(?:\s|$)/);
+    expect(disabledCheckedSmallSwitch).toContain("bg-primary");
     expect(disabledCheckedSmallSwitch).toContain("h-5");
   });
 
@@ -66,9 +67,37 @@ describe("shared web switch and CVA recipes", () => {
       checked: true,
     });
     expect(control).toBeDisabled();
-    expect(control.className).toContain("bg-lifeos-accent");
+    expect(control.className).toContain("bg-primary");
     expect(control.className).toContain("h-5");
     fireEvent.click(control);
     expect(onCheckedChange).not.toHaveBeenCalled();
+  });
+});
+
+describe("labelled switch row", () => {
+  it("names the control by its visible label and describes it with the hint", () => {
+    render(
+      <Switch
+        checked
+        hint="Existing passkeys are not deleted."
+        label="Keep passkeys available"
+        onCheckedChange={() => undefined}
+      />,
+    );
+
+    const control = screen.getByRole("switch", {
+      name: "Keep passkeys available",
+      checked: true,
+    });
+    expect(control).toHaveAccessibleDescription(
+      "Existing passkeys are not deleted.",
+    );
+  });
+});
+
+describe("cn with design tokens", () => {
+  it("keeps a token font size and a token colour together", () => {
+    expect(cn("text-label text-ink")).toBe("text-label text-ink");
+    expect(cn("bg-primary", "bg-surface-sunken")).toBe("bg-surface-sunken");
   });
 });

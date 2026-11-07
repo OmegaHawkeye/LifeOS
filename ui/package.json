@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "theme:generate": "node scripts/generate-theme.mjs"
+  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -19,6 +22,30 @@
       "react-native": "./src/Button.native.tsx",
       "default": "./src/Button.web.tsx"
     },
+    "./theme.css": "./theme.css",
+    "./theme.web.css": "./theme.web.css",
+    "./theme.native.css": "./theme.native.css",
+    "./tokens.json": "./tokens.json",
+    "./tag": {
+      "types": "./src/Tag.types.ts",
+      "react-native": "./src/Tag.native.tsx",
+      "default": "./src/Tag.web.tsx"
+    },
+    "./meter": {
+      "types": "./src/Meter.types.ts",
+      "react-native": "./src/Meter.native.tsx",
+      "default": "./src/Meter.web.tsx"
+    },
+    "./signal-card": {
+      "types": "./src/SignalCard.types.ts",
+      "react-native": "./src/SignalCard.native.tsx",
+      "default": "./src/SignalCard.web.tsx"
+    },
+    "./segmented-control": {
+      "types": "./src/SegmentedControl.types.ts",
+      "react-native": "./src/SegmentedControl.native.tsx",
+      "default": "./src/SegmentedControl.web.tsx"
+    },
     "./button-variants": {
       "types": "./src/buttonVariants.ts",
       "default": "./src/buttonVariants.ts"
@@ -33,7 +60,15 @@
       "react-native": "./src/Switch.native.tsx",
       "default": "./src/Switch.web.tsx"
     },
-    "./theme.css": "./theme.css"
+    "./app-nav": {
+      "types": "./src/AppNav.types.ts",
+      "react-native": "./src/AppNav.native.tsx",
+      "default": "./src/AppNav.web.tsx"
+    },
+    "./tokens": {
+      "types": "./src/nativeTokens.ts",
+      "default": "./src/nativeTokens.ts"
+    }
   },
   "peerDependencies": {
     "@types/react": ">=19",

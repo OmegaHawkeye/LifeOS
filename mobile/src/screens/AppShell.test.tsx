@@ -116,7 +116,7 @@ describe("LifeOS native shell", () => {
       "pending-login",
       "123456",
     );
-    expect(await screen.findByText("Your day, in context")).toBeTruthy();
+    expect(await screen.findByRole("header", { name: "Today" })).toBeTruthy();
     expect(
       screen.getByTestId("today-dashboard-scroll").props.className,
     ).toContain("flex-1");
@@ -168,7 +168,7 @@ describe("LifeOS native shell", () => {
       </MobileAuthProvider>,
     );
 
-    expect(await screen.findByText("Your day, in context")).toBeTruthy();
+    expect(await screen.findByRole("header", { name: "Today" })).toBeTruthy();
     expect(screen.queryByLabelText("LifeOS email")).toBeNull();
   });
 
@@ -188,7 +188,7 @@ describe("LifeOS native shell", () => {
     );
 
     expect(await screen.findByText("Sign in")).toBeTruthy();
-    expect(screen.queryByText("Your day, in context")).toBeNull();
+    expect(screen.queryByRole("header", { name: "Today" })).toBeNull();
   });
 
   test("keeps the authenticator step open when its code is rejected", async () => {
@@ -225,7 +225,7 @@ describe("LifeOS native shell", () => {
       "The authenticator code is incorrect or expired.",
     );
     expect(screen.getByLabelText("Authenticator code")).toBeTruthy();
-    expect(screen.queryByText("Your day, in context")).toBeNull();
+    expect(screen.queryByRole("header", { name: "Today" })).toBeNull();
   });
 
   test("completes first-time authenticator enrollment before entering the app", async () => {
@@ -256,7 +256,7 @@ describe("LifeOS native shell", () => {
     expect(
       screen.getByRole("button", { name: "Confirm authenticator" }),
     ).toBeTruthy();
-    expect(screen.queryByText("Your day, in context")).toBeNull();
+    expect(screen.queryByRole("header", { name: "Today" })).toBeNull();
 
     await fireEvent.changeText(
       screen.getByLabelText("Authenticator code"),
@@ -269,7 +269,7 @@ describe("LifeOS native shell", () => {
       "pending-setup",
       "123456",
     );
-    expect(await screen.findByText("Your day, in context")).toBeTruthy();
+    expect(await screen.findByRole("header", { name: "Today" })).toBeTruthy();
   });
 
   test("cancels first-time enrollment before hiding its setup key", async () => {

@@ -34,6 +34,7 @@ export function Button({
         buttonVariants({
           className,
           disabled: isDisabled,
+          selected: Boolean(selected),
           size: size ?? (variant === "icon" ? "icon" : "md"),
           variant,
         }),
@@ -45,7 +46,7 @@ export function Button({
       {loading ? (
         <span
           aria-hidden="true"
-          className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+          className="size-4 animate-spin rounded-full border-2 border-current border-r-transparent motion-reduce:animate-[spin_2.4s_linear_infinite]"
         />
       ) : null}
       {children}
