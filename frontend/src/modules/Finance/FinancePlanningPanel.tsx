@@ -279,7 +279,12 @@ export function FinancePlanningPanel({
                   type="number"
                 />
               </div>
-              <Button disabled={saving} loading={saving} type="submit">
+              <Button
+                className="mt-2"
+                disabled={saving}
+                loading={saving}
+                type="submit"
+              >
                 Add budget for {month}
               </Button>
             </form>
@@ -382,6 +387,7 @@ export function FinancePlanningPanel({
               type="date"
             />
             <Button
+              className="mt-2"
               disabled={saving || accounts.length === 0}
               loading={saving}
               type="submit"
@@ -513,6 +519,7 @@ export function FinancePlanningPanel({
               />
             </div>
             <Button
+              className="mt-2"
               disabled={saving || currencies.length === 0}
               loading={saving}
               type="submit"
