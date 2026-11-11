@@ -93,7 +93,6 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('/security/two-factor/confirm', [TwoFactorController::class, 'confirm'])->name('security.two-factor.confirm');
         Route::delete('/security/two-factor', [TwoFactorController::class, 'destroy'])->name('security.two-factor.destroy');
         Route::get('/security/passkeys', [PasskeyManagementController::class, 'index'])
-            ->middleware('web')
             ->name('security.passkeys.index');
         Route::post('/security/passkeys/management-sessions', [PasskeyManagementController::class, 'beginMobileManagement'])->name('security.passkeys.management-sessions.store');
         Route::delete('/security/passkeys/{passkey}', [PasskeyManagementController::class, 'destroy'])->whereNumber('passkey')->name('security.passkeys.destroy');
